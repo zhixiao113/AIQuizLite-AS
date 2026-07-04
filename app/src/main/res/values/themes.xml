@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.AIQuizLite" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary Brand Color -->
+        <item name="colorPrimary">@color/brand_primary</item>
+        <item name="colorPrimaryVariant">@color/brand_primary_dark</item>
+        <item name="colorSecondary">@color/brand_success</item>
+        <item name="colorSurface">@color/brand_surface</item>
+
+        <!-- Status Bar -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+
+        <!-- Window Background -->
+        <item name="android:windowBackground">@drawable/bg_gradient</item>
+
+        <!-- Typography -->
+        <item name="android:textViewStyle">@style/TextAppearance.App.Body</item>
+    </style>
+
+    <!-- Typography Styles -->
+    <style name="TextAppearance.App.Title" parent="TextAppearance.MaterialComponents.Headline5">
+        <item name="android:textColor">@color/brand_ink</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="TextAppearance.App.Subtitle" parent="TextAppearance.MaterialComponents.Subtitle1">
+        <item name="android:textColor">@color/brand_text_secondary</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="TextAppearance.App.Body" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:textColor">@color/brand_ink</item>
+        <item name="android:textSize">16sp</item>
+        <item name="lineHeight">24sp</item>
+    </style>
+
+    <style name="TextAppearance.App.Caption" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textColor">@color/brand_text_muted</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <!-- Card Styles -->
+    <style name="CardStyle.Primary" parent="Widget.MaterialComponents.CardView">
+        <item name="cardBackgroundColor">@color/brand_card</item>
+        <item name="cardCornerRadius">16dp</item>
+        <item name="cardElevation">2dp</item>
+        <item name="strokeColor">@color/brand_border</item>
+        <item name="strokeWidth">0dp</item>
+    </style>
+
+    <style name="CardStyle.Elevated" parent="Widget.MaterialComponents.CardView">
+        <item name="cardBackgroundColor">@color/brand_card</item>
+        <item name="cardCornerRadius">16dp</item>
+        <item name="cardElevation">4dp</item>
+        <item name="strokeWidth">0dp</item>
+    </style>
+
+    <!-- Button Styles -->
+    <style name="ButtonStyle.Primary" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/brand_primary</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/brand_card</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
+    </style>
+
+    <style name="ButtonStyle.Secondary" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="cornerRadius">12dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/brand_primary</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="strokeColor">@color/brand_primary</item>
+        <item name="strokeWidth">2dp</item>
+        <item name="android:minHeight">48dp</item>
+    </style>
+
+    <style name="ButtonStyle.Danger" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="cornerRadius">12dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/brand_error</item>
+        <item name="strokeColor">@color/brand_error</item>
+        <item name="strokeWidth">2dp</item>
+        <item name="android:minHeight">48dp</item>
+    </style>
+
+    <style name="ButtonStyle.Success" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/brand_success</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/brand_card</item>
+        <item name="android:minHeight">48dp</item>
+    </style>
+
+    <!-- Option Button Styles for Quiz -->
+    <style name="OptionStyle.RadioButton" parent="Widget.MaterialComponents.CompoundButton.RadioButton">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/brand_ink</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:minHeight">48dp</item>
+    </style>
+
+    <style name="OptionStyle.CheckBox" parent="Widget.MaterialComponents.CompoundButton.CheckBox">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/brand_ink</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:minHeight">48dp</item>
+    </style>
+</resources>

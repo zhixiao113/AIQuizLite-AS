@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3" xmlns:ns1="http://schemas.android.com/tools"><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="E:\project-bs\AIQuizLite-AS\app\src\main\res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main" generated-set="main$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="E:\project-bs\AIQuizLite-AS\app\src\main\res"><file name="bg_gradient" path="E:\project-bs\AIQuizLite-AS\app\src\main\res\drawable\bg_gradient.xml" qualifiers="" type="drawable"/><file name="btn_primary" path="E:\project-bs\AIQuizLite-AS\app\src\main\res\drawable\btn_primary.xml" qualifiers="" type="drawable"/><file name="btn_success" path="E:\project-bs\AIQuizLite-AS\app\src\main\res\drawable\btn_success.xml" qualifiers="" type="drawable"/><file name="card_background" path="E:\project-bs\AIQuizLite-AS\app\src\main\res\drawable\card_background.xml" qualifiers="" type="drawable"/><file name="option_background" path="E:\project-bs\AIQuizLite-AS\app\src\main\res\drawable\option_background.xml" qualifiers="" type="drawable"/><file name="activity_main" path="E:\project-bs\AIQuizLite-AS\app\src\main\res\layout\activity_main.xml" qualifiers="" type="layout"/><file name="activity_quiz" path="E:\project-bs\AIQuizLite-AS\app\src\main\res\layout\activity_quiz.xml" qualifiers="" type="layout"/><file path="E:\project-bs\AIQuizLite-AS\app\src\main\res\values\colors.xml" qualifiers=""><color name="brand_primary">#2563EB</color><color name="brand_primary_light">#3B82F6</color><color name="brand_primary_dark">#1D4ED8</color><color name="brand_success">#10B981</color><color name="brand_error">#EF4444</color><color name="brand_warning">#F59E0B</color><color name="brand_ink">#111827</color><color name="brand_text_secondary">#4B5563</color><color name="brand_text_muted">#9CA3AF</color><color name="brand_text_light">#D1D5DB</color><color name="brand_surface">#F9FAFB</color><color name="brand_card">#FFFFFF</color><color name="brand_card_hover">#F3F4F6</color><color name="brand_border">#E5E7EB</color><color name="brand_border_light">#F3F4F6</color><color name="brand_divider">#E5E7EB</color><color name="brand_cream">#F9FAFB</color><color name="brand_orange">#2563EB</color><color name="brand_red">#EF4444</color><color name="brand_green">#10B981</color><color name="brand_muted">#4B5563</color><color name="brand_line">#E5E7EB</color></file><file path="E:\project-bs\AIQuizLite-AS\app\src\main\res\values\strings.xml" qualifiers=""><string name="app_name">AI 刷题轻应用</string><string name="daily_practice">日常刷题</string><string name="wrong_book">错题本</string><string name="mock_exam">模拟考试</string><string name="empty_wrong_book">当前还没有错题，先去刷几道题。</string><string name="submit_answer">提交答案</string><string name="next_question">下一题</string><string name="submit_exam">交卷</string><string name="finish_session">完成</string><string name="back_home">返回首页</string><string name="question_image">题目图片</string><string name="no_selection">请先选择答案</string><string name="question_bank_selector">选择题库</string><string name="daily_history_list_title">每次日常刷题</string><string name="daily_history_empty">当前题库还没有日常刷题记录。</string><string name="latest_correct">最近答对</string><string name="daily_history_subtitle">按当前题库查看最近几次日常刷题结果</string><string name="daily_history_title">日常答题记录</string><string name="latest_wrong">最近答错</string><string name="latest_accuracy">最近正确率</string><string name="clear_daily_history_confirm">确定清除当前题库的全部日常答题记录吗？</string><string name="daily_history_cleared">日常答题记录已清除</string><string name="more">更多</string><string name="refresh">刷新</string><string name="daily_history_all_subtitle">查看当前题库的全部日常刷题记录</string><string name="daily_history_all_title">全部日常答题记录</string></file><file path="E:\project-bs\AIQuizLite-AS\app\src\main\res\values\themes.xml" qualifiers=""><style name="Theme.AIQuizLite" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        
+        <item name="colorPrimary">@color/brand_primary</item>
+        <item name="colorPrimaryVariant">@color/brand_primary_dark</item>
+        <item name="colorSecondary">@color/brand_success</item>
+        <item name="colorSurface">@color/brand_surface</item>
+
+        
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar" ns1:targetApi="m">true</item>
+
+        
+        <item name="android:windowBackground">@drawable/bg_gradient</item>
+
+        
+        <item name="android:textViewStyle">@style/TextAppearance.App.Body</item>
+    </style><style name="TextAppearance.App.Title" parent="TextAppearance.MaterialComponents.Headline5">
+        <item name="android:textColor">@color/brand_ink</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style><style name="TextAppearance.App.Subtitle" parent="TextAppearance.MaterialComponents.Subtitle1">
+        <item name="android:textColor">@color/brand_text_secondary</item>
+        <item name="android:textSize">16sp</item>
+    </style><style name="TextAppearance.App.Body" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:textColor">@color/brand_ink</item>
+        <item name="android:textSize">16sp</item>
+        <item name="lineHeight">24sp</item>
+    </style><style name="TextAppearance.App.Caption" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textColor">@color/brand_text_muted</item>
+        <item name="android:textSize">14sp</item>
+    </style><style name="CardStyle.Primary" parent="Widget.MaterialComponents.CardView">
+        <item name="cardBackgroundColor">@color/brand_card</item>
+        <item name="cardCornerRadius">16dp</item>
+        <item name="cardElevation">2dp</item>
+        <item name="strokeColor">@color/brand_border</item>
+        <item name="strokeWidth">0dp</item>
+    </style><style name="CardStyle.Elevated" parent="Widget.MaterialComponents.CardView">
+        <item name="cardBackgroundColor">@color/brand_card</item>
+        <item name="cardCornerRadius">16dp</item>
+        <item name="cardElevation">4dp</item>
+        <item name="strokeWidth">0dp</item>
+    </style><style name="ButtonStyle.Primary" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/brand_primary</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/brand_card</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
+    </style><style name="ButtonStyle.Secondary" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="cornerRadius">12dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/brand_primary</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="strokeColor">@color/brand_primary</item>
+        <item name="strokeWidth">2dp</item>
+        <item name="android:minHeight">48dp</item>
+    </style><style name="ButtonStyle.Danger" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="cornerRadius">12dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/brand_error</item>
+        <item name="strokeColor">@color/brand_error</item>
+        <item name="strokeWidth">2dp</item>
+        <item name="android:minHeight">48dp</item>
+    </style><style name="ButtonStyle.Success" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/brand_success</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/brand_card</item>
+        <item name="android:minHeight">48dp</item>
+    </style><style name="OptionStyle.RadioButton" parent="Widget.MaterialComponents.CompoundButton.RadioButton">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/brand_ink</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:minHeight">48dp</item>
+    </style><style name="OptionStyle.CheckBox" parent="Widget.MaterialComponents.CompoundButton.CheckBox">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/brand_ink</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:minHeight">48dp</item>
+    </style></file><file name="activity_daily_history" path="E:\project-bs\AIQuizLite-AS\app\src\main\res\layout\activity_daily_history.xml" qualifiers="" type="layout"/><file name="ic_import_question_bank" path="E:\project-bs\AIQuizLite-AS\app\src\main\res\drawable\ic_import_question_bank.xml" qualifiers="" type="drawable"/></source></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="E:\project-bs\AIQuizLite-AS\app\src\debug\res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug" generated-set="debug$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="E:\project-bs\AIQuizLite-AS\app\src\debug\res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="E:\project-bs\AIQuizLite-AS\app\build\generated\res\resValues\debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated" generated-set="generated$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="E:\project-bs\AIQuizLite-AS\app\build\generated\res\resValues\debug"/></dataSet><mergedItems/></merger>

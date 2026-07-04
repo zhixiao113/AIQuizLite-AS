@@ -1,0 +1,2948 @@
+[
+  {
+    "id": "ST0001",
+    "index": 1,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 1,
+    "type": "single",
+    "stem": "在 openEuler 中，以下哪一项是创建逻辑卷(LV)的正确流程？",
+    "options": [
+      {
+        "key": "A",
+        "text": "lvcreate -> vgcreate -> pvcreate"
+      },
+      {
+        "key": "B",
+        "text": "pvcreate -> lvcreate -> vgcreate"
+      },
+      {
+        "key": "C",
+        "text": "vgcreate -> pvcreate -> lvcreate"
+      },
+      {
+        "key": "D",
+        "text": "pvcreate -> vgcreate -> lvcreate"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0002",
+    "index": 2,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 2,
+    "type": "single",
+    "stem": "以下哪一种文件系统支持写时复制(COW)？",
+    "options": [
+      {
+        "key": "A",
+        "text": "fat32"
+      },
+      {
+        "key": "B",
+        "text": "XFS"
+      },
+      {
+        "key": "C",
+        "text": "ext4"
+      },
+      {
+        "key": "D",
+        "text": "btrfs"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0003",
+    "index": 3,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 3,
+    "type": "single",
+    "stem": "在 openEuler 中，以下哪一个挂载选项可禁用文件系统的写操作？",
+    "options": [
+      {
+        "key": "A",
+        "text": "rw"
+      },
+      {
+        "key": "B",
+        "text": "noexec"
+      },
+      {
+        "key": "C",
+        "text": "ro"
+      },
+      {
+        "key": "D",
+        "text": "sync"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0004",
+    "index": 4,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 4,
+    "type": "single",
+    "stem": "在 openEuler 中，以下哪一条命令可以将物理卷(PV)添加到已有卷组(VG)中？",
+    "options": [
+      {
+        "key": "A",
+        "text": "vgextend"
+      },
+      {
+        "key": "B",
+        "text": "pvextend"
+      },
+      {
+        "key": "C",
+        "text": "vgcreate"
+      },
+      {
+        "key": "D",
+        "text": "pvcreate"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0005",
+    "index": 5,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 5,
+    "type": "single",
+    "stem": "在 openEuler 中，以下哪一项不是逻辑卷(LV)的特点？",
+    "options": [
+      {
+        "key": "A",
+        "text": "容量固定，难动态扩缩容"
+      },
+      {
+        "key": "B",
+        "text": "支持迁移"
+      },
+      {
+        "key": "C",
+        "text": "可跨物理磁盘"
+      },
+      {
+        "key": "D",
+        "text": "支持快照"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0006",
+    "index": 6,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 6,
+    "type": "single",
+    "stem": "在 openEuler 中，以下哪一项文件系统更适合高并发随机 I/O 场景？",
+    "options": [
+      {
+        "key": "A",
+        "text": "Ext4"
+      },
+      {
+        "key": "B",
+        "text": "XFS"
+      },
+      {
+        "key": "C",
+        "text": "Vfat"
+      },
+      {
+        "key": "D",
+        "text": "Btrfs"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0007",
+    "index": 7,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 7,
+    "type": "single",
+    "stem": "在 openEuler 中，管理员使用以下哪一条命令可以直接将磁盘/dev/sdb 初始化为 GPT 分区表？",
+    "options": [
+      {
+        "key": "A",
+        "text": "parted /dev/sdb mklabel gpt"
+      },
+      {
+        "key": "B",
+        "text": "gdisk /dev/sdb -> 输入 o"
+      },
+      {
+        "key": "C",
+        "text": "sgdisk --zap-all /dev/sdb"
+      },
+      {
+        "key": "D",
+        "text": "fdisk /dev/sdb -> 输入 g"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0008",
+    "index": 8,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 8,
+    "type": "single",
+    "stem": "在 openEuler 中，以下哪一条命令可以用于激活卷组(VG)？",
+    "options": [
+      {
+        "key": "A",
+        "text": "lvchange -a y"
+      },
+      {
+        "key": "B",
+        "text": "pvchange -a y"
+      },
+      {
+        "key": "C",
+        "text": "vgscan"
+      },
+      {
+        "key": "D",
+        "text": "vgchange -a y"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0009",
+    "index": 9,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 9,
+    "type": "single",
+    "stem": "在 openEuler 中，以下哪一条命令组合不可以用于调整逻辑卷 LV 的大小？",
+    "options": [
+      {
+        "key": "A",
+        "text": "lvextend + resize2fs"
+      },
+      {
+        "key": "B",
+        "text": "lvresize + xfs_growfs"
+      },
+      {
+        "key": "C",
+        "text": "lvextend + mkfs.ext4"
+      },
+      {
+        "key": "D",
+        "text": "lvreduce + resize2fs"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0010",
+    "index": 10,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 10,
+    "type": "single",
+    "stem": "在 openEuler 中，以下哪一项可以决定卷组(VG)的最大容量？",
+    "options": [
+      {
+        "key": "A",
+        "text": "PE 的数量"
+      },
+      {
+        "key": "B",
+        "text": "PV 的数量"
+      },
+      {
+        "key": "C",
+        "text": "PV 的大小"
+      },
+      {
+        "key": "D",
+        "text": "LV 的数量"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0011",
+    "index": 11,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 11,
+    "type": "single",
+    "stem": "在 openEuler 中，以下哪一项参数可以在创建卷组(VG)时指定 PE 的大小？",
+    "options": [
+      {
+        "key": "A",
+        "text": "-p"
+      },
+      {
+        "key": "B",
+        "text": "-L"
+      },
+      {
+        "key": "C",
+        "text": "-S"
+      },
+      {
+        "key": "D",
+        "text": "-I"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0012",
+    "index": 12,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 12,
+    "type": "single",
+    "stem": "使用以下哪一项硬件方案最能提升业务的随机 I/O 性能？",
+    "options": [
+      {
+        "key": "A",
+        "text": "使用 NVMe 接口的 SSD 硬盘"
+      },
+      {
+        "key": "B",
+        "text": "启用硬盘缓存写缓存"
+      },
+      {
+        "key": "C",
+        "text": "使用 HDD 硬盘"
+      },
+      {
+        "key": "D",
+        "text": "硬盘配置 RAID 5"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0013",
+    "index": 13,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 13,
+    "type": "single",
+    "stem": "以下哪一项不是设置 swap 分区的原因？",
+    "options": [
+      {
+        "key": "A",
+        "text": "将不常用数据移至 swap，释放物理内存提升 I/O"
+      },
+      {
+        "key": "B",
+        "text": "系统休眠时保存内存数据"
+      },
+      {
+        "key": "C",
+        "text": "增加 swap 比增加物理内存更经济"
+      },
+      {
+        "key": "D",
+        "text": "当物理内存充足时，增加 swap 可以优化内存使用效率"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0014",
+    "index": 14,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 14,
+    "type": "single",
+    "stem": "在 openEuler 中，以下哪一条命令可以检查文件系统错误并自动修复？",
+    "options": [
+      {
+        "key": "A",
+        "text": "fsck -A"
+      },
+      {
+        "key": "B",
+        "text": "fsck -n"
+      },
+      {
+        "key": "C",
+        "text": "fsck -a"
+      },
+      {
+        "key": "D",
+        "text": "fsck -y"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0015",
+    "index": 15,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 15,
+    "type": "single",
+    "stem": "在 openEuler 中，运维人员需要将 ext4 格式的逻辑卷扩展 5GB，以下哪项操作正确？",
+    "options": [
+      {
+        "key": "A",
+        "text": "lvextend -L +5G /dev/vg01/lv_data -> xfs_growfs /dev/vg01/lv_data"
+      },
+      {
+        "key": "B",
+        "text": "lvresize -L 15G /dev/vg01/lv_data -> xfs_growfs /dev/vg01/lv_data"
+      },
+      {
+        "key": "C",
+        "text": "lvexpand -L 15G /dev/vg01/lv_data"
+      },
+      {
+        "key": "D",
+        "text": "lvextend -L +5G /dev/vg01/lv_data -> resize2fs /dev/vg01/lv_data"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0016",
+    "index": 16,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 16,
+    "type": "single",
+    "stem": "在 openEuler 中，以下哪一条命令可以删除逻辑卷？",
+    "options": [
+      {
+        "key": "A",
+        "text": "lvmremove"
+      },
+      {
+        "key": "B",
+        "text": "lvdelete"
+      },
+      {
+        "key": "C",
+        "text": "lvdd"
+      },
+      {
+        "key": "D",
+        "text": "lvremove"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0017",
+    "index": 17,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 17,
+    "type": "single",
+    "stem": "在 openEuler 中，以下哪一条命令可以创建名称为 Eulerlv，容量为 20GB且属于卷组 Eulervg 的逻辑卷？",
+    "options": [
+      {
+        "key": "A",
+        "text": "lvcreate -L 20GB -n Eulervg Eulerlv"
+      },
+      {
+        "key": "B",
+        "text": "lvcreate -v 20G -n Eulerlv Eulervg"
+      },
+      {
+        "key": "C",
+        "text": "lvcreate -n 20G -L Eulerlv Eulervg"
+      },
+      {
+        "key": "D",
+        "text": "lvcreate -L 20G -n Eulerlv Eulervg"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0018",
+    "index": 18,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 18,
+    "type": "single",
+    "stem": "以下哪一项不是磁盘分区的优点？",
+    "options": [
+      {
+        "key": "A",
+        "text": "磁盘分区大小固定后，有利于后期动态扩展"
+      },
+      {
+        "key": "B",
+        "text": "数据隔离，提升系统安全性"
+      },
+      {
+        "key": "C",
+        "text": "允许从同一磁盘进行不同操作系统的多重启动"
+      },
+      {
+        "key": "D",
+        "text": "限制磁盘空间使用情况，可以提高诊断工具和备份映像的性能"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0019",
+    "index": 19,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 19,
+    "type": "single",
+    "stem": "在 openEuler 中，管理员使用以下哪一条命令可以查看磁盘分区信息？",
+    "options": [
+      {
+        "key": "A",
+        "text": "df"
+      },
+      {
+        "key": "B",
+        "text": "du"
+      },
+      {
+        "key": "C",
+        "text": "blkid"
+      },
+      {
+        "key": "D",
+        "text": "lsblk"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0020",
+    "index": 20,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 20,
+    "type": "single",
+    "stem": "在 openEuler 中，以下哪一条命令可以强制卸载正在使用的文件系统？",
+    "options": [
+      {
+        "key": "A",
+        "text": "umount -a"
+      },
+      {
+        "key": "B",
+        "text": "umount -"
+      },
+      {
+        "key": "C",
+        "text": "umount -v"
+      },
+      {
+        "key": "D",
+        "text": "umount -f"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0021",
+    "index": 21,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 21,
+    "type": "single",
+    "stem": "在 openEuler 中，以下哪一项工具用于管理设备文件系统/dev？",
+    "options": [
+      {
+        "key": "A",
+        "text": "mount"
+      },
+      {
+        "key": "B",
+        "text": "fdisk"
+      },
+      {
+        "key": "C",
+        "text": "mkfs"
+      },
+      {
+        "key": "D",
+        "text": "udev"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0022",
+    "index": 22,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 22,
+    "type": "single",
+    "stem": "在 openEuler 中，以下哪一项是默认的物理单元(PE)大小？",
+    "options": [
+      {
+        "key": "A",
+        "text": "2MB"
+      },
+      {
+        "key": "B",
+        "text": "4MB"
+      },
+      {
+        "key": "C",
+        "text": "8MB"
+      },
+      {
+        "key": "D",
+        "text": "16MB"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0023",
+    "index": 23,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 23,
+    "type": "single",
+    "stem": "在 openEuler 中，以下哪一项配置文件可以定义开机自动挂载？",
+    "options": [
+      {
+        "key": "A",
+        "text": "/etc/fstab"
+      },
+      {
+        "key": "B",
+        "text": "/dev/automount.conf"
+      },
+      {
+        "key": "C",
+        "text": "/etc/automount.conf"
+      },
+      {
+        "key": "D",
+        "text": "/dev/fstab"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0024",
+    "index": 24,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 24,
+    "type": "single",
+    "stem": "在 openEuler 中，以下关于/etc/fstab 的描述，错误的是哪一项？",
+    "options": [
+      {
+        "key": "A",
+        "text": "blkid 命令依赖于/etc/fstab 文件来显示块设备信息"
+      },
+      {
+        "key": "B",
+        "text": "系统启动时，会自动将此文件中指定的文件系统挂载到指定目录"
+      },
+      {
+        "key": "C",
+        "text": "/etc/fstab 文件中的 nofail 选项表示即便挂载失败也继续启动系统"
+      },
+      {
+        "key": "D",
+        "text": "该文件用来存放文件系统的静态挂载信息"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0025",
+    "index": 25,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 25,
+    "type": "single",
+    "stem": "以下哪一项不是磁盘的性能指标？",
+    "options": [
+      {
+        "key": "A",
+        "text": "饱和度"
+      },
+      {
+        "key": "B",
+        "text": "吞吐量"
+      },
+      {
+        "key": "C",
+        "text": "转速"
+      },
+      {
+        "key": "D",
+        "text": "IOPS"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0026",
+    "index": 26,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 26,
+    "type": "single",
+    "stem": "在 openEuler 中，以下哪一条命令可以用于显示文件系统的标签？",
+    "options": [
+      {
+        "key": "A",
+        "text": "mount"
+      },
+      {
+        "key": "B",
+        "text": "fdisk"
+      },
+      {
+        "key": "C",
+        "text": "blkid"
+      },
+      {
+        "key": "D",
+        "text": "lsblk"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0027",
+    "index": 27,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 27,
+    "type": "single",
+    "stem": "在 openEuler 中， vgcreate 命令中以下哪一项参数表示卷组上允许创建的最大逻辑卷数？",
+    "options": [
+      {
+        "key": "A",
+        "text": "vgcreate -v"
+      },
+      {
+        "key": "B",
+        "text": "vgcreate -p"
+      },
+      {
+        "key": "C",
+        "text": "vgcreate -l"
+      },
+      {
+        "key": "D",
+        "text": "vgcreate -s"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0028",
+    "index": 28,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 28,
+    "type": "single",
+    "stem": "在 openEuler 中，以下哪一项不属于/dev 下的设备节点类型?",
+    "options": [
+      {
+        "key": "A",
+        "text": "符号链接(1)"
+      },
+      {
+        "key": "B",
+        "text": "字符设备(c)"
+      },
+      {
+        "key": "C",
+        "text": "块设备(b)"
+      },
+      {
+        "key": "D",
+        "text": "目录(d)"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0029",
+    "index": 29,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 29,
+    "type": "single",
+    "stem": "在 openEuler 中，以下哪一项分区工具支持创建 2T 以上的磁盘分区且提供了动态调整分区大小的功能?",
+    "options": [
+      {
+        "key": "A",
+        "text": "fdisk"
+      },
+      {
+        "key": "B",
+        "text": "gpt"
+      },
+      {
+        "key": "C",
+        "text": "parted"
+      },
+      {
+        "key": "D",
+        "text": "gdisk"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0030",
+    "index": 30,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 30,
+    "type": "single",
+    "stem": "以下关于 swap 的描述，错误的是哪一项?",
+    "options": [
+      {
+        "key": "A",
+        "text": "可以通过命令 swapon -s 观察 swap 使用率"
+      },
+      {
+        "key": "B",
+        "text": "对性能稳定有要求时，swap 类型优先选择 swap 文件"
+      },
+      {
+        "key": "C",
+        "text": "可以在内存不足时作为后备扩展，但是无法替代物理内存"
+      },
+      {
+        "key": "D",
+        "text": "可以通过命令 free -h 观察 swap 使用率"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0031",
+    "index": 31,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 31,
+    "type": "single",
+    "stem": "在 openEuler 中，以下哪一条命令可以用于调整交换分区的优先级?",
+    "options": [
+      {
+        "key": "A",
+        "text": "systemctl vm.swappiness=20"
+      },
+      {
+        "key": "B",
+        "text": "echo 10 > /proc/sys/vm/swappiness"
+      },
+      {
+        "key": "C",
+        "text": "swapoff /dev/sda1"
+      },
+      {
+        "key": "D",
+        "text": "swapon -p 10/dev/sda1"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0032",
+    "index": 32,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 32,
+    "type": "single",
+    "stem": "在 openEuler 中，以下哪一项操作可以通过启用文件系统缓存来提升写入性能，但可能在断电时导致数据丢失?",
+    "options": [
+      {
+        "key": "A",
+        "text": "在挂载时使用 noatime 参数"
+      },
+      {
+        "key": "B",
+        "text": "在挂载时使用 sync 参数"
+      },
+      {
+        "key": "C",
+        "text": "在挂载时使用 rw，writeback 参数"
+      },
+      {
+        "key": "E",
+        "text": "在挂载时使用 ro 参数"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0033",
+    "index": 33,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 33,
+    "type": "single",
+    "stem": "在 openEuler 中，以下哪一种文件系统可以用于本地存储并且具备写时复制特性?",
+    "options": [
+      {
+        "key": "A",
+        "text": "ext4"
+      },
+      {
+        "key": "B",
+        "text": "Btrfs"
+      },
+      {
+        "key": "C",
+        "text": "FAT32"
+      },
+      {
+        "key": "E",
+        "text": "Ceph"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0034",
+    "index": 34,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 34,
+    "type": "single",
+    "stem": "在 openEuler 中，以下哪一条命令可以查看逻辑卷(LV)的 UUID?",
+    "options": [
+      {
+        "key": "A",
+        "text": "vgdisplay"
+      },
+      {
+        "key": "B",
+        "text": "Iv-a"
+      },
+      {
+        "key": "C",
+        "text": "Ivshow"
+      },
+      {
+        "key": "D",
+        "text": "Ivdisplay"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0035",
+    "index": 35,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 35,
+    "type": "single",
+    "stem": "在 openEuler 中，以下哪一条命令可以用于显示文件系统的磁盘使用情况?",
+    "options": [
+      {
+        "key": "A",
+        "text": "blkid"
+      },
+      {
+        "key": "B",
+        "text": "df"
+      },
+      {
+        "key": "C",
+        "text": "Isblk"
+      },
+      {
+        "key": "E",
+        "text": "du"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0036",
+    "index": 36,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 36,
+    "type": "single",
+    "stem": "在 openEuler 中，运维人员需要将逻辑卷（LV）/dev/vg01/lv_data 从 15GB 扩展到 20GB，且文件系统为 ext4，以下哪一项操作顺序是正确的？",
+    "options": [
+      {
+        "key": "A",
+        "text": "lvexpand -L 15G /dev/vg01/lv_data"
+      },
+      {
+        "key": "B",
+        "text": "lvresize -L 15G /dev/vg01/lv_data -> xfs_growfs /dev/vg01/lv_data"
+      },
+      {
+        "key": "C",
+        "text": "lvextend -L +5G /dev/vg01/lv_data -> resize2fs /dev/vg01/lv_data"
+      },
+      {
+        "key": "D",
+        "text": "lvextend -L +5G /dev/vg01/lv_data -> xfs_growfs /dev/vg01/lv_data"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0037",
+    "index": 37,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 37,
+    "type": "single",
+    "stem": "以下哪一项不是设置 swap 分区的原因?",
+    "options": [
+      {
+        "key": "A",
+        "text": "当系统休眠时，可以将物理内存数据移动至 swap 分区，下次启动时再加载到物理内 存"
+      },
+      {
+        "key": "B",
+        "text": "当物理内存不足时，增加 swap 分区比增加物理内存更经济"
+      },
+      {
+        "key": "C",
+        "text": "当物理内存中存在不常用数据时，可以将这些数据移动至 swap 分区，此时系统会有 更多物理内存用于缓存，从而加快系统 VO"
+      },
+      {
+        "key": "D",
+        "text": "当物理内存充足时，增加 swap 分区可以优化内存使用效率"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0038",
+    "index": 38,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 38,
+    "type": "single",
+    "stem": "在 openEuler 中，以下关于物理单元(PE)的描述，错误的是哪一项?",
+    "options": [
+      {
+        "key": "A",
+        "text": "PE 越大，存储性能越高"
+      },
+      {
+        "key": "B",
+        "text": "所有逻辑卷(LV)的容量必须是 PE 大小的整数倍"
+      },
+      {
+        "key": "C",
+        "text": "若需调整 PE 的大小，必须在创建卷组(VG)时指定"
+      },
+      {
+        "key": "D",
+        "text": "已存在的 VG 不支持修改 PE 的大小"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0039",
+    "index": 39,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 39,
+    "type": "single",
+    "stem": "以下哪一条命令可以用于检查 ext 系列文件系统的完整性？",
+    "options": [
+      {
+        "key": "A",
+        "text": "xfs_growfs"
+      },
+      {
+        "key": "B",
+        "text": "resize2fs"
+      },
+      {
+        "key": "C",
+        "text": "fs -l"
+      },
+      {
+        "key": "D",
+        "text": "e2fsck -f"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0040",
+    "index": 40,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 40,
+    "type": "single",
+    "stem": "在 openEuler 中，以下哪一条命令可以用于检查并修复损坏的 ext4 文件系统?",
+    "options": [
+      {
+        "key": "A",
+        "text": "format.ext4"
+      },
+      {
+        "key": "B",
+        "text": "e2fsck"
+      },
+      {
+        "key": "C",
+        "text": "xfs_check.ext4"
+      },
+      {
+        "key": "E",
+        "text": "mkfs.ext4"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0041",
+    "index": 41,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 41,
+    "type": "single",
+    "stem": "在 openEuler 中，以下关于物理卷(PV)、卷组(VG)和逻辑卷(LV)的描述，错误的是哪一项?",
+    "options": [
+      {
+        "key": "A",
+        "text": "VG 删除前，需要先删除所有 LV"
+      },
+      {
+        "key": "B",
+        "text": "LV 的快照是只读的"
+      },
+      {
+        "key": "C",
+        "text": "PV 的删除操作是不可逆的"
+      },
+      {
+        "key": "D",
+        "text": "LV 不可以格式化为 NTFS 文件系统"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0042",
+    "index": 42,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 42,
+    "type": "single",
+    "stem": "以下关于创建 swap 分区或者 swap 文件的描述，错误的是哪一项?",
+    "options": [
+      {
+        "key": "A",
+        "text": "swap 文件是文件系统中的一个特殊文件，独立于系统和数据文件之外"
+      },
+      {
+        "key": "B",
+        "text": "swap 分区和 swap 文件均可使用命令 swapon 启用"
+      },
+      {
+        "key": "C",
+        "text": "swap 分区是一块独立的硬盘分区，没有文件或内容"
+      },
+      {
+        "key": "D",
+        "text": "swap 分区和 swap 文件均可随时创建"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0043",
+    "index": 43,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 43,
+    "type": "multiple",
+    "stem": "在 openEuler 中，以下哪些情况会导致卷组(VG)状态异常？",
+    "options": [
+      {
+        "key": "A",
+        "text": "逻辑卷(LV)被删除"
+      },
+      {
+        "key": "B",
+        "text": "VG 容量不足"
+      },
+      {
+        "key": "C",
+        "text": "物理卷(PV)故障"
+      },
+      {
+        "key": "D",
+        "text": "未正确激活 VG"
+      }
+    ],
+    "answers": [
+      "C",
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0044",
+    "index": 44,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 44,
+    "type": "multiple",
+    "stem": "以下关于各类文件系统的描述，正确的是哪些项？",
+    "options": [
+      {
+        "key": "A",
+        "text": "xfs_growfs 支持在线扩展已挂载的 XFS 文件系统"
+      },
+      {
+        "key": "B",
+        "text": "Btrfs 支持动态调整分区大小，无需卸载文件系统"
+      },
+      {
+        "key": "C",
+        "text": "Ext4 原生支持快照"
+      },
+      {
+        "key": "D",
+        "text": "XFS 是一种高性能的日志文件系统"
+      }
+    ],
+    "answers": [
+      "A",
+      "B",
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0045",
+    "index": 45,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 45,
+    "type": "multiple",
+    "stem": "在 openEuler 中，创建卷组(VG)时必须指定以下哪些参数？",
+    "options": [
+      {
+        "key": "A",
+        "text": "PV 路径"
+      },
+      {
+        "key": "B",
+        "text": "LV 数量"
+      },
+      {
+        "key": "C",
+        "text": "PE 大小(非必须，默认 4MB)"
+      },
+      {
+        "key": "D",
+        "text": "VG 名称"
+      }
+    ],
+    "answers": [
+      "A",
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0046",
+    "index": 46,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 46,
+    "type": "multiple",
+    "stem": "以下哪些场景适合使用 deadline I/O 调度算法？",
+    "options": [
+      {
+        "key": "A",
+        "text": "大文件顺序写入"
+      },
+      {
+        "key": "B",
+        "text": "低延迟敏感型应用(如金融交易系统)"
+      },
+      {
+        "key": "C",
+        "text": "数据库 OLTP(随机 I/O 为主)"
+      },
+      {
+        "key": "D",
+        "text": "通用服务器"
+      }
+    ],
+    "answers": [
+      "B",
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0047",
+    "index": 47,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 47,
+    "type": "multiple",
+    "stem": "在 openEuler 中，以下哪些是在线扩展逻辑卷(LV)过程中的必要操作？",
+    "options": [
+      {
+        "key": "A",
+        "text": "使用 lvextend 扩展逻辑卷大小"
+      },
+      {
+        "key": "B",
+        "text": "使用 resize2fs(或其他对应工具)调整文件系统大小"
+      },
+      {
+        "key": "C",
+        "text": "使用 vgresize 扩展卷组"
+      },
+      {
+        "key": "D",
+        "text": "使用 pvresize 调整物理卷"
+      }
+    ],
+    "answers": [
+      "A",
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0048",
+    "index": 48,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 48,
+    "type": "multiple",
+    "stem": "在 openEuler 中，以下哪些工具可以用于磁盘分区？",
+    "options": [
+      {
+        "key": "A",
+        "text": "mkfs"
+      },
+      {
+        "key": "B",
+        "text": "lsblk"
+      },
+      {
+        "key": "C",
+        "text": "parted"
+      },
+      {
+        "key": "D",
+        "text": "fdisk"
+      }
+    ],
+    "answers": [
+      "C",
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0049",
+    "index": 49,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 49,
+    "type": "multiple",
+    "stem": "在 openEuler 中，以下哪些命令可以修复 ext4 文件系统错误？",
+    "options": [
+      {
+        "key": "A",
+        "text": "fsck -t ext4"
+      },
+      {
+        "key": "B",
+        "text": "xfs_repair"
+      },
+      {
+        "key": "C",
+        "text": "e2fsck"
+      },
+      {
+        "key": "D",
+        "text": "fsck.ext4"
+      }
+    ],
+    "answers": [
+      "A",
+      "C",
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0050",
+    "index": 50,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 50,
+    "type": "multiple",
+    "stem": "在实际生产环境中，运维人员执行缩减逻辑卷(LV)容量前，需要确认哪些操作？",
+    "options": [
+      {
+        "key": "A",
+        "text": "使用 fsck 检查文件系统的完整性"
+      },
+      {
+        "key": "B",
+        "text": "卸载文件系统"
+      },
+      {
+        "key": "C",
+        "text": "确保缩减时指定的容量小于当前使用的空间(错误，应大于使用空间)"
+      },
+      {
+        "key": "D",
+        "text": "备份数据"
+      }
+    ],
+    "answers": [
+      "A",
+      "B",
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0051",
+    "index": 51,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 51,
+    "type": "multiple",
+    "stem": "在 openEuler 中，管理员可以在以下哪些类型的物理卷(PV)上创建逻辑卷(LV)？",
+    "options": [
+      {
+        "key": "A",
+        "text": "NFS 共享"
+      },
+      {
+        "key": "B",
+        "text": "iSCSI 存储"
+      },
+      {
+        "key": "C",
+        "text": "本地磁盘"
+      },
+      {
+        "key": "D",
+        "text": "FC SAN"
+      }
+    ],
+    "answers": [
+      "B",
+      "C",
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0052",
+    "index": 52,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 52,
+    "type": "multiple",
+    "stem": "在 openEuler 中，以下哪些命令无法将物理卷/dev/sdc 从卷组 vg1 中移除？",
+    "options": [
+      {
+        "key": "A",
+        "text": "pvremove /dev/sdc"
+      },
+      {
+        "key": "B",
+        "text": "lvremove /dev/vg1/sdc"
+      },
+      {
+        "key": "C",
+        "text": "vgmove vg1 /dev/sdc"
+      },
+      {
+        "key": "D",
+        "text": "vgreduce vg1 /dev/sdc"
+      }
+    ],
+    "answers": [
+      "A",
+      "B",
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0053",
+    "index": 53,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 53,
+    "type": "multiple",
+    "stem": "在 openEuler 中，以下哪些命令可以查看磁盘分区表？",
+    "options": [
+      {
+        "key": "A",
+        "text": "parted print"
+      },
+      {
+        "key": "B",
+        "text": "fdisk -l"
+      },
+      {
+        "key": "C",
+        "text": "df -h"
+      },
+      {
+        "key": "D",
+        "text": "lsblk"
+      }
+    ],
+    "answers": [
+      "A",
+      "B",
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0054",
+    "index": 54,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 54,
+    "type": "multiple",
+    "stem": "在 openEuler 中，以下哪些是 LVM 的组成部分？",
+    "options": [
+      {
+        "key": "A",
+        "text": "LV"
+      },
+      {
+        "key": "B",
+        "text": "VG"
+      },
+      {
+        "key": "C",
+        "text": "PV"
+      },
+      {
+        "key": "D",
+        "text": "GPT"
+      }
+    ],
+    "answers": [
+      "A",
+      "B",
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0055",
+    "index": 55,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 55,
+    "type": "multiple",
+    "stem": "以下哪些命令可以缩小逻辑卷的容量？",
+    "options": [
+      {
+        "key": "A",
+        "text": "lvextend"
+      },
+      {
+        "key": "B",
+        "text": "lvreduce"
+      },
+      {
+        "key": "C",
+        "text": "lvminus"
+      },
+      {
+        "key": "D",
+        "text": "lvresize"
+      }
+    ],
+    "answers": [
+      "B",
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0056",
+    "index": 56,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 56,
+    "type": "multiple",
+    "stem": "在 openEuler 中，以下哪些命令可以查看 LVM 的配置信息？",
+    "options": [
+      {
+        "key": "A",
+        "text": "vgdisplay"
+      },
+      {
+        "key": "B",
+        "text": "pvs"
+      },
+      {
+        "key": "C",
+        "text": "lvs"
+      },
+      {
+        "key": "D",
+        "text": "lvmdiskscan"
+      }
+    ],
+    "answers": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0057",
+    "index": 57,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 57,
+    "type": "multiple",
+    "stem": "在 openEuler 中，使用 pvdisplay 命令可以查看以下哪些信息？",
+    "options": [
+      {
+        "key": "A",
+        "text": "物理卷(PV)的名称"
+      },
+      {
+        "key": "B",
+        "text": "PE 的大小"
+      },
+      {
+        "key": "C",
+        "text": "物理卷(PV)的厂家"
+      },
+      {
+        "key": "D",
+        "text": "物理卷(PV)所属的卷组(VG)"
+      }
+    ],
+    "answers": [
+      "A",
+      "B",
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0058",
+    "index": 58,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 58,
+    "type": "multiple",
+    "stem": "在 openEuler 中，以下哪些工具可以监控磁盘的 IOPS？",
+    "options": [
+      {
+        "key": "A",
+        "text": "pidstat -d"
+      },
+      {
+        "key": "B",
+        "text": "top"
+      },
+      {
+        "key": "C",
+        "text": "iostat -x"
+      },
+      {
+        "key": "D",
+        "text": "vmstat"
+      }
+    ],
+    "answers": [
+      "A",
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0059",
+    "index": 59,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 59,
+    "type": "multiple",
+    "stem": "在 openEuler 中，以下哪些文件系统挂载选项可以用于优化磁盘的 I/O 性能？",
+    "options": [
+      {
+        "key": "A",
+        "text": "sync"
+      },
+      {
+        "key": "B",
+        "text": "noatime"
+      },
+      {
+        "key": "C",
+        "text": "barrier=0"
+      },
+      {
+        "key": "D",
+        "text": "data=writeback"
+      }
+    ],
+    "answers": [
+      "B",
+      "C",
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0060",
+    "index": 60,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 60,
+    "type": "multiple",
+    "stem": "在 openEuler 中，以下哪些命令可以用于查看已挂载的文件系统？",
+    "options": [
+      {
+        "key": "A",
+        "text": "mount"
+      },
+      {
+        "key": "B",
+        "text": "blkid"
+      },
+      {
+        "key": "C",
+        "text": "lsblk"
+      },
+      {
+        "key": "D",
+        "text": "ls /dev"
+      }
+    ],
+    "answers": [
+      "A",
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0061",
+    "index": 61,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 61,
+    "type": "multiple",
+    "stem": "在 openEuler 中，以下关于卷组(VG)的描述，正确的是哪些项?",
+    "options": [
+      {
+        "key": "A",
+        "text": "VG 的名称在创建后可以修改"
+      },
+      {
+        "key": "B",
+        "text": "使用命令 vgs 可以查看 VG 总容量和可用容量"
+      },
+      {
+        "key": "C",
+        "text": "VG 中的 PE 大小在 VG 创建后无法修改"
+      },
+      {
+        "key": "D",
+        "text": "VG 可以包含多个 LV，LV 也可以跨越多个 VG"
+      }
+    ],
+    "answers": [
+      "A",
+      "B",
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0062",
+    "index": 62,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 62,
+    "type": "multiple",
+    "stem": "在 openEuler 中，以下哪些方法不可以扩展卷组(VG)的容量?",
+    "options": [
+      {
+        "key": "A",
+        "text": "扩展现有物理卷(PV)的磁盘空间"
+      },
+      {
+        "key": "B",
+        "text": "合并其他 VG"
+      },
+      {
+        "key": "C",
+        "text": "vgextend VG 名 新 PV 路径"
+      },
+      {
+        "key": "D",
+        "text": "调整 PE 大小"
+      }
+    ],
+    "answers": [
+      "A",
+      "B",
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0063",
+    "index": 63,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 63,
+    "type": "multiple",
+    "stem": "在 openEuler 中，以下哪些是删除卷组(VG)前需要执行的操作?",
+    "options": [
+      {
+        "key": "A",
+        "text": "初始化物理卷(PV)"
+      },
+      {
+        "key": "B",
+        "text": "卸载所有基于该卷组(VG)的文件系统"
+      },
+      {
+        "key": "C",
+        "text": "删除卷组中的所有逻辑卷(LV)"
+      },
+      {
+        "key": "D",
+        "text": "从卷组中移除所有物理卷 PV"
+      }
+    ],
+    "answers": [
+      "B",
+      "C",
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0064",
+    "index": 64,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 64,
+    "type": "multiple",
+    "stem": "在 openEuler 中，以下哪些命令可以查看逻辑卷(LV)的详细属性?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Ivdisplay"
+      },
+      {
+        "key": "B",
+        "text": "Isblk"
+      },
+      {
+        "key": "C",
+        "text": "Ivscan"
+      },
+      {
+        "key": "D",
+        "text": "lvs-a"
+      }
+    ],
+    "answers": [
+      "A",
+      "C",
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0065",
+    "index": 65,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 65,
+    "type": "multiple",
+    "stem": "在 openEuler 中，以下哪些存储设备的命名格式是正确的?",
+    "options": [
+      {
+        "key": "A",
+        "text": "/dev/vdisk 1"
+      },
+      {
+        "key": "B",
+        "text": "/dev/sr1"
+      },
+      {
+        "key": "C",
+        "text": "/dev/sdb"
+      },
+      {
+        "key": "D",
+        "text": "/dev/nvme0n1"
+      }
+    ],
+    "answers": [
+      "B",
+      "C",
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0066",
+    "index": 66,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 66,
+    "type": "multiple",
+    "stem": "在 openEuler 中，以下关于命令 xfs_repair 的描述，正确的是哪些项?",
+    "options": [
+      {
+        "key": "A",
+        "text": "依赖日志恢复数据"
+      },
+      {
+        "key": "B",
+        "text": "需要先卸载文件系统"
+      },
+      {
+        "key": "C",
+        "text": "需要在文件系统挂载状态下运行"
+      },
+      {
+        "key": "D",
+        "text": "可以修复损坏的元数据"
+      }
+    ],
+    "answers": [
+      "A",
+      "B",
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0067",
+    "index": 67,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 67,
+    "type": "multiple",
+    "stem": "在 openEuler 的 MBR 分区方案中，以下关于扩展分区的描述，正确的是哪些项?",
+    "options": [
+      {
+        "key": "A",
+        "text": "扩展分区创建后不能直接使用，需要在扩展分区内创建逻辑分区"
+      },
+      {
+        "key": "B",
+        "text": "每块磁盘内只能划分一块扩展分区"
+      },
+      {
+        "key": "C",
+        "text": "扩展分区数量最多为 4 个"
+      },
+      {
+        "key": "D",
+        "text": "扩展分区内可划分任意块逻辑分区"
+      }
+    ],
+    "answers": [
+      "A",
+      "B",
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0068",
+    "index": 68,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 68,
+    "type": "multiple",
+    "stem": "在 openEuler 中，以下哪些操作可能导致数据丢失?",
+    "options": [
+      {
+        "key": "A",
+        "text": "未执行备份操作，直接缩容 ext4 文件系统"
+      },
+      {
+        "key": "B",
+        "text": "使用 dd 覆盖磁盘的前 512 字节"
+      },
+      {
+        "key": "C",
+        "text": "强制卸载已写入数据的文件系统"
+      },
+      {
+        "key": "D",
+        "text": "在已挂载的文件系统上运行 fsck"
+      }
+    ],
+    "answers": [
+      "A",
+      "B",
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0069",
+    "index": 69,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 69,
+    "type": "multiple",
+    "stem": "以下关于逻辑分区的描述，正确的是哪些项?",
+    "options": [
+      {
+        "key": "A",
+        "text": "逻辑分区是扩展分区的子集"
+      },
+      {
+        "key": "B",
+        "text": "逻辑分区的数量可以超过 4"
+      },
+      {
+        "key": "C",
+        "text": "逻辑分区的数量受限于物理磁盘的大小"
+      },
+      {
+        "key": "D",
+        "text": "逻辑分区不能直接使用"
+      }
+    ],
+    "answers": [
+      "A",
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0070",
+    "index": 70,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 70,
+    "type": "multiple",
+    "stem": "在 openEuler 中，以下哪些命令可以用于查看挂载的文件系统?",
+    "options": [
+      {
+        "key": "A",
+        "text": "blkid"
+      },
+      {
+        "key": "B",
+        "text": "Isblk"
+      },
+      {
+        "key": "C",
+        "text": "Is/dev"
+      },
+      {
+        "key": "D",
+        "text": "mount"
+      }
+    ],
+    "answers": [
+      "B",
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0071",
+    "index": 71,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 71,
+    "type": "multiple",
+    "stem": "以下哪些是 btrfs 文件系统的特性?",
+    "options": [
+      {
+        "key": "A",
+        "text": "支持 COW"
+      },
+      {
+        "key": "B",
+        "text": "支持透明压缩"
+      },
+      {
+        "key": "C",
+        "text": "支持快照"
+      },
+      {
+        "key": "D",
+        "text": "支持动态 inode 分配"
+      }
+    ],
+    "answers": [
+      "A",
+      "B",
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0072",
+    "index": 72,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 72,
+    "type": "multiple",
+    "stem": "在 openEuler 中，以下关于 XFS 文件系统特点的描述，正确的是哪些项？",
+    "options": [
+      {
+        "key": "A",
+        "text": "支持实时性要求极高的场景"
+      },
+      {
+        "key": "B",
+        "text": "是一种高性能日志文件系统"
+      },
+      {
+        "key": "C",
+        "text": "具备透明压缩的能力"
+      },
+      {
+        "key": "D",
+        "text": "适合大文件和大容量存储"
+      }
+    ],
+    "answers": [
+      "B",
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0073",
+    "index": 73,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 73,
+    "type": "multiple",
+    "stem": "在 openEuler 的 MBR 分区方案中，以下关于扩展分区的描述，正确的是哪些项？",
+    "options": [
+      {
+        "key": "A",
+        "text": "扩展分区创建后可以直接使用"
+      },
+      {
+        "key": "B",
+        "text": "一块硬盘只能有一个扩展分区"
+      },
+      {
+        "key": "C",
+        "text": "扩展分区内可划分任意个逻辑分区"
+      },
+      {
+        "key": "D",
+        "text": "扩展分区容量等于各个逻辑分区容量之和"
+      }
+    ],
+    "answers": [
+      "B",
+      "C",
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0074",
+    "index": 74,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 74,
+    "type": "judge",
+    "stem": "在 openEuler 中，主分区和扩展分区可以直接格式化为文件系统。",
+    "options": [
+      {
+        "key": "A",
+        "text": "正确"
+      },
+      {
+        "key": "B",
+        "text": "错误"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0075",
+    "index": 75,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 75,
+    "type": "judge",
+    "stem": "固态硬盘 SSD 与传统机械硬盘 HDD 相比，具备更好的抗震防摔性。",
+    "options": [
+      {
+        "key": "A",
+        "text": "正确"
+      },
+      {
+        "key": "B",
+        "text": "错误"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0076",
+    "index": 76,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 76,
+    "type": "judge",
+    "stem": "在 openEuler 中， swap 分区不能使用 LVM。",
+    "options": [
+      {
+        "key": "A",
+        "text": "正确"
+      },
+      {
+        "key": "B",
+        "text": "错误"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0077",
+    "index": 77,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 77,
+    "type": "judge",
+    "stem": "在 openEuler 中，blkid 命令可以用于查看块设备的 UUID。",
+    "options": [
+      {
+        "key": "A",
+        "text": "正确"
+      },
+      {
+        "key": "B",
+        "text": "错误"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0078",
+    "index": 78,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 78,
+    "type": "judge",
+    "stem": "在 openEuler 中，LVM 的物理卷(PV)必须是未分区的整个硬盘。",
+    "options": [
+      {
+        "key": "A",
+        "text": "正确"
+      },
+      {
+        "key": "B",
+        "text": "错误"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0079",
+    "index": 79,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 79,
+    "type": "judge",
+    "stem": "磁盘配置 RAID，可以提升容错性，但是无法提升磁盘 I/O 性能。",
+    "options": [
+      {
+        "key": "A",
+        "text": "正确"
+      },
+      {
+        "key": "B",
+        "text": "错误"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0080",
+    "index": 80,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 80,
+    "type": "judge",
+    "stem": "在 openEuler 的 MBR 分区方案中，主分区可以直接安装操作系统，逻辑分区不能直接引导操作系统。",
+    "options": [
+      {
+        "key": "A",
+        "text": "正确"
+      },
+      {
+        "key": "B",
+        "text": "错误"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0081",
+    "index": 81,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 81,
+    "type": "judge",
+    "stem": "在 openEuler 中，MBR 分区方案最多支持 4 个主分区，或 3 个主分区+1 个扩展分区。",
+    "options": [
+      {
+        "key": "A",
+        "text": "正确"
+      },
+      {
+        "key": "B",
+        "text": "错误"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0082",
+    "index": 82,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 82,
+    "type": "judge",
+    "stem": "在 openEuler 中，使用命令 mount -a 可以重新挂载/etc/fstab 中所有已挂载的文件系统。",
+    "options": [
+      {
+        "key": "A",
+        "text": "正确"
+      },
+      {
+        "key": "B",
+        "text": "错误"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0083",
+    "index": 83,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 83,
+    "type": "judge",
+    "stem": "在 openEuler 中，同一卷组(VG)中的 PE 大小是一致的，且在创建后不可修改。",
+    "options": [
+      {
+        "key": "A",
+        "text": "正确"
+      },
+      {
+        "key": "B",
+        "text": "错误"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0084",
+    "index": 84,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 84,
+    "type": "judge",
+    "stem": "在 openEuler 中，/dev 目录下的设备文件是需要管理员手动创建的。",
+    "options": [
+      {
+        "key": "A",
+        "text": "正确"
+      },
+      {
+        "key": "B",
+        "text": "错误"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0085",
+    "index": 85,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 85,
+    "type": "judge",
+    "stem": "在 openEuler 中，物理卷(PV)必须属于某个卷组(VG)才能使用。",
+    "options": [
+      {
+        "key": "A",
+        "text": "正确"
+      },
+      {
+        "key": "B",
+        "text": "错误"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0086",
+    "index": 86,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 86,
+    "type": "judge",
+    "stem": "在 openEuler 中，LVM 允许在不卸载文件系统的情况下扩展逻辑卷。",
+    "options": [
+      {
+        "key": "A",
+        "text": "正确"
+      },
+      {
+        "key": "B",
+        "text": "错误"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0087",
+    "index": 87,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 87,
+    "type": "judge",
+    "stem": "在 openEuler 中，可以使用命令 vgcombine 合并多个卷组。",
+    "options": [
+      {
+        "key": "A",
+        "text": "正确"
+      },
+      {
+        "key": "B",
+        "text": "错误"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0088",
+    "index": 88,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 88,
+    "type": "judge",
+    "stem": "在 openEuler 中，在挂载文件系统时，使用挂载选项 noatime 可以禁止更新文件的访问时间，减少 I/O 操作。",
+    "options": [
+      {
+        "key": "A",
+        "text": "正确"
+      },
+      {
+        "key": "B",
+        "text": "错误"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0089",
+    "index": 89,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 89,
+    "type": "judge",
+    "stem": "在 openEuler 中，mkfs 命令只能用于创建 ext4 文件系统。",
+    "options": [
+      {
+        "key": "A",
+        "text": "正确"
+      },
+      {
+        "key": "B",
+        "text": "错误"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0090",
+    "index": 90,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 90,
+    "type": "judge",
+    "stem": "在 openEuler 中，fstab 的参数 nouser 表示不允许任何用户挂载此文件系统。",
+    "options": [
+      {
+        "key": "A",
+        "text": "正确"
+      },
+      {
+        "key": "B",
+        "text": "错误"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0091",
+    "index": 91,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 91,
+    "type": "judge",
+    "stem": "在 openEuler 中，使用命令 lvresize 可以直接调整逻辑卷(LV)的大小并同步文件系统。",
+    "options": [
+      {
+        "key": "A",
+        "text": "正确"
+      },
+      {
+        "key": "B",
+        "text": "错误"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0092",
+    "index": 92,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 92,
+    "type": "judge",
+    "stem": "openEuler 支持的文件系统包括 ext4 和 XFS，默认使用 XFS 文件系统。",
+    "options": [
+      {
+        "key": "A",
+        "text": "正确"
+      },
+      {
+        "key": "B",
+        "text": "错误"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0093",
+    "index": 93,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 93,
+    "type": "judge",
+    "stem": "在 openEuler 中，iostat 可以监控单个进程磁盘的 I/O 吞吐量。",
+    "options": [
+      {
+        "key": "A",
+        "text": "正确"
+      },
+      {
+        "key": "B",
+        "text": "错误"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0094",
+    "index": 94,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 94,
+    "type": "judge",
+    "stem": "在 openEuler 中，使用 resize2fs 命令缩小 ext4 文件系统时，无需卸载文件系统。",
+    "options": [
+      {
+        "key": "A",
+        "text": "正确"
+      },
+      {
+        "key": "B",
+        "text": "错误"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0095",
+    "index": 95,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 95,
+    "type": "judge",
+    "stem": "在 openEuler 中，卷组(VG)的名称必须唯一。",
+    "options": [
+      {
+        "key": "A",
+        "text": "正确"
+      },
+      {
+        "key": "B",
+        "text": "错误"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0096",
+    "index": 96,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 96,
+    "type": "judge",
+    "stem": "在 openEuler 中，PE 是能被 LVM 寻址的最小单元，其大小可以指定。",
+    "options": [
+      {
+        "key": "A",
+        "text": "正确"
+      },
+      {
+        "key": "B",
+        "text": "错误"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0097",
+    "index": 97,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 97,
+    "type": "judge",
+    "stem": "在 openEuler 中，物理卷(PV)的大小可以动态调整。",
+    "options": [
+      {
+        "key": "A",
+        "text": "正确"
+      },
+      {
+        "key": "B",
+        "text": "错误"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0098",
+    "index": 98,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 98,
+    "type": "judge",
+    "stem": "在 openEuler 中，XFS 文件系统支持在线缩小容量。",
+    "options": [
+      {
+        "key": "A",
+        "text": "正确"
+      },
+      {
+        "key": "B",
+        "text": "错误"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0099",
+    "index": 99,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 99,
+    "type": "judge",
+    "stem": "在 openEuler 中，命令 mkfs.ext4、mkfs.xfs、mkfs.ntfs 均可用于文件系统格式化。",
+    "options": [
+      {
+        "key": "A",
+        "text": "正确"
+      },
+      {
+        "key": "B",
+        "text": "错误"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0100",
+    "index": 100,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 100,
+    "type": "judge",
+    "stem": "在 openEuler 中，LVM 的物理卷(LV)必须是未分区的整个磁盘。",
+    "options": [
+      {
+        "key": "A",
+        "text": "正确"
+      },
+      {
+        "key": "B",
+        "text": "错误"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0101",
+    "index": 101,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 101,
+    "type": "judge",
+    "stem": "在 openEuler 中，LVM 支持热插拔存储设备。",
+    "options": [
+      {
+        "key": "A",
+        "text": "正确"
+      },
+      {
+        "key": "B",
+        "text": "错误"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0102",
+    "index": 102,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 102,
+    "type": "judge",
+    "stem": "在 openEuler 中，使用 resizefs 命令缩小 ext4 文件系统时，无需卸载逻辑卷。",
+    "options": [
+      {
+        "key": "A",
+        "text": "正确"
+      },
+      {
+        "key": "B",
+        "text": "错误"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0103",
+    "index": 103,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 103,
+    "type": "judge",
+    "stem": "在 openEuler 中，使用命令 pvremove 删除物理卷(PV)前，必选先将其从卷组(VG)中移除。",
+    "options": [
+      {
+        "key": "A",
+        "text": "正确"
+      },
+      {
+        "key": "B",
+        "text": "错误"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0104",
+    "index": 104,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 104,
+    "type": "judge",
+    "stem": "在 openEuler 中，缩小文件系统前需要先缩小块设备(Iv)，否则顺序颠倒会导致数据丢失。",
+    "options": [
+      {
+        "key": "A",
+        "text": "正确"
+      },
+      {
+        "key": "B",
+        "text": "错误"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "ST0105",
+    "index": 105,
+    "paper": "openEuler 存储管理与实践",
+    "numberInPaper": 105,
+    "type": "judge",
+    "stem": "在 openEuler 中，使用命令 vgreduce 可以将物理卷（PV）从卷组（VG）中移除。",
+    "options": [
+      {
+        "key": "A",
+        "text": "正确"
+      },
+      {
+        "key": "B",
+        "text": "错误"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  }
+]

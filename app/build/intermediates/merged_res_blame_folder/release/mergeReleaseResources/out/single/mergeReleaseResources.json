@@ -1,0 +1,46 @@
+[
+    {
+        "merged": "com.example.aiquizlite.app-release-31:/drawable_ic_import_question_bank.xml.flat",
+        "source": "com.example.aiquizlite.app-main-32:/drawable/ic_import_question_bank.xml"
+    },
+    {
+        "merged": "D:\\soft\\android202422\\gradle\\daemon\\8.10.2\\com.example.aiquizlite.app-release-31:\\drawable_btn_primary.xml.flat",
+        "source": "D:\\soft\\android202422\\gradle\\daemon\\8.10.2\\com.example.aiquizlite.app-main-32:\\drawable\\btn_primary.xml"
+    },
+    {
+        "merged": "com.example.aiquizlite.app-release-31:/layout_activity_main.xml.flat",
+        "source": "com.example.aiquizlite.app-main-32:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.example.aiquizlite.app-release-31:/layout_activity_quiz.xml.flat",
+        "source": "com.example.aiquizlite.app-main-32:/layout/activity_quiz.xml"
+    },
+    {
+        "merged": "D:\\soft\\android202422\\gradle\\daemon\\8.10.2\\com.example.aiquizlite.app-release-31:\\drawable_bg_gradient.xml.flat",
+        "source": "D:\\soft\\android202422\\gradle\\daemon\\8.10.2\\com.example.aiquizlite.app-main-32:\\drawable\\bg_gradient.xml"
+    },
+    {
+        "merged": "D:\\soft\\android202422\\gradle\\daemon\\8.10.2\\com.example.aiquizlite.app-release-31:\\layout_activity_main.xml.flat",
+        "source": "D:\\soft\\android202422\\gradle\\daemon\\8.10.2\\com.example.aiquizlite.app-main-32:\\layout\\activity_main.xml"
+    },
+    {
+        "merged": "D:\\soft\\android202422\\gradle\\daemon\\8.10.2\\com.example.aiquizlite.app-release-31:\\drawable_card_background.xml.flat",
+        "source": "D:\\soft\\android202422\\gradle\\daemon\\8.10.2\\com.example.aiquizlite.app-main-32:\\drawable\\card_background.xml"
+    },
+    {
+        "merged": "D:\\soft\\android202422\\gradle\\daemon\\8.10.2\\com.example.aiquizlite.app-release-31:\\layout_activity_daily_history.xml.flat",
+        "source": "D:\\soft\\android202422\\gradle\\daemon\\8.10.2\\com.example.aiquizlite.app-main-32:\\layout\\activity_daily_history.xml"
+    },
+    {
+        "merged": "D:\\soft\\android202422\\gradle\\daemon\\8.10.2\\com.example.aiquizlite.app-release-31:\\drawable_option_background.xml.flat",
+        "source": "D:\\soft\\android202422\\gradle\\daemon\\8.10.2\\com.example.aiquizlite.app-main-32:\\drawable\\option_background.xml"
+    },
+    {
+        "merged": "D:\\soft\\android202422\\gradle\\daemon\\8.10.2\\com.example.aiquizlite.app-release-31:\\drawable_btn_success.xml.flat",
+        "source": "D:\\soft\\android202422\\gradle\\daemon\\8.10.2\\com.example.aiquizlite.app-main-32:\\drawable\\btn_success.xml"
+    },
+    {
+        "merged": "D:\\soft\\android202422\\gradle\\daemon\\8.10.2\\com.example.aiquizlite.app-release-31:\\layout_activity_quiz.xml.flat",
+        "source": "D:\\soft\\android202422\\gradle\\daemon\\8.10.2\\com.example.aiquizlite.app-main-32:\\layout\\activity_quiz.xml"
+    }
+]

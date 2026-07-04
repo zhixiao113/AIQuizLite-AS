@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<incidents format="6" by="lint 8.8.1" type="incidents">
+
+    <incident
+        id="DefaultLocale"
+        severity="warning"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`.">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/example/aiquizlite/Question.java"
+            line="95"
+            column="48"
+            startOffset="2222"
+            endLine="95"
+            endColumn="59"
+            endOffset="2233"/>
+    </incident>
+
+    <incident
+        id="DefaultLocale"
+        severity="warning"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`.">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/example/aiquizlite/Question.java"
+            line="122"
+            column="60"
+            startOffset="3103"
+            endLine="122"
+            endColumn="71"
+            endOffset="3114"/>
+    </incident>
+
+    <incident
+        id="GradleDependency"
+        severity="warning"
+        message="A newer version of com.google.android.material:material than 1.10.0 is available: 1.11.0">
+        <fix-replace
+            description="Change to 1.11.0"
+            family="Update versions"
+            oldString="1.10.0"
+            replacement="1.11.0"
+            priority="0"/>
+        <location
+            file="${:app*projectDir}/build.gradle"
+            line="59"
+            column="20"
+            startOffset="1444"
+            endLine="59"
+            endColumn="65"
+            endOffset="1489"/>
+    </incident>
+
+    <incident
+        id="GradleDependency"
+        severity="warning"
+        message="A newer version of androidx.activity:activity than 1.8.0 is available: 1.12.2">
+        <fix-replace
+            description="Change to 1.12.2"
+            family="Update versions"
+            oldString="1.8.0"
+            replacement="1.12.2"
+            priority="0"/>
+        <location
+            file="${:app*projectDir}/build.gradle"
+            line="60"
+            column="20"
+            startOffset="1509"
+            endLine="60"
+            endColumn="54"
+            endOffset="1543"/>
+    </incident>
+
+    <incident
+        id="DrawAllocation"
+        severity="warning"
+        message="Avoid object allocations during draw/layout operations (preallocate and reuse instead)">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/example/aiquizlite/DailyStatsChartView.java"
+            line="98"
+            column="21"
+            startOffset="3394"
+            endLine="98"
+            endColumn="31"
+            endOffset="3404"/>
+    </incident>
+
+    <incident
+        id="ClickableViewAccessibility"
+        severity="warning"
+        message="`onTouch` lambda should call `View#performClick` when a click is detected">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/example/aiquizlite/QuestionBankActivity.java"
+            line="247"
+            column="33"
+            startOffset="9837"
+            endLine="272"
+            endColumn="10"
+            endOffset="11019"/>
+    </incident>
+
+    <incident
+        id="ClickableViewAccessibility"
+        severity="warning"
+        message="Custom view ``ScrollView`` has `setOnTouchListener` called on it but does not override `performClick`">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/example/aiquizlite/QuizActivity.java"
+            line="565"
+            column="9"
+            startOffset="22304"
+            endLine="586"
+            endColumn="11"
+            endOffset="23225"/>
+    </incident>
+
+    <incident
+        id="ClickableViewAccessibility"
+        severity="warning"
+        message="`onTouch` lambda should call `View#performClick` when a click is detected">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/example/aiquizlite/QuizActivity.java"
+            line="565"
+            column="46"
+            startOffset="22341"
+            endLine="586"
+            endColumn="10"
+            endOffset="23224"/>
+    </incident>
+
+    <incident
+        id="SetTextI18n"
+        severity="warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders.">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/example/aiquizlite/DailyHistoryActivity.java"
+            line="33"
+            column="29"
+            startOffset="1186"
+            endLine="33"
+            endColumn="92"
+            endOffset="1249"/>
+    </incident>
+
+    <incident
+        id="SetTextI18n"
+        severity="warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders.">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/example/aiquizlite/DailyHistoryActivity.java"
+            line="77"
+            column="17"
+            startOffset="2849"
+            endLine="79"
+            endColumn="72"
+            endOffset="3013"/>
+    </incident>
+
+    <incident
+        id="SetTextI18n"
+        severity="warning"
+        message="String literal in `setText` can not be translated. Use Android resources instead.">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/example/aiquizlite/ImportQuestionBankActivity.java"
+            line="90"
+            column="28"
+            startOffset="3128"
+            endLine="90"
+            endColumn="43"
+            endOffset="3143"/>
+    </incident>
+
+    <incident
+        id="SetTextI18n"
+        severity="warning"
+        message="String literal in `setText` can not be translated. Use Android resources instead.">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/example/aiquizlite/ImportQuestionBankActivity.java"
+            line="99"
+            column="32"
+            startOffset="3548"
+            endLine="99"
+            endColumn="71"
+            endOffset="3587"/>
+    </incident>
+
+    <incident
+        id="SetTextI18n"
+        severity="warning"
+        message="String literal in `setText` can not be translated. Use Android resources instead.">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/example/aiquizlite/ImportQuestionBankActivity.java"
+            line="118"
+            column="29"
+            startOffset="4409"
+            endLine="118"
+            endColumn="40"
+            endOffset="4420"/>
+    </incident>
+
+    <incident
+        id="SetTextI18n"
+        severity="warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders.">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/example/aiquizlite/ImportQuestionBankActivity.java"
+            line="167"
+            column="36"
+            startOffset="6692"
+            endLine="167"
+            endColumn="89"
+            endOffset="6745"/>
+    </incident>
+
+    <incident
+        id="SetTextI18n"
+        severity="warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders.">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/example/aiquizlite/MainActivity.java"
+            line="106"
+            column="17"
+            startOffset="4494"
+            endLine="109"
+            endColumn="43"
+            endOffset="4643"/>
+    </incident>
+
+    <incident
+        id="SetTextI18n"
+        severity="warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders.">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/example/aiquizlite/MainActivity.java"
+            line="111"
+            column="32"
+            startOffset="4686"
+            endLine="111"
+            endColumn="91"
+            endOffset="4745"/>
+    </incident>
+
+    <incident
+        id="SetTextI18n"
+        severity="warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders.">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/example/aiquizlite/MainActivity.java"
+            line="233"
+            column="17"
+            startOffset="9973"
+            endLine="235"
+            endColumn="72"
+            endOffset="10137"/>
+    </incident>
+
+    <incident
+        id="SetTextI18n"
+        severity="warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders.">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/example/aiquizlite/QuestionBankActivity.java"
+            line="166"
+            column="22"
+            startOffset="6752"
+            endLine="166"
+            endColumn="104"
+            endOffset="6834"/>
+    </incident>
+
+    <incident
+        id="SetTextI18n"
+        severity="warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders.">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/example/aiquizlite/QuizActivity.java"
+            line="122"
+            column="35"
+            startOffset="4838"
+            endLine="122"
+            endColumn="75"
+            endOffset="4878"/>
+    </incident>
+
+    <incident
+        id="SetTextI18n"
+        severity="warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders.">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/example/aiquizlite/QuizActivity.java"
+            line="134"
+            column="31"
+            startOffset="5235"
+            endLine="134"
+            endColumn="111"
+            endOffset="5315"/>
+    </incident>
+
+    <incident
+        id="SetTextI18n"
+        severity="warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders.">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/example/aiquizlite/QuizActivity.java"
+            line="186"
+            column="30"
+            startOffset="7223"
+            endLine="186"
+            endColumn="96"
+            endOffset="7289"/>
+    </incident>
+
+    <incident
+        id="SetTextI18n"
+        severity="warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders.">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/example/aiquizlite/QuizActivity.java"
+            line="186"
+            column="38"
+            startOffset="7231"
+            endLine="186"
+            endColumn="54"
+            endOffset="7247"/>
+    </incident>
+
+    <incident
+        id="SetTextI18n"
+        severity="warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders.">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/example/aiquizlite/QuizActivity.java"
+            line="192"
+            column="17"
+            startOffset="7558"
+            endLine="197"
+            endColumn="37"
+            endOffset="7785"/>
+    </incident>
+
+    <incident
+        id="SetTextI18n"
+        severity="warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders.">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/example/aiquizlite/QuizActivity.java"
+            line="199"
+            column="30"
+            startOffset="7826"
+            endLine="199"
+            endColumn="77"
+            endOffset="7873"/>
+    </incident>
+
+    <incident
+        id="SetTextI18n"
+        severity="warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders.">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/example/aiquizlite/QuizActivity.java"
+            line="363"
+            column="30"
+            startOffset="14375"
+            endLine="363"
+            endColumn="91"
+            endOffset="14436"/>
+    </incident>
+
+    <incident
+        id="HardcodedText"
+        severity="warning"
+        message="Hardcoded string &quot;📚&quot;, should use `@string` resource">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/layout/activity_main.xml"
+            line="35"
+            column="21"
+            startOffset="1319"
+            endLine="35"
+            endColumn="38"
+            endOffset="1336"/>
+    </incident>
+
+    <incident
+        id="HardcodedText"
+        severity="warning"
+        message="Hardcoded string &quot;📝 &quot;, should use `@string` resource">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/layout/activity_main.xml"
+            line="81"
+            column="25"
+            startOffset="3608"
+            endLine="81"
+            endColumn="43"
+            endOffset="3626"/>
+    </incident>
+
+    <incident
+        id="HardcodedText"
+        severity="warning"
+        message="Hardcoded string &quot;倒置&quot;, should use `@string` resource">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/layout/activity_main.xml"
+            line="104"
+            column="25"
+            startOffset="4756"
+            endLine="104"
+            endColumn="42"
+            endOffset="4773"/>
+    </incident>
+
+    <incident
+        id="HardcodedText"
+        severity="warning"
+        message="Hardcoded string &quot;重新开始&quot;, should use `@string` resource">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/layout/activity_main.xml"
+            line="150"
+            column="25"
+            startOffset="6831"
+            endLine="150"
+            endColumn="44"
+            endOffset="6850"/>
+    </incident>
+
+    <incident
+        id="HardcodedText"
+        severity="warning"
+        message="Hardcoded string &quot;随机刷完整题库，做错自动加入错题本&quot;, should use `@string` resource">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/layout/activity_main.xml"
+            line="159"
+            column="25"
+            startOffset="7248"
+            endLine="159"
+            endColumn="57"
+            endOffset="7280"/>
+    </incident>
+
+    <incident
+        id="HardcodedText"
+        severity="warning"
+        message="Hardcoded string &quot;错题连续答对 3 次才会移出&quot;, should use `@string` resource">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/layout/activity_main.xml"
+            line="196"
+            column="25"
+            startOffset="8990"
+            endLine="196"
+            endColumn="54"
+            endOffset="9019"/>
+    </incident>
+
+    <incident
+        id="HardcodedText"
+        severity="warning"
+        message="Hardcoded string &quot;172 题随机顺序，选项自动打乱，最后统一交卷&quot;, should use `@string` resource">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/layout/activity_main.xml"
+            line="233"
+            column="25"
+            startOffset="10735"
+            endLine="233"
+            endColumn="63"
+            endOffset="10773"/>
+    </incident>
+
+    <incident
+        id="HardcodedText"
+        severity="warning"
+        message="Hardcoded string &quot;AI 认证考试练习&quot;, should use `@string` resource">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/layout/activity_main.xml"
+            line="342"
+            column="13"
+            startOffset="15656"
+            endLine="342"
+            endColumn="37"
+            endOffset="15680"/>
+    </incident>
+
+    <incident
+        id="HardcodedText"
+        severity="warning"
+        message="Hardcoded string &quot;答案有误&quot;, should use `@string` resource">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/layout/activity_quiz.xml"
+            line="66"
+            column="21"
+            startOffset="2739"
+            endLine="66"
+            endColumn="40"
+            endOffset="2758"/>
+    </incident>
+
+</incidents>

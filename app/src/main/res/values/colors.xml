@@ -1,0 +1,35 @@
+<resources>
+    <!-- Primary Brand Colors - Modern Education Theme -->
+    <color name="brand_primary">#2563EB</color>           <!-- Modern Blue - Trust & Knowledge -->
+    <color name="brand_primary_light">#3B82F6</color>     <!-- Lighter variant for hover states -->
+    <color name="brand_primary_dark">#1D4ED8</color>      <!-- Darker variant for pressed states -->
+
+    <!-- Semantic Colors -->
+    <color name="brand_success">#10B981</color>           <!-- Modern Green - Correct answers -->
+    <color name="brand_error">#EF4444</color>             <!-- Modern Red - Wrong answers -->
+    <color name="brand_warning">#F59E0B</color>           <!-- Amber - Attention -->
+
+    <!-- Neutral Colors -->
+    <color name="brand_ink">#111827</color>               <!-- Primary text - Near black -->
+    <color name="brand_text_secondary">#4B5563</color>    <!-- Secondary text - Gray 600 -->
+    <color name="brand_text_muted">#9CA3AF</color>        <!-- Muted text - Gray 400 -->
+    <color name="brand_text_light">#D1D5DB</color>        <!-- Light text - Gray 300 -->
+
+    <!-- Surface Colors -->
+    <color name="brand_surface">#F9FAFB</color>           <!-- Background - Gray 50 -->
+    <color name="brand_card">#FFFFFF</color>              <!-- Card background - Pure white -->
+    <color name="brand_card_hover">#F3F4F6</color>        <!-- Card hover state - Gray 100 -->
+
+    <!-- Border & Divider -->
+    <color name="brand_border">#E5E7EB</color>            <!-- Border - Gray 200 -->
+    <color name="brand_border_light">#F3F4F6</color>      <!-- Light border - Gray 100 -->
+    <color name="brand_divider">#E5E7EB</color>           <!-- Divider - Gray 200 -->
+
+    <!-- Legacy compatibility (mapped to new colors) -->
+    <color name="brand_cream">#F9FAFB</color>
+    <color name="brand_orange">#2563EB</color>
+    <color name="brand_red">#EF4444</color>
+    <color name="brand_green">#10B981</color>
+    <color name="brand_muted">#4B5563</color>
+    <color name="brand_line">#E5E7EB</color>
+</resources>

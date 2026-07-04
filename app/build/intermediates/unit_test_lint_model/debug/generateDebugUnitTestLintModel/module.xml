@@ -1,0 +1,19 @@
+<lint-module
+    format="1"
+    dir="E:\project-bs\AIQuizLite-AS\app"
+    name=":app"
+    type="APP"
+    maven="AIQuizLite:app:unspecified"
+    agpVersion="8.8.1"
+    buildFolder="build"
+    bootClassPath="D:\soft\android202422\sdk_home\platforms\android-35\android.jar;D:\soft\android202422\sdk_home\build-tools\35.0.0\core-lambda-stubs.jar"
+    javaSourceLevel="17"
+    compileTarget="android-35"
+    neverShrinking="true">
+  <lintOptions
+      abortOnError="true"
+      absolutePaths="true"
+      checkReleaseBuilds="true"
+      explainIssues="true"/>
+  <variant name="debug"/>
+</lint-module>

@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">AI 刷题轻应用</string>
+    <string name="daily_practice">日常刷题</string>
+    <string name="wrong_book">错题本</string>
+    <string name="mock_exam">模拟考试</string>
+    <string name="empty_wrong_book">当前还没有错题，先去刷几道题。</string>
+    <string name="submit_answer">提交答案</string>
+    <string name="next_question">下一题</string>
+    <string name="submit_exam">交卷</string>
+    <string name="finish_session">完成</string>
+    <string name="back_home">返回首页</string>
+    <string name="question_image">题目图片</string>
+    <string name="no_selection">请先选择答案</string>
+    <string name="question_bank_selector">选择题库</string>
+    <string name="daily_history_title">日常答题记录</string>
+    <string name="daily_history_subtitle">按当前题库查看最近几次日常刷题结果</string>
+    <string name="latest_correct">最近答对</string>
+    <string name="latest_wrong">最近答错</string>
+    <string name="latest_accuracy">最近正确率</string>
+    <string name="daily_history_list_title">每次日常刷题</string>
+    <string name="daily_history_empty">当前题库还没有日常刷题记录。</string>
+    <string name="refresh">刷新</string>
+    <string name="more">更多</string>
+    <string name="daily_history_all_title">全部日常答题记录</string>
+    <string name="daily_history_all_subtitle">查看当前题库的全部日常刷题记录</string>
+    <string name="clear_daily_history_confirm">确定清除当前题库的全部日常答题记录吗？</string>
+    <string name="daily_history_cleared">日常答题记录已清除</string>
+</resources>

@@ -1,0 +1,6152 @@
+[
+  {
+    "id": "OS0001",
+    "index": 1,
+    "paper": "操作系统题库",
+    "numberInPaper": 1,
+    "type": "single",
+    "stem": "以下哪个操作是 原子操作（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "PV 操作"
+      },
+      {
+        "key": "B",
+        "text": "普通赋值语句"
+      },
+      {
+        "key": "C",
+        "text": "printf 输出"
+      },
+      {
+        "key": "D",
+        "text": "循环语句"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0002",
+    "index": 2,
+    "paper": "操作系统题库",
+    "numberInPaper": 2,
+    "type": "single",
+    "stem": "下列哪种机制不能用于解决临界区问题()",
+    "options": [
+      {
+        "key": "A",
+        "text": "fork函数"
+      },
+      {
+        "key": "B",
+        "text": "互斥锁"
+      },
+      {
+        "key": "C",
+        "text": "PV操作"
+      },
+      {
+        "key": "D",
+        "text": "信号量"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0003",
+    "index": 3,
+    "paper": "操作系统题库",
+    "numberInPaper": 3,
+    "type": "single",
+    "stem": "信号量与互斥锁的相同点是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "均可实现进程/线程间的互斥，保护临界区"
+      },
+      {
+        "key": "B",
+        "text": "均可实现同步与互斥"
+      },
+      {
+        "key": "C",
+        "text": "均可用于计数"
+      },
+      {
+        "key": "D",
+        "text": "均可由任意进程/线程释放"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0004",
+    "index": 4,
+    "paper": "操作系统题库",
+    "numberInPaper": 4,
+    "type": "single",
+    "stem": "司机等待“关车门” 使用的是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "V 操作"
+      },
+      {
+        "key": "B",
+        "text": "直接运行"
+      },
+      {
+        "key": "C",
+        "text": "P 操作"
+      },
+      {
+        "key": "D",
+        "text": "轮询检查"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0005",
+    "index": 5,
+    "paper": "操作系统题库",
+    "numberInPaper": 5,
+    "type": "single",
+    "stem": "静态优先级和动态优先级的区别是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "动态优先级运行时可改变"
+      },
+      {
+        "key": "B",
+        "text": "动态优先级更不公平"
+      },
+      {
+        "key": "C",
+        "text": "静态优先级运行时可改变"
+      },
+      {
+        "key": "D",
+        "text": "静态优先级更快"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0006",
+    "index": 6,
+    "paper": "操作系统题库",
+    "numberInPaper": 6,
+    "type": "single",
+    "stem": "死锁定理:系统死锁的充要条件是资源分配图()",
+    "options": [
+      {
+        "key": "A",
+        "text": "可完全简化"
+      },
+      {
+        "key": "B",
+        "text": "不可完全简化"
+      },
+      {
+        "key": "C",
+        "text": "无环路"
+      },
+      {
+        "key": "D",
+        "text": "有环路"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0007",
+    "index": 7,
+    "paper": "操作系统题库",
+    "numberInPaper": 7,
+    "type": "single",
+    "stem": "破坏死锁的任意一个必要条件，就可以实现()",
+    "options": [
+      {
+        "key": "A",
+        "text": "死锁检测"
+      },
+      {
+        "key": "B",
+        "text": "死锁解除"
+      },
+      {
+        "key": "C",
+        "text": "死锁防止"
+      },
+      {
+        "key": "D",
+        "text": "死锁避免"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0008",
+    "index": 8,
+    "paper": "操作系统题库",
+    "numberInPaper": 8,
+    "type": "single",
+    "stem": "进程控制的主要目的是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "管理内存"
+      },
+      {
+        "key": "B",
+        "text": "管理设备"
+      },
+      {
+        "key": "C",
+        "text": "管理文件"
+      },
+      {
+        "key": "D",
+        "text": "管理进程生命周期"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0009",
+    "index": 9,
+    "paper": "操作系统题库",
+    "numberInPaper": 9,
+    "type": "single",
+    "stem": "下列函数中，用于执行V操作的是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "sem_wait"
+      },
+      {
+        "key": "B",
+        "text": "sem_init"
+      },
+      {
+        "key": "C",
+        "text": "sem_destroy"
+      },
+      {
+        "key": "D",
+        "text": "sem_post"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0010",
+    "index": 10,
+    "paper": "操作系统题库",
+    "numberInPaper": 10,
+    "type": "single",
+    "stem": "物理地址是指（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "磁盘地址"
+      },
+      {
+        "key": "B",
+        "text": "内存单元真实地址"
+      },
+      {
+        "key": "C",
+        "text": "虚拟地址"
+      },
+      {
+        "key": "D",
+        "text": "程序使用的地址"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0011",
+    "index": 11,
+    "paper": "操作系统题库",
+    "numberInPaper": 11,
+    "type": "single",
+    "stem": "FIFO 算法中，内存块数增加但缺页率上升的现象称为（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "颠簸"
+      },
+      {
+        "key": "B",
+        "text": "死锁"
+      },
+      {
+        "key": "C",
+        "text": "Belady 异常"
+      },
+      {
+        "key": "D",
+        "text": "抖动"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0012",
+    "index": 12,
+    "paper": "操作系统题库",
+    "numberInPaper": 12,
+    "type": "single",
+    "stem": "查看 Linux 进程调度策略的命令是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "chrt"
+      },
+      {
+        "key": "B",
+        "text": "df"
+      },
+      {
+        "key": "C",
+        "text": "renice"
+      },
+      {
+        "key": "D",
+        "text": "free"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0013",
+    "index": 13,
+    "paper": "操作系统题库",
+    "numberInPaper": 13,
+    "type": "single",
+    "stem": "实现 互斥时，互斥信号量的初始值通常设为（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "-1"
+      },
+      {
+        "key": "B",
+        "text": "0"
+      },
+      {
+        "key": "C",
+        "text": "任意整数"
+      },
+      {
+        "key": "D",
+        "text": "1"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0014",
+    "index": 14,
+    "paper": "操作系统题库",
+    "numberInPaper": 14,
+    "type": "single",
+    "stem": "下列属于进程高级通信（传递数据）的是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "控制信号"
+      },
+      {
+        "key": "B",
+        "text": "软中断"
+      },
+      {
+        "key": "C",
+        "text": "信号量"
+      },
+      {
+        "key": "D",
+        "text": "管道"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0015",
+    "index": 15,
+    "paper": "操作系统题库",
+    "numberInPaper": 15,
+    "type": "single",
+    "stem": "在 Linux/openEuler 中，创建进程的系统调用是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "exit"
+      },
+      {
+        "key": "B",
+        "text": "fork"
+      },
+      {
+        "key": "C",
+        "text": "wait"
+      },
+      {
+        "key": "D",
+        "text": "getpid"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0016",
+    "index": 16,
+    "paper": "操作系统题库",
+    "numberInPaper": 16,
+    "type": "single",
+    "stem": "银行家算法中，系统能找到一个进程完成序列，称为()",
+    "options": [
+      {
+        "key": "A",
+        "text": "安全状态"
+      },
+      {
+        "key": "B",
+        "text": "死锁状态"
+      },
+      {
+        "key": "C",
+        "text": "阻塞状态"
+      },
+      {
+        "key": "D",
+        "text": "不安全状态"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0017",
+    "index": 17,
+    "paper": "操作系统题库",
+    "numberInPaper": 17,
+    "type": "single",
+    "stem": "信号量的值表示（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "可用资源数"
+      },
+      {
+        "key": "B",
+        "text": "CPU 时间片"
+      },
+      {
+        "key": "C",
+        "text": "进程优先级"
+      },
+      {
+        "key": "D",
+        "text": "内存大小"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0018",
+    "index": 18,
+    "paper": "操作系统题库",
+    "numberInPaper": 18,
+    "type": "single",
+    "stem": "无名管道主要适用于（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "磁盘文件读写"
+      },
+      {
+        "key": "B",
+        "text": "父子 / 兄弟等亲缘进程"
+      },
+      {
+        "key": "C",
+        "text": "网络通信"
+      },
+      {
+        "key": "D",
+        "text": "无亲缘关系进程"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0019",
+    "index": 19,
+    "paper": "操作系统题库",
+    "numberInPaper": 19,
+    "type": "single",
+    "stem": "固定分区分配最大问题是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "外部碎片"
+      },
+      {
+        "key": "B",
+        "text": "复杂"
+      },
+      {
+        "key": "C",
+        "text": "共享难"
+      },
+      {
+        "key": "D",
+        "text": "内部碎片"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0020",
+    "index": 20,
+    "paper": "操作系统题库",
+    "numberInPaper": 20,
+    "type": "single",
+    "stem": "解除死锁时，终止全部死锁进程属于()",
+    "options": [
+      {
+        "key": "A",
+        "text": "静态分配"
+      },
+      {
+        "key": "B",
+        "text": "撤销进程"
+      },
+      {
+        "key": "C",
+        "text": "回退"
+      },
+      {
+        "key": "D",
+        "text": "剥夺资源"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0021",
+    "index": 21,
+    "paper": "操作系统题库",
+    "numberInPaper": 21,
+    "type": "single",
+    "stem": "下列能实现内存逻辑扩充的技术是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "分段"
+      },
+      {
+        "key": "B",
+        "text": "虚拟内存"
+      },
+      {
+        "key": "C",
+        "text": "拼接"
+      },
+      {
+        "key": "D",
+        "text": "动态分区"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0022",
+    "index": 22,
+    "paper": "操作系统题库",
+    "numberInPaper": 22,
+    "type": "single",
+    "stem": "若信号量S初始值为1，执行一次P操作、一次V操作后，S的值为()",
+    "options": [
+      {
+        "key": "A",
+        "text": "2"
+      },
+      {
+        "key": "B",
+        "text": "1"
+      },
+      {
+        "key": "C",
+        "text": "0"
+      },
+      {
+        "key": "D",
+        "text": "-1"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0023",
+    "index": 23,
+    "paper": "操作系统题库",
+    "numberInPaper": 23,
+    "type": "single",
+    "stem": "银行家算法中，Need 矩阵表示()",
+    "options": [
+      {
+        "key": "A",
+        "text": "剩余需求"
+      },
+      {
+        "key": "B",
+        "text": "最大需求"
+      },
+      {
+        "key": "C",
+        "text": "已分配资源"
+      },
+      {
+        "key": "D",
+        "text": "可用资源"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0024",
+    "index": 24,
+    "paper": "操作系统题库",
+    "numberInPaper": 24,
+    "type": "single",
+    "stem": "操作系统通过管理什么来实现进程控制（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "寄存器"
+      },
+      {
+        "key": "B",
+        "text": "程序代码"
+      },
+      {
+        "key": "C",
+        "text": "PCB"
+      },
+      {
+        "key": "D",
+        "text": "磁盘文件"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0025",
+    "index": 25,
+    "paper": "操作系统题库",
+    "numberInPaper": 25,
+    "type": "single",
+    "stem": "下列关于信号量特性的说法，正确的是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "信号量是进程级资源，不能实现进程间共享"
+      },
+      {
+        "key": "B",
+        "text": "信号量是系统级资源，可实现进程/线程间共享"
+      },
+      {
+        "key": "C",
+        "text": "信号量只能用于进程间同步，不能用于线程间"
+      },
+      {
+        "key": "D",
+        "text": "信号量的功能比互斥锁更单一"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0026",
+    "index": 26,
+    "paper": "操作系统题库",
+    "numberInPaper": 26,
+    "type": "single",
+    "stem": "下列操作中，由操作系统内核完成的是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "复制文件"
+      },
+      {
+        "key": "B",
+        "text": "编辑文件"
+      },
+      {
+        "key": "C",
+        "text": "编译程序"
+      },
+      {
+        "key": "D",
+        "text": "进程切换与控制"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0027",
+    "index": 27,
+    "paper": "操作系统题库",
+    "numberInPaper": 27,
+    "type": "single",
+    "stem": "分段存储管理中，分段是按()划分",
+    "options": [
+      {
+        "key": "A",
+        "text": "磁盘容量"
+      },
+      {
+        "key": "B",
+        "text": "物理大小"
+      },
+      {
+        "key": "C",
+        "text": "页面尺寸"
+      },
+      {
+        "key": "D",
+        "text": "程序逻辑模块"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0028",
+    "index": 28,
+    "paper": "操作系统题库",
+    "numberInPaper": 28,
+    "type": "single",
+    "stem": "下列不属于处理器调度层次的是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "高级调度"
+      },
+      {
+        "key": "B",
+        "text": "低级调度"
+      },
+      {
+        "key": "C",
+        "text": "设备调度"
+      },
+      {
+        "key": "D",
+        "text": "中级调度"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0029",
+    "index": 29,
+    "paper": "操作系统题库",
+    "numberInPaper": 29,
+    "type": "single",
+    "stem": "哲学家进餐问题中，所有哲学家同时拿起左叉，会导致()",
+    "options": [
+      {
+        "key": "A",
+        "text": "正常进餐"
+      },
+      {
+        "key": "B",
+        "text": "死锁"
+      },
+      {
+        "key": "C",
+        "text": "效率提高"
+      },
+      {
+        "key": "D",
+        "text": "饥饿"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0030",
+    "index": 30,
+    "paper": "操作系统题库",
+    "numberInPaper": 30,
+    "type": "single",
+    "stem": "物理地址是指()",
+    "options": [
+      {
+        "key": "A",
+        "text": "程序地址"
+      },
+      {
+        "key": "B",
+        "text": "内存真实地址"
+      },
+      {
+        "key": "C",
+        "text": "虚拟地址"
+      },
+      {
+        "key": "D",
+        "text": "磁盘地址"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0031",
+    "index": 31,
+    "paper": "操作系统题库",
+    "numberInPaper": 31,
+    "type": "single",
+    "stem": "进程被唤醒后，进入的状态是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "阻塞态"
+      },
+      {
+        "key": "B",
+        "text": "就绪态"
+      },
+      {
+        "key": "C",
+        "text": "终止态"
+      },
+      {
+        "key": "D",
+        "text": "运行态"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0032",
+    "index": 32,
+    "paper": "操作系统题库",
+    "numberInPaper": 32,
+    "type": "single",
+    "stem": "进程调度又称为()",
+    "options": [
+      {
+        "key": "A",
+        "text": "低级调度"
+      },
+      {
+        "key": "B",
+        "text": "高级调度"
+      },
+      {
+        "key": "C",
+        "text": "平衡调度"
+      },
+      {
+        "key": "D",
+        "text": "中级调度"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0033",
+    "index": 33,
+    "paper": "操作系统题库",
+    "numberInPaper": 33,
+    "type": "single",
+    "stem": "同步的目的是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "控制进程执行次序"
+      },
+      {
+        "key": "B",
+        "text": "增加并发冲突"
+      },
+      {
+        "key": "C",
+        "text": "让进程竞争资源"
+      },
+      {
+        "key": "D",
+        "text": "提高 CPU 占用"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0034",
+    "index": 34,
+    "paper": "操作系统题库",
+    "numberInPaper": 34,
+    "type": "single",
+    "stem": "下列关于并发与并行的区别，说法正确的是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "并发和并行没有本质区别，均是同时执行多个任务"
+      },
+      {
+        "key": "B",
+        "text": "并发只能用于进程，并行只能用于线程"
+      },
+      {
+        "key": "C",
+        "text": "并发是多个任务交替执行，并行是多个任务同时执行"
+      },
+      {
+        "key": "D",
+        "text": "并发需要多CPU支持，并行不需要"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0035",
+    "index": 35,
+    "paper": "操作系统题库",
+    "numberInPaper": 35,
+    "type": "single",
+    "stem": "允许死锁必要条件存在，但动态避免进入不安全状态的是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "死锁避免"
+      },
+      {
+        "key": "B",
+        "text": "死锁解除"
+      },
+      {
+        "key": "C",
+        "text": "死锁防止"
+      },
+      {
+        "key": "D",
+        "text": "死锁检测"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0036",
+    "index": 36,
+    "paper": "操作系统题库",
+    "numberInPaper": 36,
+    "type": "single",
+    "stem": "请求分页系统中，进程启动时（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "按需分配所有页面"
+      },
+      {
+        "key": "B",
+        "text": "全部装入内存"
+      },
+      {
+        "key": "C",
+        "text": "只装入部分页面"
+      },
+      {
+        "key": "D",
+        "text": "全部放在外存"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0037",
+    "index": 37,
+    "paper": "操作系统题库",
+    "numberInPaper": 37,
+    "type": "single",
+    "stem": "Linux 普通进程(CFS)的优先级范围是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "-20~19"
+      },
+      {
+        "key": "B",
+        "text": "100~139"
+      },
+      {
+        "key": "C",
+        "text": "1~99"
+      },
+      {
+        "key": "D",
+        "text": "0~50"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0038",
+    "index": 38,
+    "paper": "操作系统题库",
+    "numberInPaper": 38,
+    "type": "single",
+    "stem": "高响应比优先调度(HRRN)综合了()",
+    "options": [
+      {
+        "key": "A",
+        "text": "SJF 和 优先级"
+      },
+      {
+        "key": "B",
+        "text": "FCFS 和 SJF"
+      },
+      {
+        "key": "C",
+        "text": "FCFS 和 RR"
+      },
+      {
+        "key": "D",
+        "text": "RR 和 优先级"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0039",
+    "index": 39,
+    "paper": "操作系统题库",
+    "numberInPaper": 39,
+    "type": "single",
+    "stem": "openEuler 中查看进程状态的命令是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "ps"
+      },
+      {
+        "key": "B",
+        "text": "cd"
+      },
+      {
+        "key": "C",
+        "text": "mkdir"
+      },
+      {
+        "key": "D",
+        "text": "ls"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0040",
+    "index": 40,
+    "paper": "操作系统题库",
+    "numberInPaper": 40,
+    "type": "single",
+    "stem": "段页式存储管理的顺序是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "先分段再分页"
+      },
+      {
+        "key": "B",
+        "text": "先分页再分段"
+      },
+      {
+        "key": "C",
+        "text": "只分段"
+      },
+      {
+        "key": "D",
+        "text": "只分页"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0041",
+    "index": 41,
+    "paper": "操作系统题库",
+    "numberInPaper": 41,
+    "type": "single",
+    "stem": "从消息队列接收消息的函数是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "msgsnd"
+      },
+      {
+        "key": "B",
+        "text": "msgctl"
+      },
+      {
+        "key": "C",
+        "text": "read"
+      },
+      {
+        "key": "D",
+        "text": "msgrcv"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0042",
+    "index": 42,
+    "paper": "操作系统题库",
+    "numberInPaper": 42,
+    "type": "single",
+    "stem": "逻辑地址是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "物理地址"
+      },
+      {
+        "key": "B",
+        "text": "程序相对地址"
+      },
+      {
+        "key": "C",
+        "text": "绝对地址"
+      },
+      {
+        "key": "D",
+        "text": "磁盘地址"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0043",
+    "index": 43,
+    "paper": "操作系统题库",
+    "numberInPaper": 43,
+    "type": "single",
+    "stem": "资源分配图中，圆圈表示()",
+    "options": [
+      {
+        "key": "A",
+        "text": "资源"
+      },
+      {
+        "key": "B",
+        "text": "线程"
+      },
+      {
+        "key": "C",
+        "text": "可用资源数"
+      },
+      {
+        "key": "D",
+        "text": "进程"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0044",
+    "index": 44,
+    "paper": "操作系统题库",
+    "numberInPaper": 44,
+    "type": "single",
+    "stem": "生产者生产产品后应（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "V (互斥)"
+      },
+      {
+        "key": "B",
+        "text": "P (互斥)"
+      },
+      {
+        "key": "C",
+        "text": "V (满缓冲区)"
+      },
+      {
+        "key": "D",
+        "text": "P (满缓冲区)"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0045",
+    "index": 45,
+    "paper": "操作系统题库",
+    "numberInPaper": 45,
+    "type": "single",
+    "stem": "段页式存储管理的顺序是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "先分页再分段"
+      },
+      {
+        "key": "B",
+        "text": "只分页"
+      },
+      {
+        "key": "C",
+        "text": "只分段"
+      },
+      {
+        "key": "D",
+        "text": "先分段再分页"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0046",
+    "index": 46,
+    "paper": "操作系统题库",
+    "numberInPaper": 46,
+    "type": "single",
+    "stem": "访问的页面不在内存时，会触发（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "越界中断"
+      },
+      {
+        "key": "B",
+        "text": "I/O 中断"
+      },
+      {
+        "key": "C",
+        "text": "时钟中断"
+      },
+      {
+        "key": "D",
+        "text": "缺页中断"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0047",
+    "index": 47,
+    "paper": "操作系统题库",
+    "numberInPaper": 47,
+    "type": "single",
+    "stem": "没有外部碎片的存储管理是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "分段"
+      },
+      {
+        "key": "B",
+        "text": "动态分区"
+      },
+      {
+        "key": "C",
+        "text": "固定分区"
+      },
+      {
+        "key": "D",
+        "text": "分页"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0048",
+    "index": 48,
+    "paper": "操作系统题库",
+    "numberInPaper": 48,
+    "type": "single",
+    "stem": "引入分页存储管理的主要目的是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "实现内存共享"
+      },
+      {
+        "key": "B",
+        "text": "解决外部碎片"
+      },
+      {
+        "key": "C",
+        "text": "便于程序保护"
+      },
+      {
+        "key": "D",
+        "text": "加快访问速度"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0049",
+    "index": 49,
+    "paper": "操作系统题库",
+    "numberInPaper": 49,
+    "type": "single",
+    "stem": "采用剥夺式调度，可以破坏死锁的()",
+    "options": [
+      {
+        "key": "A",
+        "text": "循环等待"
+      },
+      {
+        "key": "B",
+        "text": "占有等待"
+      },
+      {
+        "key": "C",
+        "text": "互斥条件"
+      },
+      {
+        "key": "D",
+        "text": "不剥夺条件"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0050",
+    "index": 50,
+    "paper": "操作系统题库",
+    "numberInPaper": 50,
+    "type": "single",
+    "stem": "关于进程终止，说法正确的是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "仍占用内存"
+      },
+      {
+        "key": "B",
+        "text": "资源被释放，PCB 撤销"
+      },
+      {
+        "key": "C",
+        "text": "还能被唤醒"
+      },
+      {
+        "key": "D",
+        "text": "只是暂停"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0051",
+    "index": 51,
+    "paper": "操作系统题库",
+    "numberInPaper": 51,
+    "type": "single",
+    "stem": "安全性算法中，Work 向量初始值等于()",
+    "options": [
+      {
+        "key": "A",
+        "text": "Max"
+      },
+      {
+        "key": "B",
+        "text": "Available"
+      },
+      {
+        "key": "C",
+        "text": "Allocation"
+      },
+      {
+        "key": "D",
+        "text": "Need"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0052",
+    "index": 52,
+    "paper": "操作系统题库",
+    "numberInPaper": 52,
+    "type": "single",
+    "stem": "创建无名管道的系统调用是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "read"
+      },
+      {
+        "key": "B",
+        "text": "fork"
+      },
+      {
+        "key": "C",
+        "text": "write"
+      },
+      {
+        "key": "D",
+        "text": "pipe"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0053",
+    "index": 53,
+    "paper": "操作系统题库",
+    "numberInPaper": 53,
+    "type": "single",
+    "stem": "下列不属于内存保护功能的是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "地址映射"
+      },
+      {
+        "key": "B",
+        "text": "防止非法访问"
+      },
+      {
+        "key": "C",
+        "text": "越界检查"
+      },
+      {
+        "key": "D",
+        "text": "存取权限控制"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0054",
+    "index": 54,
+    "paper": "操作系统题库",
+    "numberInPaper": 54,
+    "type": "single",
+    "stem": "解除死锁时，强行收回死锁进程资源，称为()",
+    "options": [
+      {
+        "key": "A",
+        "text": "静态分配"
+      },
+      {
+        "key": "B",
+        "text": "剥夺资源"
+      },
+      {
+        "key": "C",
+        "text": "进程回退"
+      },
+      {
+        "key": "D",
+        "text": "撤销进程"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0055",
+    "index": 55,
+    "paper": "操作系统题库",
+    "numberInPaper": 55,
+    "type": "single",
+    "stem": "进程已占有部分资源，又申请新资源，且不释放原有资源，破坏的是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "互斥条件"
+      },
+      {
+        "key": "B",
+        "text": "循环等待"
+      },
+      {
+        "key": "C",
+        "text": "不剥夺"
+      },
+      {
+        "key": "D",
+        "text": "占有且等待"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0056",
+    "index": 56,
+    "paper": "操作系统题库",
+    "numberInPaper": 56,
+    "type": "single",
+    "stem": "向消息队列发送消息的函数是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "msgget"
+      },
+      {
+        "key": "B",
+        "text": "msgsnd"
+      },
+      {
+        "key": "C",
+        "text": "pipe"
+      },
+      {
+        "key": "D",
+        "text": "msgrcv"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0057",
+    "index": 57,
+    "paper": "操作系统题库",
+    "numberInPaper": 57,
+    "type": "single",
+    "stem": "短作业优先算法的缺点是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "不利于短作业"
+      },
+      {
+        "key": "B",
+        "text": "调度开销大"
+      },
+      {
+        "key": "C",
+        "text": "可能导致长作业饥饿"
+      },
+      {
+        "key": "D",
+        "text": "系统吞吐量低"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0058",
+    "index": 58,
+    "paper": "操作系统题库",
+    "numberInPaper": 58,
+    "type": "single",
+    "stem": "资源分配图无环路，则系统()",
+    "options": [
+      {
+        "key": "A",
+        "text": "一定无死锁"
+      },
+      {
+        "key": "B",
+        "text": "一定死锁"
+      },
+      {
+        "key": "C",
+        "text": "可能死锁"
+      },
+      {
+        "key": "D",
+        "text": "不确定"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0059",
+    "index": 59,
+    "paper": "操作系统题库",
+    "numberInPaper": 59,
+    "type": "single",
+    "stem": "fork 调用失败时返回（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "0"
+      },
+      {
+        "key": "B",
+        "text": "1"
+      },
+      {
+        "key": "C",
+        "text": "-1"
+      },
+      {
+        "key": "D",
+        "text": "子进程 PID"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0060",
+    "index": 60,
+    "paper": "操作系统题库",
+    "numberInPaper": 60,
+    "type": "single",
+    "stem": "只使用 P 操作不使用 V 操作会导致（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "程序更快"
+      },
+      {
+        "key": "B",
+        "text": "自动释放资源"
+      },
+      {
+        "key": "C",
+        "text": "同步正常"
+      },
+      {
+        "key": "D",
+        "text": "死锁或永久阻塞"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0061",
+    "index": 61,
+    "paper": "操作系统题库",
+    "numberInPaper": 61,
+    "type": "single",
+    "stem": "动态分区中，产生最多外部碎片的算法是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "最佳适应"
+      },
+      {
+        "key": "B",
+        "text": "循环适应"
+      },
+      {
+        "key": "C",
+        "text": "首次适应"
+      },
+      {
+        "key": "D",
+        "text": "固定分区"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0062",
+    "index": 62,
+    "paper": "操作系统题库",
+    "numberInPaper": 62,
+    "type": "single",
+    "stem": "若信号量 S 初始值为 1，执行一次 P 操作后 S 的值为（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "1"
+      },
+      {
+        "key": "B",
+        "text": "2"
+      },
+      {
+        "key": "C",
+        "text": "-1"
+      },
+      {
+        "key": "D",
+        "text": "0"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0063",
+    "index": 63,
+    "paper": "操作系统题库",
+    "numberInPaper": 63,
+    "type": "single",
+    "stem": "Linux 管理物理内存的核心机制是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "段页式"
+      },
+      {
+        "key": "B",
+        "text": "动态分区"
+      },
+      {
+        "key": "C",
+        "text": "单连续存储"
+      },
+      {
+        "key": "D",
+        "text": "伙伴系统"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0064",
+    "index": 64,
+    "paper": "操作系统题库",
+    "numberInPaper": 64,
+    "type": "single",
+    "stem": "Linux 系统中最常用的页面置换算法是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "FIFO"
+      },
+      {
+        "key": "B",
+        "text": "LRU"
+      },
+      {
+        "key": "C",
+        "text": "OPT"
+      },
+      {
+        "key": "D",
+        "text": "随机置换"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0065",
+    "index": 65,
+    "paper": "操作系统题库",
+    "numberInPaper": 65,
+    "type": "single",
+    "stem": "父进程等待子进程结束的系统调用是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "wait"
+      },
+      {
+        "key": "B",
+        "text": "getpid"
+      },
+      {
+        "key": "C",
+        "text": "exit"
+      },
+      {
+        "key": "D",
+        "text": "fork"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0066",
+    "index": 66,
+    "paper": "操作系统题库",
+    "numberInPaper": 66,
+    "type": "single",
+    "stem": "理想最优但无法实现的置换算法是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "OPT"
+      },
+      {
+        "key": "B",
+        "text": "FIFO"
+      },
+      {
+        "key": "C",
+        "text": "LRU"
+      },
+      {
+        "key": "D",
+        "text": "Clock"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0067",
+    "index": 67,
+    "paper": "操作系统题库",
+    "numberInPaper": 67,
+    "type": "single",
+    "stem": "Linux 无名管道的通信方式是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "仅能读"
+      },
+      {
+        "key": "B",
+        "text": "仅能写"
+      },
+      {
+        "key": "C",
+        "text": "全双工"
+      },
+      {
+        "key": "D",
+        "text": "半双工"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0068",
+    "index": 68,
+    "paper": "操作系统题库",
+    "numberInPaper": 68,
+    "type": "single",
+    "stem": "动态分区中产生最多外部碎片的算法是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "循环适应"
+      },
+      {
+        "key": "B",
+        "text": "最佳适应"
+      },
+      {
+        "key": "C",
+        "text": "最坏适应"
+      },
+      {
+        "key": "D",
+        "text": "首次适应"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0069",
+    "index": 69,
+    "paper": "操作系统题库",
+    "numberInPaper": 69,
+    "type": "single",
+    "stem": "消息队列的消息结构体中，必须包含的字段是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "mfd"
+      },
+      {
+        "key": "B",
+        "text": "mkey"
+      },
+      {
+        "key": "C",
+        "text": "msize"
+      },
+      {
+        "key": "D",
+        "text": "mtype"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0070",
+    "index": 70,
+    "paper": "操作系统题库",
+    "numberInPaper": 70,
+    "type": "single",
+    "stem": "操作系统将逻辑地址转换为物理地址的过程称为()",
+    "options": [
+      {
+        "key": "A",
+        "text": "内存分配"
+      },
+      {
+        "key": "B",
+        "text": "地址映射"
+      },
+      {
+        "key": "C",
+        "text": "内存保护"
+      },
+      {
+        "key": "D",
+        "text": "内存扩充"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0071",
+    "index": 71,
+    "paper": "操作系统题库",
+    "numberInPaper": 71,
+    "type": "single",
+    "stem": "在“加锁与不加锁并发对比实验”中，下列关于实验现象与分析的说法，正确的是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "不加锁版本输出有序，说明并发程序无时间相关错误"
+      },
+      {
+        "key": "B",
+        "text": "加锁版本输出错乱，说明信号量初始值设置正确"
+      },
+      {
+        "key": "C",
+        "text": "不加锁版本每次运行，都会出现输出错乱现象"
+      },
+      {
+        "key": "D",
+        "text": "加锁版本(信号量保护)多次运行，输出结果始终有序，无错乱"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0072",
+    "index": 72,
+    "paper": "操作系统题库",
+    "numberInPaper": 72,
+    "type": "single",
+    "stem": "时间片轮转 RR 调度属于()",
+    "options": [
+      {
+        "key": "A",
+        "text": "短作业优先"
+      },
+      {
+        "key": "B",
+        "text": "抢占式"
+      },
+      {
+        "key": "C",
+        "text": "静态优先级"
+      },
+      {
+        "key": "D",
+        "text": "非抢占"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0073",
+    "index": 73,
+    "paper": "操作系统题库",
+    "numberInPaper": 73,
+    "type": "single",
+    "stem": "司机售票员问题中，司机“停车” 后应执行（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "P (门)"
+      },
+      {
+        "key": "B",
+        "text": "V (门)"
+      },
+      {
+        "key": "C",
+        "text": "V (车)"
+      },
+      {
+        "key": "D",
+        "text": "P (车)"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0074",
+    "index": 74,
+    "paper": "操作系统题库",
+    "numberInPaper": 74,
+    "type": "single",
+    "stem": "openEuler系统中，sem_init函数的pshared参数设为1，表示()",
+    "options": [
+      {
+        "key": "A",
+        "text": "信号量用于线程间共享"
+      },
+      {
+        "key": "B",
+        "text": "信号量初始化失败"
+      },
+      {
+        "key": "C",
+        "text": "信号量用于进程间共享"
+      },
+      {
+        "key": "D",
+        "text": "信号量初始值为1"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0075",
+    "index": 75,
+    "paper": "操作系统题库",
+    "numberInPaper": 75,
+    "type": "single",
+    "stem": "下列属于进程低级通信的是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "共享存储"
+      },
+      {
+        "key": "B",
+        "text": "消息队列"
+      },
+      {
+        "key": "C",
+        "text": "管道"
+      },
+      {
+        "key": "D",
+        "text": "信号量"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0076",
+    "index": 76,
+    "paper": "操作系统题库",
+    "numberInPaper": 76,
+    "type": "single",
+    "stem": "优先级调度中，优先级通常由()决定",
+    "options": [
+      {
+        "key": "A",
+        "text": "到达时间"
+      },
+      {
+        "key": "B",
+        "text": "内存大小"
+      },
+      {
+        "key": "C",
+        "text": "用户设定或系统分配"
+      },
+      {
+        "key": "D",
+        "text": "作业长度"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0077",
+    "index": 77,
+    "paper": "操作系统题库",
+    "numberInPaper": 77,
+    "type": "single",
+    "stem": "实现 同步时，同步信号量的初始值一般设为（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "负数"
+      },
+      {
+        "key": "B",
+        "text": "0"
+      },
+      {
+        "key": "C",
+        "text": "2"
+      },
+      {
+        "key": "D",
+        "text": "1"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0078",
+    "index": 78,
+    "paper": "操作系统题库",
+    "numberInPaper": 78,
+    "type": "single",
+    "stem": "查看所有进程的详细信息，常用命令是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "ls"
+      },
+      {
+        "key": "B",
+        "text": "ps aux"
+      },
+      {
+        "key": "C",
+        "text": "ps"
+      },
+      {
+        "key": "D",
+        "text": "top"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0079",
+    "index": 79,
+    "paper": "操作系统题库",
+    "numberInPaper": 79,
+    "type": "single",
+    "stem": "页表的作用是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "记录页号与物理块号映射"
+      },
+      {
+        "key": "B",
+        "text": "记录段号与基址"
+      },
+      {
+        "key": "C",
+        "text": "记录权限"
+      },
+      {
+        "key": "D",
+        "text": "记录内存占用"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0080",
+    "index": 80,
+    "paper": "操作系统题库",
+    "numberInPaper": 80,
+    "type": "single",
+    "stem": "资源按层次顺序申请，可以破坏()",
+    "options": [
+      {
+        "key": "A",
+        "text": "循环等待"
+      },
+      {
+        "key": "B",
+        "text": "互斥"
+      },
+      {
+        "key": "C",
+        "text": "占有等待"
+      },
+      {
+        "key": "D",
+        "text": "不剥夺"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0081",
+    "index": 81,
+    "paper": "操作系统题库",
+    "numberInPaper": 81,
+    "type": "single",
+    "stem": "司机售票员问题中，售票员“关车门” 后应执行（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "V (车)"
+      },
+      {
+        "key": "B",
+        "text": "P (车)"
+      },
+      {
+        "key": "C",
+        "text": "V (门)"
+      },
+      {
+        "key": "D",
+        "text": "P (门)"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0082",
+    "index": 82,
+    "paper": "操作系统题库",
+    "numberInPaper": 82,
+    "type": "single",
+    "stem": "下列能实现内存逻辑扩充的是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "拼接"
+      },
+      {
+        "key": "B",
+        "text": "固定分区"
+      },
+      {
+        "key": "C",
+        "text": "分段"
+      },
+      {
+        "key": "D",
+        "text": "虚拟内存"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0083",
+    "index": 83,
+    "paper": "操作系统题库",
+    "numberInPaper": 83,
+    "type": "single",
+    "stem": "进程正常结束时，用于终止自身的系统调用是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "fork"
+      },
+      {
+        "key": "B",
+        "text": "sleep"
+      },
+      {
+        "key": "C",
+        "text": "exit"
+      },
+      {
+        "key": "D",
+        "text": "kill"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0084",
+    "index": 84,
+    "paper": "操作系统题库",
+    "numberInPaper": 84,
+    "type": "single",
+    "stem": "分页存储管理中，页面大小通常由()决定",
+    "options": [
+      {
+        "key": "A",
+        "text": "操作系统"
+      },
+      {
+        "key": "B",
+        "text": "编译器"
+      },
+      {
+        "key": "C",
+        "text": "硬件"
+      },
+      {
+        "key": "D",
+        "text": "用户程序"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0085",
+    "index": 85,
+    "paper": "操作系统题库",
+    "numberInPaper": 85,
+    "type": "single",
+    "stem": "静态分配(进程执行前申请全部资源)可以破坏()",
+    "options": [
+      {
+        "key": "A",
+        "text": "不剥夺"
+      },
+      {
+        "key": "B",
+        "text": "占有且等待"
+      },
+      {
+        "key": "C",
+        "text": "互斥"
+      },
+      {
+        "key": "D",
+        "text": "循环等待"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0086",
+    "index": 86,
+    "paper": "操作系统题库",
+    "numberInPaper": 86,
+    "type": "single",
+    "stem": "下列关于信号量与互斥锁的区别，说法错误的是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "互斥锁仅能实现互斥，信号量可实现同步+互斥"
+      },
+      {
+        "key": "B",
+        "text": "信号量可实现同步，互斥锁不能"
+      },
+      {
+        "key": "C",
+        "text": "互斥锁可由任意进程/线程释放，信号量不能"
+      },
+      {
+        "key": "D",
+        "text": "信号量可用于计数，互斥锁不能"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0087",
+    "index": 87,
+    "paper": "操作系统题库",
+    "numberInPaper": 87,
+    "type": "single",
+    "stem": "若系统找不到安全序列，则系统处于()",
+    "options": [
+      {
+        "key": "A",
+        "text": "死锁检测"
+      },
+      {
+        "key": "B",
+        "text": "死锁解除"
+      },
+      {
+        "key": "C",
+        "text": "安全状态"
+      },
+      {
+        "key": "D",
+        "text": "不安全状态"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0088",
+    "index": 88,
+    "paper": "操作系统题库",
+    "numberInPaper": 88,
+    "type": "single",
+    "stem": "向无名管道写入数据的系统调用是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "write"
+      },
+      {
+        "key": "B",
+        "text": "msgsnd"
+      },
+      {
+        "key": "C",
+        "text": "read"
+      },
+      {
+        "key": "D",
+        "text": "msgctl"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0089",
+    "index": 89,
+    "paper": "操作系统题库",
+    "numberInPaper": 89,
+    "type": "single",
+    "stem": "资源只能由进程主动释放，不可强行抢占，这是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "占有等待"
+      },
+      {
+        "key": "B",
+        "text": "互斥条件"
+      },
+      {
+        "key": "C",
+        "text": "不剥夺条件"
+      },
+      {
+        "key": "D",
+        "text": "循环等待"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0090",
+    "index": 90,
+    "paper": "操作系统题库",
+    "numberInPaper": 90,
+    "type": "single",
+    "stem": "下列不属于内存保护功能的是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "存取控制"
+      },
+      {
+        "key": "B",
+        "text": "越界检查"
+      },
+      {
+        "key": "C",
+        "text": "地址映射"
+      },
+      {
+        "key": "D",
+        "text": "非法访问防止"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0091",
+    "index": 91,
+    "paper": "操作系统题库",
+    "numberInPaper": 91,
+    "type": "single",
+    "stem": "衡量调度性能的最核心指标不包括()",
+    "options": [
+      {
+        "key": "A",
+        "text": "内存大小"
+      },
+      {
+        "key": "B",
+        "text": "等待时间"
+      },
+      {
+        "key": "C",
+        "text": "周转时间"
+      },
+      {
+        "key": "D",
+        "text": "响应时间"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0092",
+    "index": 92,
+    "paper": "操作系统题库",
+    "numberInPaper": 92,
+    "type": "single",
+    "stem": "分段存储管理中，分段是按照（）划分",
+    "options": [
+      {
+        "key": "A",
+        "text": "物理内存大小"
+      },
+      {
+        "key": "B",
+        "text": "程序逻辑模块"
+      },
+      {
+        "key": "C",
+        "text": "磁盘容量"
+      },
+      {
+        "key": "D",
+        "text": "页面尺寸"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0093",
+    "index": 93,
+    "paper": "操作系统题库",
+    "numberInPaper": 93,
+    "type": "single",
+    "stem": "分段系统的逻辑地址结构是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "段号 + 段内偏移"
+      },
+      {
+        "key": "B",
+        "text": "页号 + 偏移"
+      },
+      {
+        "key": "C",
+        "text": "段号 + 页号"
+      },
+      {
+        "key": "D",
+        "text": "块号 + 偏移"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0094",
+    "index": 94,
+    "paper": "操作系统题库",
+    "numberInPaper": 94,
+    "type": "single",
+    "stem": "作业调度又称为()",
+    "options": [
+      {
+        "key": "A",
+        "text": "低级调度"
+      },
+      {
+        "key": "B",
+        "text": "高级调度"
+      },
+      {
+        "key": "C",
+        "text": "进程调度"
+      },
+      {
+        "key": "D",
+        "text": "中级调度"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0095",
+    "index": 95,
+    "paper": "操作系统题库",
+    "numberInPaper": 95,
+    "type": "single",
+    "stem": "Linux 普通进程默认的调度策略是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "RR"
+      },
+      {
+        "key": "B",
+        "text": "CFS(SCHED_OTHER)"
+      },
+      {
+        "key": "C",
+        "text": "FIFO"
+      },
+      {
+        "key": "D",
+        "text": "SJF"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0096",
+    "index": 96,
+    "paper": "操作系统题库",
+    "numberInPaper": 96,
+    "type": "single",
+    "stem": "段表的主要作用是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "记录页面位置"
+      },
+      {
+        "key": "B",
+        "text": "实现段号到段基址的映射"
+      },
+      {
+        "key": "C",
+        "text": "缺页处理"
+      },
+      {
+        "key": "D",
+        "text": "内存分配"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0097",
+    "index": 97,
+    "paper": "操作系统题库",
+    "numberInPaper": 97,
+    "type": "single",
+    "stem": "内存“抖动 / 颠簸” 是指（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "进程死锁"
+      },
+      {
+        "key": "B",
+        "text": "地址越界"
+      },
+      {
+        "key": "C",
+        "text": "内存不足"
+      },
+      {
+        "key": "D",
+        "text": "频繁缺页与页面置换"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0098",
+    "index": 98,
+    "paper": "操作系统题库",
+    "numberInPaper": 98,
+    "type": "single",
+    "stem": "管道中无数据时，执行 read 会（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "报错退出"
+      },
+      {
+        "key": "B",
+        "text": "立即返回"
+      },
+      {
+        "key": "C",
+        "text": "随机读取"
+      },
+      {
+        "key": "D",
+        "text": "阻塞等待"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0099",
+    "index": 99,
+    "paper": "操作系统题库",
+    "numberInPaper": 99,
+    "type": "single",
+    "stem": "时间片太小会导致()",
+    "options": [
+      {
+        "key": "A",
+        "text": "响应变慢"
+      },
+      {
+        "key": "B",
+        "text": "调度开销增大"
+      },
+      {
+        "key": "C",
+        "text": "平均周转时间变长"
+      },
+      {
+        "key": "D",
+        "text": "长作业饥饿"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0100",
+    "index": 100,
+    "paper": "操作系统题库",
+    "numberInPaper": 100,
+    "type": "single",
+    "stem": "页表中修改位 M 的作用是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "是否需写回磁盘"
+      },
+      {
+        "key": "B",
+        "text": "页号"
+      },
+      {
+        "key": "C",
+        "text": "权限"
+      },
+      {
+        "key": "D",
+        "text": "是否访问"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0101",
+    "index": 101,
+    "paper": "操作系统题库",
+    "numberInPaper": 101,
+    "type": "single",
+    "stem": "对信号量 S 执行 V 操作的含义是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "申请资源"
+      },
+      {
+        "key": "B",
+        "text": "阻塞进程"
+      },
+      {
+        "key": "C",
+        "text": "等待资源"
+      },
+      {
+        "key": "D",
+        "text": "释放资源"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0102",
+    "index": 102,
+    "paper": "操作系统题库",
+    "numberInPaper": 102,
+    "type": "single",
+    "stem": "信号量与 PV 操作中，前驱图的“前操作” 之后应执行（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "初始化"
+      },
+      {
+        "key": "B",
+        "text": "销毁"
+      },
+      {
+        "key": "C",
+        "text": "V 操作"
+      },
+      {
+        "key": "D",
+        "text": "P 操作"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0103",
+    "index": 103,
+    "paper": "操作系统题库",
+    "numberInPaper": 103,
+    "type": "single",
+    "stem": "多个进程访问临界区，为保证互斥应使用（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "同步信号量"
+      },
+      {
+        "key": "B",
+        "text": "全局变量"
+      },
+      {
+        "key": "C",
+        "text": "互斥信号量"
+      },
+      {
+        "key": "D",
+        "text": "延时循环"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0104",
+    "index": 104,
+    "paper": "操作系统题库",
+    "numberInPaper": 104,
+    "type": "single",
+    "stem": "pipe (fd) 中，用于写管道的文件描述符是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "fd [1]"
+      },
+      {
+        "key": "B",
+        "text": "fd [2]"
+      },
+      {
+        "key": "C",
+        "text": "pipe"
+      },
+      {
+        "key": "D",
+        "text": "fd [0]"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0105",
+    "index": 105,
+    "paper": "操作系统题库",
+    "numberInPaper": 105,
+    "type": "single",
+    "stem": "访问页面不在内存时产生的中断是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "缺页中断"
+      },
+      {
+        "key": "B",
+        "text": "时钟中断"
+      },
+      {
+        "key": "C",
+        "text": "I/O 中断"
+      },
+      {
+        "key": "D",
+        "text": "越界中断"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0106",
+    "index": 106,
+    "paper": "操作系统题库",
+    "numberInPaper": 106,
+    "type": "single",
+    "stem": "下列关于sem_destroy函数的说法，正确的是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "必须在所有进程/线程使用完毕后调用，避免资源泄漏"
+      },
+      {
+        "key": "B",
+        "text": "用于初始化信号量"
+      },
+      {
+        "key": "C",
+        "text": "可在进程/线程使用信号量期间调用"
+      },
+      {
+        "key": "D",
+        "text": "调用后信号量仍可继续使用"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0107",
+    "index": 107,
+    "paper": "操作系统题库",
+    "numberInPaper": 107,
+    "type": "single",
+    "stem": "下列哪种情况会导致信号量使用错误，进而引发临界区保护失效()",
+    "options": [
+      {
+        "key": "A",
+        "text": "互斥场景中，信号量初始值设为1"
+      },
+      {
+        "key": "B",
+        "text": "PV操作成对出现"
+      },
+      {
+        "key": "C",
+        "text": "互斥场景中，信号量初始值设为2"
+      },
+      {
+        "key": "D",
+        "text": "进程间共享信号量时，pshared设为1"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0108",
+    "index": 108,
+    "paper": "操作系统题库",
+    "numberInPaper": 108,
+    "type": "single",
+    "stem": "下列不属于进程控制基本操作的是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "终止"
+      },
+      {
+        "key": "B",
+        "text": "阻塞"
+      },
+      {
+        "key": "C",
+        "text": "创建"
+      },
+      {
+        "key": "D",
+        "text": "编译"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0109",
+    "index": 109,
+    "paper": "操作系统题库",
+    "numberInPaper": 109,
+    "type": "single",
+    "stem": "存在一组进程形成环路，相互等待资源，这是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "不剥夺"
+      },
+      {
+        "key": "B",
+        "text": "循环等待"
+      },
+      {
+        "key": "C",
+        "text": "互斥"
+      },
+      {
+        "key": "D",
+        "text": "占有等待"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0110",
+    "index": 110,
+    "paper": "操作系统题库",
+    "numberInPaper": 110,
+    "type": "single",
+    "stem": "创建 / 获取消息队列的系统调用是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "msgctl"
+      },
+      {
+        "key": "B",
+        "text": "msgsnd"
+      },
+      {
+        "key": "C",
+        "text": "msgrcv"
+      },
+      {
+        "key": "D",
+        "text": "msgget"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0111",
+    "index": 111,
+    "paper": "操作系统题库",
+    "numberInPaper": 111,
+    "type": "single",
+    "stem": "资源分配图中，方框内的点表示()",
+    "options": [
+      {
+        "key": "A",
+        "text": "资源实例"
+      },
+      {
+        "key": "B",
+        "text": "请求"
+      },
+      {
+        "key": "C",
+        "text": "分配"
+      },
+      {
+        "key": "D",
+        "text": "进程"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0112",
+    "index": 112,
+    "paper": "操作系统题库",
+    "numberInPaper": 112,
+    "type": "single",
+    "stem": "银行家算法属于()",
+    "options": [
+      {
+        "key": "A",
+        "text": "死锁避免"
+      },
+      {
+        "key": "B",
+        "text": "死锁解除"
+      },
+      {
+        "key": "C",
+        "text": "死锁检测"
+      },
+      {
+        "key": "D",
+        "text": "死锁防止"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0113",
+    "index": 113,
+    "paper": "操作系统题库",
+    "numberInPaper": 113,
+    "type": "single",
+    "stem": "当信号量S的值为0时，执行P操作的结果是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "信号量S不变，进程/线程阻塞"
+      },
+      {
+        "key": "B",
+        "text": "信号量S变为-1，进程/线程继续执行"
+      },
+      {
+        "key": "C",
+        "text": "信号量S变为1，进程/线程继续执行"
+      },
+      {
+        "key": "D",
+        "text": "信号量S变为-1，进程/线程阻塞"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0114",
+    "index": 114,
+    "paper": "操作系统题库",
+    "numberInPaper": 114,
+    "type": "single",
+    "stem": "内存“抖动 / 颠簸” 是指()",
+    "options": [
+      {
+        "key": "A",
+        "text": "频繁缺页置换"
+      },
+      {
+        "key": "B",
+        "text": "地址错误"
+      },
+      {
+        "key": "C",
+        "text": "死锁"
+      },
+      {
+        "key": "D",
+        "text": "内存不足"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0115",
+    "index": 115,
+    "paper": "操作系统题库",
+    "numberInPaper": 115,
+    "type": "single",
+    "stem": "Linux 写时复制（COW）主要用于优化（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "线程同步"
+      },
+      {
+        "key": "B",
+        "text": "fork () 创建进程"
+      },
+      {
+        "key": "C",
+        "text": "内存读写"
+      },
+      {
+        "key": "D",
+        "text": "缺页处理"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0116",
+    "index": 116,
+    "paper": "操作系统题库",
+    "numberInPaper": 116,
+    "type": "single",
+    "stem": "请求分页系统中，进程运行时()",
+    "options": [
+      {
+        "key": "A",
+        "text": "只装入部分页面"
+      },
+      {
+        "key": "B",
+        "text": "按需全部分配"
+      },
+      {
+        "key": "C",
+        "text": "全部装入"
+      },
+      {
+        "key": "D",
+        "text": "全放外存"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0117",
+    "index": 117,
+    "paper": "操作系统题库",
+    "numberInPaper": 117,
+    "type": "single",
+    "stem": "售票员等待“到站停车” 使用的是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "循环判断"
+      },
+      {
+        "key": "B",
+        "text": "V 操作"
+      },
+      {
+        "key": "C",
+        "text": "P 操作"
+      },
+      {
+        "key": "D",
+        "text": "延时等待"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0118",
+    "index": 118,
+    "paper": "操作系统题库",
+    "numberInPaper": 118,
+    "type": "single",
+    "stem": "若信号量 S 初始值为 0，执行一次 V 操作后 S 的值为（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "0"
+      },
+      {
+        "key": "B",
+        "text": "1"
+      },
+      {
+        "key": "C",
+        "text": "2"
+      },
+      {
+        "key": "D",
+        "text": "-1"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0119",
+    "index": 119,
+    "paper": "操作系统题库",
+    "numberInPaper": 119,
+    "type": "single",
+    "stem": "openEuler 中正常终止指定进程的命令是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "rm"
+      },
+      {
+        "key": "B",
+        "text": "kill PID"
+      },
+      {
+        "key": "C",
+        "text": "kill -9 PID"
+      },
+      {
+        "key": "D",
+        "text": "del"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0120",
+    "index": 120,
+    "paper": "操作系统题库",
+    "numberInPaper": 120,
+    "type": "single",
+    "stem": "请求分页的三个特征不包括（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "对换性"
+      },
+      {
+        "key": "B",
+        "text": "多次性"
+      },
+      {
+        "key": "C",
+        "text": "连续性"
+      },
+      {
+        "key": "D",
+        "text": "虚拟性"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0121",
+    "index": 121,
+    "paper": "操作系统题库",
+    "numberInPaper": 121,
+    "type": "single",
+    "stem": "高优先级实时进程可以()低优先级进程",
+    "options": [
+      {
+        "key": "A",
+        "text": "忽略"
+      },
+      {
+        "key": "B",
+        "text": "阻塞"
+      },
+      {
+        "key": "C",
+        "text": "抢占"
+      },
+      {
+        "key": "D",
+        "text": "终止"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0122",
+    "index": 122,
+    "paper": "操作系统题库",
+    "numberInPaper": 122,
+    "type": "single",
+    "stem": "在openEuler中实现进程间互斥，sem_init函数的初始值应设置为()",
+    "options": [
+      {
+        "key": "A",
+        "text": "1"
+      },
+      {
+        "key": "B",
+        "text": "2"
+      },
+      {
+        "key": "C",
+        "text": "0"
+      },
+      {
+        "key": "D",
+        "text": "任意非负整数"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0123",
+    "index": 123,
+    "paper": "操作系统题库",
+    "numberInPaper": 123,
+    "type": "single",
+    "stem": "关于进程阻塞，说法错误的是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "可以被唤醒"
+      },
+      {
+        "key": "B",
+        "text": "会保留 PCB"
+      },
+      {
+        "key": "C",
+        "text": "会释放 CPU"
+      },
+      {
+        "key": "D",
+        "text": "资源被系统回收"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0124",
+    "index": 124,
+    "paper": "操作系统题库",
+    "numberInPaper": 124,
+    "type": "single",
+    "stem": "大多数系统资源(如打印机)不能破坏的条件是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "互斥"
+      },
+      {
+        "key": "B",
+        "text": "占有等待"
+      },
+      {
+        "key": "C",
+        "text": "不剥夺"
+      },
+      {
+        "key": "D",
+        "text": "循环等待"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0125",
+    "index": 125,
+    "paper": "操作系统题库",
+    "numberInPaper": 125,
+    "type": "single",
+    "stem": "命令 sleep 20 的作用是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "终止进程"
+      },
+      {
+        "key": "B",
+        "text": "查看进程"
+      },
+      {
+        "key": "C",
+        "text": "创建进程"
+      },
+      {
+        "key": "D",
+        "text": "让进程阻塞 20 秒"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0126",
+    "index": 126,
+    "paper": "操作系统题库",
+    "numberInPaper": 126,
+    "type": "single",
+    "stem": "分段系统的逻辑地址结构是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "段号 + 页号"
+      },
+      {
+        "key": "B",
+        "text": "页号 + 偏移"
+      },
+      {
+        "key": "C",
+        "text": "块号 + 偏移"
+      },
+      {
+        "key": "D",
+        "text": "段号 + 段内偏移"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0127",
+    "index": 127,
+    "paper": "操作系统题库",
+    "numberInPaper": 127,
+    "type": "single",
+    "stem": "当阻塞进程等待的事件完成后，进程会（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "被唤醒，进入就绪态"
+      },
+      {
+        "key": "B",
+        "text": "继续阻塞"
+      },
+      {
+        "key": "C",
+        "text": "直接运行"
+      },
+      {
+        "key": "D",
+        "text": "被终止"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0128",
+    "index": 128,
+    "paper": "操作系统题库",
+    "numberInPaper": 128,
+    "type": "single",
+    "stem": "逻辑地址是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "物理地址"
+      },
+      {
+        "key": "B",
+        "text": "内存真实地址"
+      },
+      {
+        "key": "C",
+        "text": "磁盘地址"
+      },
+      {
+        "key": "D",
+        "text": "程序使用的相对地址"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0129",
+    "index": 129,
+    "paper": "操作系统题库",
+    "numberInPaper": 129,
+    "type": "single",
+    "stem": "分页系统的逻辑地址结构是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "页号 + 页内偏移"
+      },
+      {
+        "key": "B",
+        "text": "基址 + 限长"
+      },
+      {
+        "key": "C",
+        "text": "段号 + 段内偏移"
+      },
+      {
+        "key": "D",
+        "text": "段号 + 页号"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0130",
+    "index": 130,
+    "paper": "操作系统题库",
+    "numberInPaper": 130,
+    "type": "single",
+    "stem": "在openEuler系统中，多进程并发时，下列哪种时间相关错误会导致信号量同步失效()",
+    "options": [
+      {
+        "key": "A",
+        "text": "信号量初始化时pshared参数设为0"
+      },
+      {
+        "key": "B",
+        "text": "子进程执行P操作后，未及时执行V操作"
+      },
+      {
+        "key": "C",
+        "text": "进程执行时间片分配不均"
+      },
+      {
+        "key": "D",
+        "text": "父进程等待子进程的时间过短，提前销毁信号量"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0131",
+    "index": 131,
+    "paper": "操作系统题库",
+    "numberInPaper": 131,
+    "type": "single",
+    "stem": "PV 操作必须（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "随意使用"
+      },
+      {
+        "key": "B",
+        "text": "成对出现"
+      },
+      {
+        "key": "C",
+        "text": "只使用 V"
+      },
+      {
+        "key": "D",
+        "text": "只使用 P"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0132",
+    "index": 132,
+    "paper": "操作系统题库",
+    "numberInPaper": 132,
+    "type": "single",
+    "stem": "虚拟存储器的最大容量由()决定",
+    "options": [
+      {
+        "key": "A",
+        "text": "物理内存"
+      },
+      {
+        "key": "B",
+        "text": "CPU 速度"
+      },
+      {
+        "key": "C",
+        "text": "磁盘空间"
+      },
+      {
+        "key": "D",
+        "text": "地址结构位数"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0133",
+    "index": 133,
+    "paper": "操作系统题库",
+    "numberInPaper": 133,
+    "type": "single",
+    "stem": "下列不属于死锁解除方法的是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "进程回退"
+      },
+      {
+        "key": "B",
+        "text": "静态分配"
+      },
+      {
+        "key": "C",
+        "text": "撤销进程"
+      },
+      {
+        "key": "D",
+        "text": "剥夺资源"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0134",
+    "index": 134,
+    "paper": "操作系统题库",
+    "numberInPaper": 134,
+    "type": "single",
+    "stem": "进程因为等待 I/O 而暂时放弃 CPU，称为（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "阻塞"
+      },
+      {
+        "key": "B",
+        "text": "终止"
+      },
+      {
+        "key": "C",
+        "text": "挂起"
+      },
+      {
+        "key": "D",
+        "text": "唤醒"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0135",
+    "index": 135,
+    "paper": "操作系统题库",
+    "numberInPaper": 135,
+    "type": "single",
+    "stem": "若信号量S初始值为2，执行一次P操作后，S的值为()",
+    "options": [
+      {
+        "key": "A",
+        "text": "2"
+      },
+      {
+        "key": "B",
+        "text": "1"
+      },
+      {
+        "key": "C",
+        "text": "3"
+      },
+      {
+        "key": "D",
+        "text": "0"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0136",
+    "index": 136,
+    "paper": "操作系统题库",
+    "numberInPaper": 136,
+    "type": "single",
+    "stem": "FCFS 对下列哪类作业最不利()",
+    "options": [
+      {
+        "key": "A",
+        "text": "短作业"
+      },
+      {
+        "key": "B",
+        "text": "后台作业"
+      },
+      {
+        "key": "C",
+        "text": "长作业"
+      },
+      {
+        "key": "D",
+        "text": "I/O 型作业"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0137",
+    "index": 137,
+    "paper": "操作系统题库",
+    "numberInPaper": 137,
+    "type": "single",
+    "stem": "下列哪种现象属于并发程序中典型的时间相关错误()",
+    "options": [
+      {
+        "key": "A",
+        "text": "信号量初始化失败导致编译错误"
+      },
+      {
+        "key": "B",
+        "text": "子进程被父进程正常回收"
+      },
+      {
+        "key": "C",
+        "text": "多线程同时打印，输出信息交织错乱"
+      },
+      {
+        "key": "D",
+        "text": "线程创建时参数传递错误"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0138",
+    "index": 138,
+    "paper": "操作系统题库",
+    "numberInPaper": 138,
+    "type": "single",
+    "stem": "FIFO 算法中，内存块增加缺页率上升称为()",
+    "options": [
+      {
+        "key": "A",
+        "text": "死锁"
+      },
+      {
+        "key": "B",
+        "text": "Belady 异常"
+      },
+      {
+        "key": "C",
+        "text": "抖动"
+      },
+      {
+        "key": "D",
+        "text": "颠簸"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0139",
+    "index": 139,
+    "paper": "操作系统题库",
+    "numberInPaper": 139,
+    "type": "single",
+    "stem": "对信号量 S 执行 P 操作的含义是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "释放一个资源"
+      },
+      {
+        "key": "B",
+        "text": "销毁信号量"
+      },
+      {
+        "key": "C",
+        "text": "初始化信号量"
+      },
+      {
+        "key": "D",
+        "text": "申请一个资源"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0140",
+    "index": 140,
+    "paper": "操作系统题库",
+    "numberInPaper": 140,
+    "type": "single",
+    "stem": "实时操作系统的核心要求是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "公平性"
+      },
+      {
+        "key": "B",
+        "text": "高响应确定性"
+      },
+      {
+        "key": "C",
+        "text": "节省资源"
+      },
+      {
+        "key": "D",
+        "text": "高吞吐量"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0141",
+    "index": 141,
+    "paper": "操作系统题库",
+    "numberInPaper": 141,
+    "type": "single",
+    "stem": "下列哪种存储管理方式支持程序动态链接与共享（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "固定分区"
+      },
+      {
+        "key": "B",
+        "text": "分段"
+      },
+      {
+        "key": "C",
+        "text": "动态分区"
+      },
+      {
+        "key": "D",
+        "text": "分页"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0142",
+    "index": 142,
+    "paper": "操作系统题库",
+    "numberInPaper": 142,
+    "type": "single",
+    "stem": "下列()是请求分段与请求分页共有的硬件支持",
+    "options": [
+      {
+        "key": "A",
+        "text": "缺中断机构"
+      },
+      {
+        "key": "B",
+        "text": "段页寄存器"
+      },
+      {
+        "key": "C",
+        "text": "页表"
+      },
+      {
+        "key": "D",
+        "text": "段表"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0143",
+    "index": 143,
+    "paper": "操作系统题库",
+    "numberInPaper": 143,
+    "type": "single",
+    "stem": "请求分页的特征不包括()",
+    "options": [
+      {
+        "key": "A",
+        "text": "连续性"
+      },
+      {
+        "key": "B",
+        "text": "多次性"
+      },
+      {
+        "key": "C",
+        "text": "对换性"
+      },
+      {
+        "key": "D",
+        "text": "虚拟性"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0144",
+    "index": 144,
+    "paper": "操作系统题库",
+    "numberInPaper": 144,
+    "type": "single",
+    "stem": "下列会引起进程阻塞的操作是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "运算"
+      },
+      {
+        "key": "B",
+        "text": "循环"
+      },
+      {
+        "key": "C",
+        "text": "打印输出"
+      },
+      {
+        "key": "D",
+        "text": "键盘输入"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0145",
+    "index": 145,
+    "paper": "操作系统题库",
+    "numberInPaper": 145,
+    "type": "single",
+    "stem": "修改普通进程 nice 值的命令是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "chmod"
+      },
+      {
+        "key": "B",
+        "text": "chown"
+      },
+      {
+        "key": "C",
+        "text": "renice"
+      },
+      {
+        "key": "D",
+        "text": "top"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0146",
+    "index": 146,
+    "paper": "操作系统题库",
+    "numberInPaper": 146,
+    "type": "single",
+    "stem": "下列哪种存储管理方式没有外部碎片（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "动态分区"
+      },
+      {
+        "key": "B",
+        "text": "分段"
+      },
+      {
+        "key": "C",
+        "text": "分页"
+      },
+      {
+        "key": "D",
+        "text": "固定分区"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0147",
+    "index": 147,
+    "paper": "操作系统题库",
+    "numberInPaper": 147,
+    "type": "single",
+    "stem": "当信号量 S < 0 时，执行 P 操作会使进程（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "退出程序"
+      },
+      {
+        "key": "B",
+        "text": "进入阻塞队列"
+      },
+      {
+        "key": "C",
+        "text": "继续运行"
+      },
+      {
+        "key": "D",
+        "text": "执行 V 操作"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0148",
+    "index": 148,
+    "paper": "操作系统题库",
+    "numberInPaper": 148,
+    "type": "single",
+    "stem": "多个进程相互等待对方资源，无限期僵持的状态称为()",
+    "options": [
+      {
+        "key": "A",
+        "text": "中断"
+      },
+      {
+        "key": "B",
+        "text": "阻塞"
+      },
+      {
+        "key": "C",
+        "text": "饥饿"
+      },
+      {
+        "key": "D",
+        "text": "死锁"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0149",
+    "index": 149,
+    "paper": "操作系统题库",
+    "numberInPaper": 149,
+    "type": "single",
+    "stem": "动态重定位的地址计算公式是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "物理地址 = 页号 × 大小 + 偏移"
+      },
+      {
+        "key": "B",
+        "text": "物理地址 = 块号 × 大小 + 偏移"
+      },
+      {
+        "key": "C",
+        "text": "物理地址 = 逻辑地址 + 基址"
+      },
+      {
+        "key": "D",
+        "text": "物理地址 = 段基址 + 偏移"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0150",
+    "index": 150,
+    "paper": "操作系统题库",
+    "numberInPaper": 150,
+    "type": "single",
+    "stem": "虚拟内存的理论依据是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "并发性原理"
+      },
+      {
+        "key": "B",
+        "text": "动态性原理"
+      },
+      {
+        "key": "C",
+        "text": "局部性原理"
+      },
+      {
+        "key": "D",
+        "text": "全局性原理"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0151",
+    "index": 151,
+    "paper": "操作系统题库",
+    "numberInPaper": 151,
+    "type": "single",
+    "stem": "银行家算法的核心是判断分配后系统是否()",
+    "options": [
+      {
+        "key": "A",
+        "text": "有进程完成"
+      },
+      {
+        "key": "B",
+        "text": "无循环等待"
+      },
+      {
+        "key": "C",
+        "text": "有空闲资源"
+      },
+      {
+        "key": "D",
+        "text": "安全"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0152",
+    "index": 152,
+    "paper": "操作系统题库",
+    "numberInPaper": 152,
+    "type": "single",
+    "stem": "页表的作用是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "内存分配记录"
+      },
+      {
+        "key": "B",
+        "text": "段号→基址映射"
+      },
+      {
+        "key": "C",
+        "text": "权限记录"
+      },
+      {
+        "key": "D",
+        "text": "页号→物理块号映射"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0153",
+    "index": 153,
+    "paper": "操作系统题库",
+    "numberInPaper": 153,
+    "type": "single",
+    "stem": "查看 Linux 系统消息队列状态的命令是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "ls"
+      },
+      {
+        "key": "B",
+        "text": "ps"
+      },
+      {
+        "key": "C",
+        "text": "ipcrm"
+      },
+      {
+        "key": "D",
+        "text": "ipcs -q"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0154",
+    "index": 154,
+    "paper": "操作系统题库",
+    "numberInPaper": 154,
+    "type": "single",
+    "stem": "时间片太大时，RR 调度将退化为()",
+    "options": [
+      {
+        "key": "A",
+        "text": "SSTF"
+      },
+      {
+        "key": "B",
+        "text": "FCFS"
+      },
+      {
+        "key": "C",
+        "text": "优先级调度"
+      },
+      {
+        "key": "D",
+        "text": "SJF"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0155",
+    "index": 155,
+    "paper": "操作系统题库",
+    "numberInPaper": 155,
+    "type": "single",
+    "stem": "openEuler系统中，编译信号量相关程序时，必须添加的链接选项是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "-lunistd"
+      },
+      {
+        "key": "B",
+        "text": "-lstdio"
+      },
+      {
+        "key": "C",
+        "text": "-lpthread"
+      },
+      {
+        "key": "D",
+        "text": "-lsem"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0156",
+    "index": 156,
+    "paper": "操作系统题库",
+    "numberInPaper": 156,
+    "type": "single",
+    "stem": "虚拟内存的最大容量主要受（）限制",
+    "options": [
+      {
+        "key": "A",
+        "text": "地址总线位数"
+      },
+      {
+        "key": "B",
+        "text": "CPU 频率"
+      },
+      {
+        "key": "C",
+        "text": "物理内存大小"
+      },
+      {
+        "key": "D",
+        "text": "磁盘空间"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0157",
+    "index": 157,
+    "paper": "操作系统题库",
+    "numberInPaper": 157,
+    "type": "single",
+    "stem": "fork 函数在子进程中返回的值是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "父进程 PID"
+      },
+      {
+        "key": "B",
+        "text": "随机数"
+      },
+      {
+        "key": "C",
+        "text": "0"
+      },
+      {
+        "key": "D",
+        "text": "-1"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0158",
+    "index": 158,
+    "paper": "操作系统题库",
+    "numberInPaper": 158,
+    "type": "single",
+    "stem": "Linux 实时进程的优先级范围是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "1~99"
+      },
+      {
+        "key": "B",
+        "text": "100~139"
+      },
+      {
+        "key": "C",
+        "text": "-20~19"
+      },
+      {
+        "key": "D",
+        "text": "0~100"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0159",
+    "index": 159,
+    "paper": "操作系统题库",
+    "numberInPaper": 159,
+    "type": "single",
+    "stem": "引入分页存储管理的主要目的是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "加快速度"
+      },
+      {
+        "key": "B",
+        "text": "解决外部碎片"
+      },
+      {
+        "key": "C",
+        "text": "动态链接"
+      },
+      {
+        "key": "D",
+        "text": "便于共享"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0160",
+    "index": 160,
+    "paper": "操作系统题库",
+    "numberInPaper": 160,
+    "type": "single",
+    "stem": "PV操作的核心原则是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "多个P操作可以对应一个V操作"
+      },
+      {
+        "key": "B",
+        "text": "可以只执行P操作，不执行V操作"
+      },
+      {
+        "key": "C",
+        "text": "PV操作必须成对出现"
+      },
+      {
+        "key": "D",
+        "text": "可以只执行V操作，不执行P操作"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0161",
+    "index": 161,
+    "paper": "操作系统题库",
+    "numberInPaper": 161,
+    "type": "single",
+    "stem": "动态分区分配时，将空闲区按地址从小到大排列的算法是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "首次适应"
+      },
+      {
+        "key": "B",
+        "text": "最佳适应"
+      },
+      {
+        "key": "C",
+        "text": "快速适应"
+      },
+      {
+        "key": "D",
+        "text": "最坏适应"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0162",
+    "index": 162,
+    "paper": "操作系统题库",
+    "numberInPaper": 162,
+    "type": "single",
+    "stem": "FCFS 调度算法的特点是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "短作业优先"
+      },
+      {
+        "key": "B",
+        "text": "先来先服务"
+      },
+      {
+        "key": "C",
+        "text": "时间片轮转"
+      },
+      {
+        "key": "D",
+        "text": "优先级抢占"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0163",
+    "index": 163,
+    "paper": "操作系统题库",
+    "numberInPaper": 163,
+    "type": "single",
+    "stem": "短作业优先 SJF 调度的优点是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "平均周转时间最短"
+      },
+      {
+        "key": "B",
+        "text": "公平"
+      },
+      {
+        "key": "C",
+        "text": "实现简单"
+      },
+      {
+        "key": "D",
+        "text": "不会饥饿"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0164",
+    "index": 164,
+    "paper": "操作系统题库",
+    "numberInPaper": 164,
+    "type": "single",
+    "stem": "下列场景中，适合使用计数信号量的是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "确保同一时间只有一个线程进入临界区"
+      },
+      {
+        "key": "B",
+        "text": "实现线程间的互斥锁功能"
+      },
+      {
+        "key": "C",
+        "text": "保护单个临界资源的访问"
+      },
+      {
+        "key": "D",
+        "text": "控制多个进程同时访问一个文件(最多3个)"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0165",
+    "index": 165,
+    "paper": "操作系统题库",
+    "numberInPaper": 165,
+    "type": "single",
+    "stem": "SCHED_RR 是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "实时时间片轮转"
+      },
+      {
+        "key": "B",
+        "text": "先来先服务"
+      },
+      {
+        "key": "C",
+        "text": "短作业优先"
+      },
+      {
+        "key": "D",
+        "text": "非抢占调度"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0166",
+    "index": 166,
+    "paper": "操作系统题库",
+    "numberInPaper": 166,
+    "type": "single",
+    "stem": "临界区的核心特点是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "是进程/线程中无需保护的代码段"
+      },
+      {
+        "key": "B",
+        "text": "可由多个进程/线程同时访问"
+      },
+      {
+        "key": "C",
+        "text": "是多个进程/线程共享的、不可同时访问的代码段"
+      },
+      {
+        "key": "D",
+        "text": "只能由一个进程访问，不能由线程访问"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0167",
+    "index": 167,
+    "paper": "操作系统题库",
+    "numberInPaper": 167,
+    "type": "single",
+    "stem": "PV操作中，P操作的核心作用是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "申请资源，若资源不足则阻塞"
+      },
+      {
+        "key": "B",
+        "text": "初始化信号量"
+      },
+      {
+        "key": "C",
+        "text": "销毁信号量"
+      },
+      {
+        "key": "D",
+        "text": "释放资源，唤醒阻塞进程/线程"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0168",
+    "index": 168,
+    "paper": "操作系统题库",
+    "numberInPaper": 168,
+    "type": "single",
+    "stem": "生产者消费者问题中，消费者取产品前应（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "V (空缓冲区)"
+      },
+      {
+        "key": "B",
+        "text": "P (空缓冲区)"
+      },
+      {
+        "key": "C",
+        "text": "V (满缓冲区)"
+      },
+      {
+        "key": "D",
+        "text": "P (满缓冲区)"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0169",
+    "index": 169,
+    "paper": "操作系统题库",
+    "numberInPaper": 169,
+    "type": "single",
+    "stem": "下列关于信号量的定义，说法正确的是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "信号量是用于实现进程间通信的文件"
+      },
+      {
+        "key": "B",
+        "text": "信号量的值只能为0或1"
+      },
+      {
+        "key": "C",
+        "text": "信号量只能用于线程间同步，不能用于进程间"
+      },
+      {
+        "key": "D",
+        "text": "信号量是一个计数器，用于实现进程/线程间同步与互斥"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0170",
+    "index": 170,
+    "paper": "操作系统题库",
+    "numberInPaper": 170,
+    "type": "single",
+    "stem": "SCHED_RR 中，同优先级进程()",
+    "options": [
+      {
+        "key": "A",
+        "text": "一直抢占"
+      },
+      {
+        "key": "B",
+        "text": "同时运行"
+      },
+      {
+        "key": "C",
+        "text": "随机运行"
+      },
+      {
+        "key": "D",
+        "text": "按时间片轮转"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0171",
+    "index": 171,
+    "paper": "操作系统题库",
+    "numberInPaper": 171,
+    "type": "single",
+    "stem": "下列属于非抢占式调度的是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "FCFS"
+      },
+      {
+        "key": "B",
+        "text": "实时 FIFO"
+      },
+      {
+        "key": "C",
+        "text": "RR"
+      },
+      {
+        "key": "D",
+        "text": "抢占式优先级"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0172",
+    "index": 172,
+    "paper": "操作系统题库",
+    "numberInPaper": 172,
+    "type": "single",
+    "stem": "虚拟存储器的理论基础是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "全局性"
+      },
+      {
+        "key": "B",
+        "text": "局部性"
+      },
+      {
+        "key": "C",
+        "text": "并发性"
+      },
+      {
+        "key": "D",
+        "text": "动态性"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0173",
+    "index": 173,
+    "paper": "操作系统题库",
+    "numberInPaper": 173,
+    "type": "single",
+    "stem": "段表的主要作用是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "内存分配"
+      },
+      {
+        "key": "B",
+        "text": "页号→块号映射"
+      },
+      {
+        "key": "C",
+        "text": "段号→段基址映射"
+      },
+      {
+        "key": "D",
+        "text": "缺页处理"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0174",
+    "index": 174,
+    "paper": "操作系统题库",
+    "numberInPaper": 174,
+    "type": "single",
+    "stem": "在请求分页系统中，修改位的作用是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "记录页号"
+      },
+      {
+        "key": "B",
+        "text": "判断页面是否被访问"
+      },
+      {
+        "key": "C",
+        "text": "记录权限"
+      },
+      {
+        "key": "D",
+        "text": "判断页面是否需要写回磁盘"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0175",
+    "index": 175,
+    "paper": "操作系统题库",
+    "numberInPaper": 175,
+    "type": "single",
+    "stem": "openEuler 中强制杀死进程的命令是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "kill PID"
+      },
+      {
+        "key": "B",
+        "text": "kill -9 PID"
+      },
+      {
+        "key": "C",
+        "text": "exit"
+      },
+      {
+        "key": "D",
+        "text": "stop"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0176",
+    "index": 176,
+    "paper": "操作系统题库",
+    "numberInPaper": 176,
+    "type": "single",
+    "stem": "最便于实现程序共享与保护的是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "动态分区"
+      },
+      {
+        "key": "B",
+        "text": "分段"
+      },
+      {
+        "key": "C",
+        "text": "固定分区"
+      },
+      {
+        "key": "D",
+        "text": "分页"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0177",
+    "index": 177,
+    "paper": "操作系统题库",
+    "numberInPaper": 177,
+    "type": "single",
+    "stem": "若 S = -3，表示等待该信号量的进程数为（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "1 个"
+      },
+      {
+        "key": "B",
+        "text": "0 个"
+      },
+      {
+        "key": "C",
+        "text": "3 个"
+      },
+      {
+        "key": "D",
+        "text": "-3 个"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0178",
+    "index": 178,
+    "paper": "操作系统题库",
+    "numberInPaper": 178,
+    "type": "single",
+    "stem": "前驱图中，“后操作” 之前必须对同步信号量执行（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "等待"
+      },
+      {
+        "key": "B",
+        "text": "V 操作"
+      },
+      {
+        "key": "C",
+        "text": "P 操作"
+      },
+      {
+        "key": "D",
+        "text": "唤醒"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0179",
+    "index": 179,
+    "paper": "操作系统题库",
+    "numberInPaper": 179,
+    "type": "single",
+    "stem": "规定哲学家奇偶叉顺序不同，可以()",
+    "options": [
+      {
+        "key": "A",
+        "text": "破坏死锁条件"
+      },
+      {
+        "key": "B",
+        "text": "加快进餐"
+      },
+      {
+        "key": "C",
+        "text": "增加互斥"
+      },
+      {
+        "key": "D",
+        "text": "无意义"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0180",
+    "index": 180,
+    "paper": "操作系统题库",
+    "numberInPaper": 180,
+    "type": "single",
+    "stem": "Linux 实时调度策略不包括()",
+    "options": [
+      {
+        "key": "A",
+        "text": "以上都不是"
+      },
+      {
+        "key": "B",
+        "text": "SCHED_FIFO"
+      },
+      {
+        "key": "C",
+        "text": "SCHED_OTHER"
+      },
+      {
+        "key": "D",
+        "text": "SCHED_RR"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0181",
+    "index": 181,
+    "paper": "操作系统题库",
+    "numberInPaper": 181,
+    "type": "single",
+    "stem": "生产者 — 消费者中，P 操作顺序颠倒最容易导致()",
+    "options": [
+      {
+        "key": "A",
+        "text": "系统加速"
+      },
+      {
+        "key": "B",
+        "text": "资源利用率提高"
+      },
+      {
+        "key": "C",
+        "text": "死锁"
+      },
+      {
+        "key": "D",
+        "text": "无影响"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0182",
+    "index": 182,
+    "paper": "操作系统题库",
+    "numberInPaper": 182,
+    "type": "single",
+    "stem": "msgrcv 中，消息类型 type=0 表示（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "接收队列第一条消息"
+      },
+      {
+        "key": "B",
+        "text": "不接收"
+      },
+      {
+        "key": "C",
+        "text": "接收指定类型"
+      },
+      {
+        "key": "D",
+        "text": "接收最小类型"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0183",
+    "index": 183,
+    "paper": "操作系统题库",
+    "numberInPaper": 183,
+    "type": "single",
+    "stem": "操作系统将逻辑地址转换为物理地址的过程称为（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "内存保护"
+      },
+      {
+        "key": "B",
+        "text": "内存回收"
+      },
+      {
+        "key": "C",
+        "text": "内存分配"
+      },
+      {
+        "key": "D",
+        "text": "地址映射"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0184",
+    "index": 184,
+    "paper": "操作系统题库",
+    "numberInPaper": 184,
+    "type": "single",
+    "stem": "二进制信号量的取值范围是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "任意整数"
+      },
+      {
+        "key": "B",
+        "text": "大于0的整数"
+      },
+      {
+        "key": "C",
+        "text": "0或1"
+      },
+      {
+        "key": "D",
+        "text": "非负整数"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0185",
+    "index": 185,
+    "paper": "操作系统题库",
+    "numberInPaper": 185,
+    "type": "single",
+    "stem": "银行家算法中，Available 数组表示()",
+    "options": [
+      {
+        "key": "A",
+        "text": "已分配资源"
+      },
+      {
+        "key": "B",
+        "text": "系统当前可用资源"
+      },
+      {
+        "key": "C",
+        "text": "进程最大需求"
+      },
+      {
+        "key": "D",
+        "text": "还需资源"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0186",
+    "index": 186,
+    "paper": "操作系统题库",
+    "numberInPaper": 186,
+    "type": "single",
+    "stem": "固定分区存储管理最大的问题是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "共享困难"
+      },
+      {
+        "key": "B",
+        "text": "内部碎片"
+      },
+      {
+        "key": "C",
+        "text": "复杂"
+      },
+      {
+        "key": "D",
+        "text": "外部碎片"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0187",
+    "index": 187,
+    "paper": "操作系统题库",
+    "numberInPaper": 187,
+    "type": "single",
+    "stem": "SCHED_FIFO 调度属于()",
+    "options": [
+      {
+        "key": "A",
+        "text": "公平调度"
+      },
+      {
+        "key": "B",
+        "text": "短作业优先"
+      },
+      {
+        "key": "C",
+        "text": "先进先出实时调度"
+      },
+      {
+        "key": "D",
+        "text": "时间片轮转"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0188",
+    "index": 188,
+    "paper": "操作系统题库",
+    "numberInPaper": 188,
+    "type": "single",
+    "stem": "SCHED_FIFO 进程一旦获得 CPU 将()",
+    "options": [
+      {
+        "key": "A",
+        "text": "时间片到即让出"
+      },
+      {
+        "key": "B",
+        "text": "一直运行到结束 / 阻塞 / 被抢占"
+      },
+      {
+        "key": "C",
+        "text": "随机让出"
+      },
+      {
+        "key": "D",
+        "text": "自动休眠"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0189",
+    "index": 189,
+    "paper": "操作系统题库",
+    "numberInPaper": 189,
+    "type": "single",
+    "stem": "pipe (fd) 中，用于读管道的文件描述符是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "fd [0]"
+      },
+      {
+        "key": "B",
+        "text": "fd [2]"
+      },
+      {
+        "key": "C",
+        "text": "fd [1]"
+      },
+      {
+        "key": "D",
+        "text": "fd"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0190",
+    "index": 190,
+    "paper": "操作系统题库",
+    "numberInPaper": 190,
+    "type": "single",
+    "stem": "实时进程与普通进程相比()",
+    "options": [
+      {
+        "key": "A",
+        "text": "优先级相同"
+      },
+      {
+        "key": "B",
+        "text": "优先级更低"
+      },
+      {
+        "key": "C",
+        "text": "不一定"
+      },
+      {
+        "key": "D",
+        "text": "优先级更高"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0191",
+    "index": 191,
+    "paper": "操作系统题库",
+    "numberInPaper": 191,
+    "type": "single",
+    "stem": "分时操作系统通常采用的调度算法是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "FCFS"
+      },
+      {
+        "key": "B",
+        "text": "优先级"
+      },
+      {
+        "key": "C",
+        "text": "RR"
+      },
+      {
+        "key": "D",
+        "text": "SJF"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0192",
+    "index": 192,
+    "paper": "操作系统题库",
+    "numberInPaper": 192,
+    "type": "single",
+    "stem": "下列关于同步与互斥的说法，错误的是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "互斥是指多个进程/线程不能同时进入临界区"
+      },
+      {
+        "key": "B",
+        "text": "互斥和同步是完全独立的，没有关联"
+      },
+      {
+        "key": "C",
+        "text": "同步是指控制多个进程/线程的执行顺序"
+      },
+      {
+        "key": "D",
+        "text": "信号量既能实现互斥，也能实现同步"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0193",
+    "index": 193,
+    "paper": "操作系统题库",
+    "numberInPaper": 193,
+    "type": "single",
+    "stem": "PV操作不成对会导致的问题是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "程序编译错误"
+      },
+      {
+        "key": "B",
+        "text": "信号量初始化失败"
+      },
+      {
+        "key": "C",
+        "text": "临界区保护失效"
+      },
+      {
+        "key": "D",
+        "text": "进程/线程死锁"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0194",
+    "index": 194,
+    "paper": "操作系统题库",
+    "numberInPaper": 194,
+    "type": "single",
+    "stem": "删除消息队列使用 msgctl 的命令是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "IPC_SET"
+      },
+      {
+        "key": "B",
+        "text": "IPC_STAT"
+      },
+      {
+        "key": "C",
+        "text": "IPC_RMID"
+      },
+      {
+        "key": "D",
+        "text": "IPC_NOWAIT"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0195",
+    "index": 195,
+    "paper": "操作系统题库",
+    "numberInPaper": 195,
+    "type": "single",
+    "stem": "理想最优、但无法实际实现的页面置换算法是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "FIFO"
+      },
+      {
+        "key": "B",
+        "text": "LRU"
+      },
+      {
+        "key": "C",
+        "text": "OPT"
+      },
+      {
+        "key": "D",
+        "text": "CLOCK"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0196",
+    "index": 196,
+    "paper": "操作系统题库",
+    "numberInPaper": 196,
+    "type": "single",
+    "stem": "从无名管道读取数据的系统调用是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "read"
+      },
+      {
+        "key": "B",
+        "text": "write"
+      },
+      {
+        "key": "C",
+        "text": "msgget"
+      },
+      {
+        "key": "D",
+        "text": "pipe"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0197",
+    "index": 197,
+    "paper": "操作系统题库",
+    "numberInPaper": 197,
+    "type": "single",
+    "stem": "动态分区分配时，按地址从小到大查找的算法是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "最坏适应"
+      },
+      {
+        "key": "B",
+        "text": "首次适应"
+      },
+      {
+        "key": "C",
+        "text": "快速适应"
+      },
+      {
+        "key": "D",
+        "text": "最佳适应"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0198",
+    "index": 198,
+    "paper": "操作系统题库",
+    "numberInPaper": 198,
+    "type": "single",
+    "stem": "死锁避免与死锁检测的主要区别是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "避免动态判断安全，检测事后检查"
+      },
+      {
+        "key": "B",
+        "text": "避免允许死锁，检测不允许"
+      },
+      {
+        "key": "C",
+        "text": "两者完全一样"
+      },
+      {
+        "key": "D",
+        "text": "检测破坏条件，避免不破坏"
+      }
+    ],
+    "answers": [
+      "A"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0199",
+    "index": 199,
+    "paper": "操作系统题库",
+    "numberInPaper": 199,
+    "type": "single",
+    "stem": "死锁产生的四个必要条件中，不包括()",
+    "options": [
+      {
+        "key": "A",
+        "text": "互斥"
+      },
+      {
+        "key": "B",
+        "text": "占有且等待"
+      },
+      {
+        "key": "C",
+        "text": "循环等待"
+      },
+      {
+        "key": "D",
+        "text": "可剥夺"
+      }
+    ],
+    "answers": [
+      "D"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0200",
+    "index": 200,
+    "paper": "操作系统题库",
+    "numberInPaper": 200,
+    "type": "single",
+    "stem": "下列关于消息队列的标识，正确的是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "用文件名标识"
+      },
+      {
+        "key": "B",
+        "text": "用线程 ID 标识"
+      },
+      {
+        "key": "C",
+        "text": "用 key 标识"
+      },
+      {
+        "key": "D",
+        "text": "用 PID 标识"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0201",
+    "index": 201,
+    "paper": "操作系统题库",
+    "numberInPaper": 201,
+    "type": "single",
+    "stem": "哲学家进餐中，最多允许 4 人同时拿左叉，目的是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "提高速度"
+      },
+      {
+        "key": "B",
+        "text": "节省资源"
+      },
+      {
+        "key": "C",
+        "text": "破坏循环等待，防止死锁"
+      },
+      {
+        "key": "D",
+        "text": "简化代码"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0202",
+    "index": 202,
+    "paper": "操作系统题库",
+    "numberInPaper": 202,
+    "type": "single",
+    "stem": "分页系统的逻辑地址结构是（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "基址 + 限长"
+      },
+      {
+        "key": "B",
+        "text": "页号 + 页内偏移"
+      },
+      {
+        "key": "C",
+        "text": "段号 + 页号"
+      },
+      {
+        "key": "D",
+        "text": "段号 + 段内偏移"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0203",
+    "index": 203,
+    "paper": "操作系统题库",
+    "numberInPaper": 203,
+    "type": "single",
+    "stem": "Linux 最常用的页面置换算法是()",
+    "options": [
+      {
+        "key": "A",
+        "text": "随机"
+      },
+      {
+        "key": "B",
+        "text": "FIFO"
+      },
+      {
+        "key": "C",
+        "text": "LRU"
+      },
+      {
+        "key": "D",
+        "text": "OPT"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0204",
+    "index": 204,
+    "paper": "操作系统题库",
+    "numberInPaper": 204,
+    "type": "single",
+    "stem": "带权周转时间等于()",
+    "options": [
+      {
+        "key": "A",
+        "text": "周转时间 / 到达时间"
+      },
+      {
+        "key": "B",
+        "text": "周转时间 / 服务时间"
+      },
+      {
+        "key": "C",
+        "text": "服务时间 / 周转时间"
+      },
+      {
+        "key": "D",
+        "text": "等待时间 / 服务时间"
+      }
+    ],
+    "answers": [
+      "B"
+    ],
+    "image": null
+  },
+  {
+    "id": "OS0205",
+    "index": 205,
+    "paper": "操作系统题库",
+    "numberInPaper": 205,
+    "type": "single",
+    "stem": "分页存储管理中，页面的大小通常由什么决定（）",
+    "options": [
+      {
+        "key": "A",
+        "text": "编译器"
+      },
+      {
+        "key": "B",
+        "text": "操作系统"
+      },
+      {
+        "key": "C",
+        "text": "硬件架构"
+      },
+      {
+        "key": "D",
+        "text": "用户程序"
+      }
+    ],
+    "answers": [
+      "C"
+    ],
+    "image": null
+  }
+]

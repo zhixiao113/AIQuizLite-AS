@@ -1,0 +1,279 @@
+E:\project-bs\AIQuizLite-AS\app\src\main\java\com\example\aiquizlite\Question.java:95: Warning: Implicitly using the default locale is a common source of bugs: Use toLowerCase(Locale) instead. For strings meant to be internal use Locale.ROOT, otherwise Locale.getDefault(). [DefaultLocale]
+            String normalized = rawType.trim().toLowerCase();
+                                               ~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\java\com\example\aiquizlite\Question.java:122: Warning: Implicitly using the default locale is a common source of bugs: Use toLowerCase(Locale) instead. For strings meant to be internal use Locale.ROOT, otherwise Locale.getDefault(). [DefaultLocale]
+        return rawType == null ? "single" : rawType.trim().toLowerCase();
+                                                           ~~~~~~~~~~~
+
+   Explanation for issues of type "DefaultLocale":
+   Calling String#toLowerCase() or #toUpperCase() without specifying an
+   explicit locale is a common source of bugs. The reason for that is that
+   those methods will use the current locale on the user's device, and even
+   though the code appears to work correctly when you are developing the app,
+   it will fail in some locales. For example, in the Turkish locale, the
+   uppercase replacement for i is not I.
+
+   If you want the methods to just perform ASCII replacement, for example to
+   convert an enum name, call String#toUpperCase(Locale.ROOT) instead. If you
+   really want to use the current locale, call
+   String#toUpperCase(Locale.getDefault()) instead.
+
+   https://developer.android.com/reference/java/util/Locale.html#default_locale
+
+E:\project-bs\AIQuizLite-AS\app\build.gradle:59: Warning: A newer version of com.google.android.material:material than 1.10.0 is available: 1.11.0 [GradleDependency]
+    implementation 'com.google.android.material:material:1.10.0'
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\build.gradle:60: Warning: A newer version of androidx.activity:activity than 1.8.0 is available: 1.12.2 [GradleDependency]
+    implementation 'androidx.activity:activity:1.8.0'
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "GradleDependency":
+   This detector looks for usages of libraries where the version you are using
+   is not the current stable release. Using older versions is fine, and there
+   are cases where you deliberately want to stick with an older version.
+   However, you may simply not be aware that a more recent version is
+   available, and that is what this lint check helps find.
+
+E:\project-bs\AIQuizLite-AS\app\src\main\java\com\example\aiquizlite\DailyStatsChartView.java:98: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+        Path path = new Path();
+                    ~~~~~~~~~~
+
+   Explanation for issues of type "DrawAllocation":
+   You should avoid allocating objects during a drawing or layout operation.
+   These are called frequently, so a smooth UI can be interrupted by garbage
+   collection pauses caused by the object allocations.
+
+   The way this is generally handled is to allocate the needed objects up
+   front and to reuse them for each drawing operation.
+
+   Some methods allocate memory on your behalf (such as Bitmap.create), and
+   these should be handled in the same way.
+
+E:\project-bs\AIQuizLite-AS\app\src\main\res\values\themes.xml:12: Warning: Unnecessary; SDK_INT is always >= 23 [ObsoleteSdkInt]
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+                                                  ~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "ObsoleteSdkInt":
+   This check flags version checks that are not necessary, because the
+   minSdkVersion (or surrounding known API level) is already at least as high
+   as the version checked for.
+
+   Similarly, it also looks for resources in -vNN folders, such as values-v14
+   where the version qualifier is less than or equal to the minSdkVersion,
+   where the contents should be merged into the best folder.
+
+E:\project-bs\AIQuizLite-AS\app\src\main\res\drawable\btn_primary.xml:2: Warning: The resource R.drawable.btn_primary appears to be unused [UnusedResources]
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+^
+E:\project-bs\AIQuizLite-AS\app\src\main\res\drawable\btn_success.xml:2: Warning: The resource R.drawable.btn_success appears to be unused [UnusedResources]
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+^
+E:\project-bs\AIQuizLite-AS\app\src\main\res\values\colors.xml:4: Warning: The resource R.color.brand_primary_light appears to be unused [UnusedResources]
+    <color name="brand_primary_light">#3B82F6</color>     <!-- Lighter variant for hover states -->
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\res\values\colors.xml:10: Warning: The resource R.color.brand_warning appears to be unused [UnusedResources]
+    <color name="brand_warning">#F59E0B</color>           <!-- Amber - Attention -->
+           ~~~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\res\values\colors.xml:16: Warning: The resource R.color.brand_text_light appears to be unused [UnusedResources]
+    <color name="brand_text_light">#D1D5DB</color>        <!-- Light text - Gray 300 -->
+           ~~~~~~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\res\values\colors.xml:21: Warning: The resource R.color.brand_card_hover appears to be unused [UnusedResources]
+    <color name="brand_card_hover">#F3F4F6</color>        <!-- Card hover state - Gray 100 -->
+           ~~~~~~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\res\values\colors.xml:25: Warning: The resource R.color.brand_border_light appears to be unused [UnusedResources]
+    <color name="brand_border_light">#F3F4F6</color>      <!-- Light border - Gray 100 -->
+           ~~~~~~~~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\res\values\colors.xml:26: Warning: The resource R.color.brand_divider appears to be unused [UnusedResources]
+    <color name="brand_divider">#E5E7EB</color>           <!-- Divider - Gray 200 -->
+           ~~~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\res\values\colors.xml:29: Warning: The resource R.color.brand_cream appears to be unused [UnusedResources]
+    <color name="brand_cream">#F9FAFB</color>
+           ~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\res\values\colors.xml:30: Warning: The resource R.color.brand_orange appears to be unused [UnusedResources]
+    <color name="brand_orange">#2563EB</color>
+           ~~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\res\values\colors.xml:31: Warning: The resource R.color.brand_red appears to be unused [UnusedResources]
+    <color name="brand_red">#EF4444</color>
+           ~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\res\values\colors.xml:32: Warning: The resource R.color.brand_green appears to be unused [UnusedResources]
+    <color name="brand_green">#10B981</color>
+           ~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\res\values\colors.xml:33: Warning: The resource R.color.brand_muted appears to be unused [UnusedResources]
+    <color name="brand_muted">#4B5563</color>
+           ~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\res\values\colors.xml:34: Warning: The resource R.color.brand_line appears to be unused [UnusedResources]
+    <color name="brand_line">#E5E7EB</color>
+           ~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\res\values\strings.xml:10: Warning: The resource R.string.finish_session appears to be unused [UnusedResources]
+    <string name="finish_session">完成</string>
+            ~~~~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\res\values\strings.xml:17: Warning: The resource R.string.latest_correct appears to be unused [UnusedResources]
+    <string name="latest_correct">最近答对</string>
+            ~~~~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\res\values\strings.xml:18: Warning: The resource R.string.latest_wrong appears to be unused [UnusedResources]
+    <string name="latest_wrong">最近答错</string>
+            ~~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\res\values\strings.xml:19: Warning: The resource R.string.latest_accuracy appears to be unused [UnusedResources]
+    <string name="latest_accuracy">最近正确率</string>
+            ~~~~~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\res\values\themes.xml:22: Warning: The resource R.style.TextAppearance_App_Title appears to be unused [UnusedResources]
+    <style name="TextAppearance.App.Title" parent="TextAppearance.MaterialComponents.Headline5">
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\res\values\themes.xml:28: Warning: The resource R.style.TextAppearance_App_Subtitle appears to be unused [UnusedResources]
+    <style name="TextAppearance.App.Subtitle" parent="TextAppearance.MaterialComponents.Subtitle1">
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\res\values\themes.xml:39: Warning: The resource R.style.TextAppearance_App_Caption appears to be unused [UnusedResources]
+    <style name="TextAppearance.App.Caption" parent="TextAppearance.MaterialComponents.Caption">
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\res\values\themes.xml:45: Warning: The resource R.style.CardStyle_Primary appears to be unused [UnusedResources]
+    <style name="CardStyle.Primary" parent="Widget.MaterialComponents.CardView">
+           ~~~~~~~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\res\values\themes.xml:53: Warning: The resource R.style.CardStyle_Elevated appears to be unused [UnusedResources]
+    <style name="CardStyle.Elevated" parent="Widget.MaterialComponents.CardView">
+           ~~~~~~~~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\res\values\themes.xml:104: Warning: The resource R.style.OptionStyle_RadioButton appears to be unused [UnusedResources]
+    <style name="OptionStyle.RadioButton" parent="Widget.MaterialComponents.CompoundButton.RadioButton">
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\res\values\themes.xml:111: Warning: The resource R.style.OptionStyle_CheckBox appears to be unused [UnusedResources]
+    <style name="OptionStyle.CheckBox" parent="Widget.MaterialComponents.CompoundButton.CheckBox">
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "UnusedResources":
+   Unused resources make applications larger and slow down builds.
+
+
+   The unused resource check can ignore tests. If you want to include
+   resources that are only referenced from tests, consider packaging them in a
+   test source set instead.
+
+   You can include test sources in the unused resource check by setting the
+   system property lint.unused-resources.include-tests =true, and to exclude
+   them (usually for performance reasons), use
+   lint.unused-resources.exclude-tests =true.
+   ,
+
+E:\project-bs\AIQuizLite-AS\app\src\main\java\com\example\aiquizlite\QuestionBankActivity.java:247: Warning: onTouch lambda should call View#performClick when a click is detected [ClickableViewAccessibility]
+        card.setOnTouchListener((view, event) -> {
+                                ^
+E:\project-bs\AIQuizLite-AS\app\src\main\java\com\example\aiquizlite\QuizActivity.java:565: Warning: Custom view `ScrollView` has setOnTouchListener called on it but does not override performClick [ClickableViewAccessibility]
+        contentScrollView.setOnTouchListener((view, event) -> {
+        ^
+E:\project-bs\AIQuizLite-AS\app\src\main\java\com\example\aiquizlite\QuizActivity.java:565: Warning: onTouch lambda should call View#performClick when a click is detected [ClickableViewAccessibility]
+        contentScrollView.setOnTouchListener((view, event) -> {
+                                             ^
+
+   Explanation for issues of type "ClickableViewAccessibility":
+   If a View that overrides onTouchEvent or uses an OnTouchListener does not
+   also implement performClick and call it when clicks are detected, the View
+   may not handle accessibility actions properly. Logic handling the click
+   actions should ideally be placed in View#performClick as some accessibility
+   services invoke performClick when a click action should occur.
+
+E:\project-bs\AIQuizLite-AS\app\src\main\java\com\example\aiquizlite\DailyHistoryActivity.java:33: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+        summaryText.setText(questionBank.getDisplayName() + " · 共 " + records.size() + " 次");
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\java\com\example\aiquizlite\DailyHistoryActivity.java:77: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+                "答对 " + record.getCorrectCount()
+                ^
+E:\project-bs\AIQuizLite-AS\app\src\main\java\com\example\aiquizlite\ImportQuestionBankActivity.java:90: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+        pickButton.setText("选择本地 .json 文件");
+                           ~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\java\com\example\aiquizlite\ImportQuestionBankActivity.java:99: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+        importHintText.setText("选择文件后，下方导入框会显示题目、选项、答案 JSON，可直接查看和修改。");
+                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\java\com\example\aiquizlite\ImportQuestionBankActivity.java:118: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+        formatTitle.setText("JSON 格式要求");
+                            ~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\java\com\example\aiquizlite\ImportQuestionBankActivity.java:167: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+            importHintText.setText("已读取 " + questions.length() + " 道题，可在导入框内修改后点击右上角完成。");
+                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\java\com\example\aiquizlite\MainActivity.java:106: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+                questionBank.getDisplayName()
+                ^
+E:\project-bs\AIQuizLite-AS\app\src\main\java\com\example\aiquizlite\MainActivity.java:111: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+        wrongCountText.setText("错题本当前 " + store.getWrongCount(questionBank.getId()) + " 题");
+                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\java\com\example\aiquizlite\MainActivity.java:233: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+                "答对 " + record.getCorrectCount()
+                ^
+E:\project-bs\AIQuizLite-AS\app\src\main\java\com\example\aiquizlite\QuestionBankActivity.java:166: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+        name.setText(bank.getDisplayName() + (bank.getId().equals(selectedQuestionBankId) ? "  ✓" : ""));
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\java\com\example\aiquizlite\QuizActivity.java:122: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+            modeTitleText.setText(questionBank.getDisplayName() + " · 错题本");
+                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\java\com\example\aiquizlite\QuizActivity.java:134: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+        modeTitleText.setText(questionBank.getDisplayName() + (MODE_MOCK.equals(mode) ? " · 模拟考试" : " · 日常刷题"));
+                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\java\com\example\aiquizlite\QuizActivity.java:186: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+        progressText.setText("第 " + (currentIndex + 1) + " / " + sessionQuestions.size() + " 题");
+                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\java\com\example\aiquizlite\QuizActivity.java:186: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+        progressText.setText("第 " + (currentIndex + 1) + " / " + sessionQuestions.size() + " 题");
+                                     ~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\java\com\example\aiquizlite\QuizActivity.java:192: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+                question.getPaper()
+                ^
+E:\project-bs\AIQuizLite-AS\app\src\main\java\com\example\aiquizlite\QuizActivity.java:199: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+        questionText.setText(question.getIndex() + ". " + question.getStem());
+                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\java\com\example\aiquizlite\QuizActivity.java:363: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+        feedbackText.setText(resultLabel + "\n" + selected + "\n" + correctAnswer + detail);
+                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "SetTextI18n":
+   When calling TextView#setText
+   * Never call Number#toString() to format numbers; it will not handle
+   fraction separators and locale-specific digits properly. Consider using
+   String#format with proper format specifications (%d or %f) instead.
+   * Do not pass a string literal (e.g. "Hello") to display text. Hardcoded
+   text can not be properly translated to other languages. Consider using
+   Android resource strings instead.
+   * Do not build messages by concatenating text chunks. Such messages can not
+   be properly translated.
+
+   https://developer.android.com/guide/topics/resources/localization.html
+
+E:\project-bs\AIQuizLite-AS\app\src\main\res\layout\activity_main.xml:35: Warning: Hardcoded string "📚", should use @string resource [HardcodedText]
+                    android:text="📚"
+                    ~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\res\layout\activity_main.xml:81: Warning: Hardcoded string "📝 ", should use @string resource [HardcodedText]
+                        android:text="📝 "
+                        ~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\res\layout\activity_main.xml:104: Warning: Hardcoded string "倒置", should use @string resource [HardcodedText]
+                        android:text="倒置"
+                        ~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\res\layout\activity_main.xml:150: Warning: Hardcoded string "重新开始", should use @string resource [HardcodedText]
+                        android:text="重新开始"
+                        ~~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\res\layout\activity_main.xml:159: Warning: Hardcoded string "随机刷完整题库，做错自动加入错题本", should use @string resource [HardcodedText]
+                        android:text="随机刷完整题库，做错自动加入错题本"
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\res\layout\activity_main.xml:196: Warning: Hardcoded string "错题连续答对 3 次才会移出", should use @string resource [HardcodedText]
+                        android:text="错题连续答对 3 次才会移出"
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\res\layout\activity_main.xml:233: Warning: Hardcoded string "172 题随机顺序，选项自动打乱，最后统一交卷", should use @string resource [HardcodedText]
+                        android:text="172 题随机顺序，选项自动打乱，最后统一交卷"
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\res\layout\activity_main.xml:342: Warning: Hardcoded string "AI 认证考试练习", should use @string resource [HardcodedText]
+            android:text="AI 认证考试练习"
+            ~~~~~~~~~~~~~~~~~~~~~~~~
+E:\project-bs\AIQuizLite-AS\app\src\main\res\layout\activity_quiz.xml:66: Warning: Hardcoded string "答案有误", should use @string resource [HardcodedText]
+                    android:text="答案有误"
+                    ~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "HardcodedText":
+   Hardcoding text attributes directly in layout files is bad for several
+   reasons:
+
+   * When creating configuration variations (for example for landscape or
+   portrait) you have to repeat the actual text (and keep it up to date when
+   making changes)
+
+   * The application cannot be translated to other languages by just adding
+   new translations for existing string resources.
+
+   There are quickfixes to automatically extract this hardcoded string into a
+   resource lookup.
+
+0 errors, 60 warnings

@@ -1,0 +1,4 @@
+#Sat Jul 04 18:14:57 HKT 2026
+base.0=E\:\\project-bs\\AIQuizLite-AS\\app\\build\\intermediates\\dex\\release\\mergeDexRelease\\classes.dex
+path.0=classes.dex
+renamed.0=classes.dex
