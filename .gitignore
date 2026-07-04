@@ -1,0 +1,33 @@
+# Android
+*.apk
+*.ap_
+*.dex
+*.class
+*.jar
+*.so
+*.aar
+.gradle
+build/
+.idea/
+*.iml
+*.swp
+*.swo
+*~
+
+# Keys and sensitive data
+*.jks
+*.keystore
+local.properties
+.DS_Store
+
+# Question banks (题库数据 - 不上传)
+app/src/main/assets/*.json
+app/src/main/assets/*.zip
+app/src/main/assets/question_images/
+
+# Generated files
+.classpath
+.project
+.settings/
+*.class
+bin/
