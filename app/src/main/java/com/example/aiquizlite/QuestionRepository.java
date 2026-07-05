@@ -376,7 +376,7 @@ public final class QuestionRepository {
     }
 
     public static JSONArray normalizeImportedJson(String raw) throws Exception {
-        String trimmed = raw == null ? "" : raw.trim();
+        String trimmed = sanitizeImportedJsonText(raw);
         if (trimmed.startsWith("[")) {
             return new JSONArray(trimmed);
         }
@@ -390,7 +390,7 @@ public final class QuestionRepository {
 
     public static String resolveDisplayNameFromRawJson(String raw, String fallback) {
         try {
-            String trimmed = raw == null ? "" : raw.trim();
+            String trimmed = sanitizeImportedJsonText(raw);
             if (trimmed.startsWith("{")) {
                 JSONObject object = new JSONObject(trimmed);
                 String name = object.optString("name", "").trim();
@@ -408,6 +408,77 @@ public final class QuestionRepository {
         } catch (Exception ignored) {
         }
         return fallback;
+    }
+
+    private static String sanitizeImportedJsonText(String raw) {
+        String trimmed = raw == null ? "" : raw.trim();
+        trimmed = unwrapMarkdownFence(trimmed).trim();
+        if (trimmed.startsWith("[") || trimmed.startsWith("{")) {
+            return extractFirstJsonValue(trimmed, 0);
+        }
+
+        int arrayStart = trimmed.indexOf('[');
+        int objectStart = trimmed.indexOf('{');
+        int start = -1;
+        if (arrayStart >= 0 && objectStart >= 0) {
+            start = Math.min(arrayStart, objectStart);
+        } else if (arrayStart >= 0) {
+            start = arrayStart;
+        } else if (objectStart >= 0) {
+            start = objectStart;
+        }
+        return start >= 0 ? extractFirstJsonValue(trimmed, start) : trimmed;
+    }
+
+    private static String unwrapMarkdownFence(String text) {
+        if (!text.startsWith("```")) {
+            return text;
+        }
+        int firstLineEnd = text.indexOf('\n');
+        int fenceEnd = text.lastIndexOf("```");
+        if (firstLineEnd < 0 || fenceEnd <= firstLineEnd) {
+            return text;
+        }
+        return text.substring(firstLineEnd + 1, fenceEnd);
+    }
+
+    private static String extractFirstJsonValue(String text, int start) {
+        int end = findJsonValueEnd(text, start);
+        if (end < 0) {
+            return text.substring(start).trim();
+        }
+        return text.substring(start, end + 1).trim();
+    }
+
+    private static int findJsonValueEnd(String text, int start) {
+        boolean inString = false;
+        boolean escaped = false;
+        int depth = 0;
+        for (int i = start; i < text.length(); i++) {
+            char current = text.charAt(i);
+            if (inString) {
+                if (escaped) {
+                    escaped = false;
+                } else if (current == '\\') {
+                    escaped = true;
+                } else if (current == '"') {
+                    inString = false;
+                }
+                continue;
+            }
+
+            if (current == '"') {
+                inString = true;
+            } else if (current == '{' || current == '[') {
+                depth++;
+            } else if (current == '}' || current == ']') {
+                depth--;
+                if (depth == 0) {
+                    return i;
+                }
+            }
+        }
+        return -1;
     }
 
     private static JSONArray readQuestionArrayFromAsset(Context context, String assetFileName) throws Exception {

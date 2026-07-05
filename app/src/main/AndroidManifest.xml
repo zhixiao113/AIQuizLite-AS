@@ -12,8 +12,30 @@
             android:name=".DailyHistoryActivity"
             android:exported="false" />
         <activity
-            android:name=".ImportQuestionBankActivity"
+            android:name=".ImportGuideActivity"
             android:exported="false" />
+        <activity
+            android:name=".ImportQuestionBankActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="application/json" />
+                <data android:mimeType="text/json" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="application/json" />
+                <data android:mimeType="text/json" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".QuestionBankActivity"
             android:exported="false" />

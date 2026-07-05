@@ -3,6 +3,7 @@ package com.example.aiquizlite;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
@@ -38,6 +39,9 @@ public class ImportQuestionBankActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         buildLayout();
+        if (savedInstanceState == null) {
+            handleExternalImportIntent(getIntent());
+        }
     }
 
     private void buildLayout() {
@@ -94,13 +98,40 @@ public class ImportQuestionBankActivity extends AppCompatActivity {
         pickParams.topMargin = dp(14);
         content.addView(pickButton, pickParams);
 
+        MaterialButton pasteButton = new MaterialButton(this);
+        pasteButton.setText("粘贴 AI JSON");
+        pasteButton.setOnClickListener(view -> pasteAiJson());
+        LinearLayout.LayoutParams pasteParams = matchWrap();
+        pasteParams.topMargin = dp(10);
+        content.addView(pasteButton, pasteParams);
+
+        LinearLayout importGuideRow = new LinearLayout(this);
+        importGuideRow.setOrientation(LinearLayout.HORIZONTAL);
+        importGuideRow.setGravity(Gravity.CENTER_VERTICAL);
+        LinearLayout.LayoutParams guideRowParams = matchWrap();
+        guideRowParams.topMargin = dp(10);
+        content.addView(importGuideRow, guideRowParams);
+
         importHintText = new TextView(this);
-        importHintText.setText("选择文件后，下方导入框会显示题目、选项、答案 JSON，可直接查看和修改。");
+        importHintText.setText("导入说明：支持本地文件、AI JSON、微信分享导入");
         importHintText.setTextColor(getColor(R.color.brand_text_secondary));
         importHintText.setTextSize(14);
-        LinearLayout.LayoutParams hintParams = matchWrap();
-        hintParams.topMargin = dp(10);
-        content.addView(importHintText, hintParams);
+        importGuideRow.addView(importHintText, new LinearLayout.LayoutParams(
+                0,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                1f
+        ));
+
+        TextView guideLink = new TextView(this);
+        guideLink.setText("查看教程");
+        guideLink.setTextColor(0xFF2563EB);
+        guideLink.setTextSize(14);
+        guideLink.setPadding(dp(12), dp(8), 0, dp(8));
+        guideLink.setOnClickListener(view -> startActivity(new Intent(this, ImportGuideActivity.class)));
+        importGuideRow.addView(guideLink, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
 
         jsonEdit = new EditText(this);
         jsonEdit.setHint("导入框：题目 JSON 会显示在这里");
@@ -153,11 +184,7 @@ public class ImportQuestionBankActivity extends AppCompatActivity {
         }
         try {
             String raw = readUri(uri);
-            JSONArray questions = QuestionRepository.normalizeImportedJson(raw);
-            jsonEdit.setText(questions.toString(2));
-            String name = QuestionRepository.resolveDisplayNameFromRawJson(raw, resolveNameFromUri(uri));
-            bankNameEdit.setText(name);
-            importHintText.setText("已读取 " + questions.length() + " 道题，可在导入框内修改后点击右上角完成。");
+            fillImportedJson(raw, resolveNameFromUri(uri));
         } catch (Exception e) {
             new AlertDialog.Builder(this)
                     .setTitle("导入失败")
@@ -165,6 +192,92 @@ public class ImportQuestionBankActivity extends AppCompatActivity {
                     .setPositiveButton(android.R.string.ok, null)
                     .show();
         }
+    }
+
+    private void handleExternalImportIntent(Intent intent) {
+        if (intent == null) {
+            return;
+        }
+
+        String action = intent.getAction();
+        try {
+            if (Intent.ACTION_VIEW.equals(action)) {
+                Uri uri = intent.getData();
+                if (uri != null) {
+                    importExternalUri(uri);
+                }
+                return;
+            }
+
+            if (Intent.ACTION_SEND.equals(action)) {
+                Uri streamUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                if (streamUri != null) {
+                    importExternalUri(streamUri);
+                    return;
+                }
+
+                ClipData clipData = intent.getClipData();
+                if (clipData != null && clipData.getItemCount() > 0 && clipData.getItemAt(0).getUri() != null) {
+                    importExternalUri(clipData.getItemAt(0).getUri());
+                    return;
+                }
+
+                String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
+                if (sharedText != null && !sharedText.trim().isEmpty()) {
+                    fillImportedJson(sharedText, "微信导入题库");
+                }
+            }
+        } catch (Exception e) {
+            new AlertDialog.Builder(this)
+                    .setTitle("微信导入失败")
+                    .setMessage("微信文件不是可识别的题库 JSON：" + e.getMessage())
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show();
+        }
+    }
+
+    private void importExternalUri(Uri uri) throws Exception {
+        String raw = readUri(uri);
+        fillImportedJson(raw, resolveNameFromUri(uri, "微信导入题库"));
+    }
+
+    private void pasteAiJson() {
+        ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        if (clipboardManager == null || !clipboardManager.hasPrimaryClip()) {
+            Toast.makeText(this, "剪贴板里没有可粘贴的内容", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        ClipData clipData = clipboardManager.getPrimaryClip();
+        if (clipData == null || clipData.getItemCount() == 0) {
+            Toast.makeText(this, "剪贴板里没有可粘贴的内容", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        CharSequence text = clipData.getItemAt(0).coerceToText(this);
+        String raw = text == null ? "" : text.toString();
+        if (raw.trim().isEmpty()) {
+            Toast.makeText(this, "剪贴板内容为空", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            fillImportedJson(raw, "AI 生成题库");
+        } catch (Exception e) {
+            new AlertDialog.Builder(this)
+                    .setTitle("粘贴失败")
+                    .setMessage("剪贴板内容不是可识别的题库 JSON：" + e.getMessage())
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show();
+        }
+    }
+
+    private void fillImportedJson(String raw, String fallbackName) throws Exception {
+        JSONArray questions = QuestionRepository.normalizeImportedJson(raw);
+        jsonEdit.setText(questions.toString(2));
+        String name = QuestionRepository.resolveDisplayNameFromRawJson(raw, fallbackName);
+        bankNameEdit.setText(name);
+        importHintText.setText("已读取 " + questions.length() + " 道题，可在导入框内修改后点击右上角完成。");
     }
 
     private void finishImport() {
@@ -212,7 +325,11 @@ public class ImportQuestionBankActivity extends AppCompatActivity {
     }
 
     private String resolveNameFromUri(Uri uri) {
-        String name = "自定义题库";
+        return resolveNameFromUri(uri, "自定义题库");
+    }
+
+    private String resolveNameFromUri(Uri uri, String fallbackName) {
+        String name = fallbackName;
         try (android.database.Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
             if (cursor != null && cursor.moveToFirst()) {
                 int index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
@@ -224,6 +341,9 @@ public class ImportQuestionBankActivity extends AppCompatActivity {
         }
         if (name.endsWith(".json")) {
             name = name.substring(0, name.length() - ".json".length());
+        }
+        if (name.endsWith(".txt")) {
+            name = name.substring(0, name.length() - ".txt".length());
         }
         return name;
     }
