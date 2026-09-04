@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/quizRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -8,6 +9,7 @@
 
     <!-- Header Card - Progress & Mode -->
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/headerCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardBackgroundColor="@color/brand_card"
@@ -17,66 +19,127 @@
         app:strokeWidth="0dp">
 
         <LinearLayout
+            android:id="@+id/headerContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="20dp">
 
-            <!-- Mode Badge -->
-            <TextView
-                android:id="@+id/modeTitleText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/card_background"
-                android:paddingHorizontal="12dp"
-                android:paddingVertical="6dp"
-                android:textColor="@color/brand_primary"
-                android:textSize="13sp"
-                android:textStyle="bold"
-                android:fontFamily="sans-serif-medium" />
-
-            <!-- Progress -->
+            <!-- Mode badge and compact favorite action -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/progressText"
+                <FrameLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:fontFamily="sans-serif-medium"
-                    android:textColor="@color/brand_ink"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:id="@+id/modeTitleText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/card_background"
+                        android:ellipsize="end"
+                        android:fontFamily="sans-serif-medium"
+                        android:maxLines="1"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="6dp"
+                        android:textColor="@color/brand_primary"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                </FrameLayout>
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/correctionButton"
+                    android:id="@+id/favoriteButton"
                     style="@style/ButtonStyle.Secondary"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:layout_marginStart="10dp"
+                    android:backgroundTint="@color/brand_primary_soft"
+                    android:contentDescription="@string/favorite_question"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
-                    android:minHeight="34dp"
-                    android:paddingStart="12dp"
-                    android:paddingEnd="12dp"
-                    android:text="答案有误"
-                    android:textSize="12sp"
-                    android:visibility="gone" />
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:padding="0dp"
+                    android:text="@string/favorite_add"
+                    android:textSize="21sp"
+                    app:cornerRadius="21dp"
+                    app:strokeColor="@color/brand_primary_border"
+                    app:strokeWidth="1dp" />
             </LinearLayout>
+
+            <!-- Progress -->
+            <TextView
+                android:id="@+id/progressText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/brand_ink"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
             <!-- Meta Info -->
             <TextView
                 android:id="@+id/metaText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="6dp"
+                android:lineSpacingExtra="3dp"
                 android:textColor="@color/brand_text_muted"
-                android:textSize="14sp"
-                android:lineSpacingExtra="3dp" />
+                android:textSize="14sp" />
+
+            <!-- Contextual correction prompt, shown only after a wrong answer -->
+            <LinearLayout
+                android:id="@+id/correctionPromptRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_correction_prompt"
+                android:gravity="center_vertical"
+                android:minHeight="48dp"
+                android:orientation="horizontal"
+                android:paddingStart="12dp"
+                android:paddingEnd="6dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/correction_prompt_symbol"
+                    android:textColor="@color/brand_error_dark"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:text="@string/question_answer_may_be_wrong"
+                    android:textColor="@color/brand_error_dark"
+                    android:textSize="13sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/correctionButton"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:backgroundTint="@android:color/transparent"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:text="@string/submit_correction"
+                    android:textColor="@color/brand_error_dark"
+                    android:textSize="13sp" />
+            </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -97,6 +160,7 @@
 
             <!-- Question Card -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/questionCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardBackgroundColor="@color/brand_card"
@@ -105,6 +169,7 @@
                 app:strokeWidth="0dp">
 
                 <LinearLayout
+                    android:id="@+id/questionContent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
@@ -171,11 +236,20 @@
         </LinearLayout>
     </ScrollView>
 
-    <!-- Primary Action Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/aiExplanationButton"
+        style="@style/ButtonStyle.Secondary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/ai_explanation"
+        android:visibility="gone" />
+
+    <!-- Primary Action Button: answer first, then next question/finish -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/primaryButton"
         style="@style/ButtonStyle.Primary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="10dp" />
 </LinearLayout>

@@ -14,6 +14,7 @@ public class Question {
     private final List<Option> options;
     private final List<String> answers;
     private final String image;
+    private final String explanation;
 
     public Question(
             String id,
@@ -24,7 +25,8 @@ public class Question {
             String stem,
             List<Option> options,
             List<String> answers,
-            String image
+            String image,
+            String explanation
     ) {
         this.id = id;
         this.index = index;
@@ -35,6 +37,9 @@ public class Question {
         this.answers = Collections.unmodifiableList(new ArrayList<>(answers));
         this.type = normalizeType(type, stem, this.answers);
         this.image = image;
+        this.explanation = explanation == null || explanation.trim().isEmpty()
+                ? null
+                : explanation.trim();
     }
 
     public String getId() {
@@ -73,8 +78,16 @@ public class Question {
         return image;
     }
 
+    public String getExplanation() {
+        return explanation;
+    }
+
     public boolean isMultiChoice() {
         return "multi".equals(type);
+    }
+
+    public boolean isFillBlank() {
+        return "fill_blank".equals(type);
     }
 
     public String typeLabel() {
@@ -85,6 +98,8 @@ public class Question {
                 return "多选题";
             case "judge":
                 return "判断题";
+            case "fill_blank":
+                return "填空题";
             default:
                 return type;
         }
@@ -108,6 +123,13 @@ public class Question {
                 case "true_false":
                 case "true-false":
                     return "judge";
+                case "fill_blank":
+                case "fill-blank":
+                case "fillblank":
+                case "blank":
+                case "填空":
+                case "填空题":
+                    return "fill_blank";
                 default:
                     break;
             }

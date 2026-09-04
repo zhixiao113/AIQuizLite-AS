@@ -7,8 +7,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
@@ -25,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private String selectedQuestionBankId;
     private TextView summaryText;
     private TextView wrongCountText;
+    private TextView favoriteCountText;
     private MaterialAutoCompleteTextView questionBankEntry;
     private MaterialButton reverseOrderButton;
     private MaterialButton refreshHistoryButton;
@@ -32,15 +38,24 @@ public class MainActivity extends AppCompatActivity {
     private DailyStatsChartView historyChartView;
     private LinearLayout historyRecordsContainer;
     private TextView historyEmptyText;
+    private DrawerLayout drawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
+        getWindow().setStatusBarColor(getColor(R.color.brand_surface));
         setContentView(R.layout.activity_main);
 
+        WindowInsetsControllerCompat insetsController =
+                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        insetsController.setAppearanceLightStatusBars(true);
+
+        drawerLayout = findViewById(R.id.drawerLayout);
         questionBankEntry = findViewById(R.id.questionBankDropdown);
         summaryText = findViewById(R.id.summaryText);
         wrongCountText = findViewById(R.id.wrongCountText);
+        favoriteCountText = findViewById(R.id.favoriteCountText);
         refreshHistoryButton = findViewById(R.id.refreshHistoryButton);
         moreHistoryButton = findViewById(R.id.moreHistoryButton);
         historyChartView = findViewById(R.id.historyChartView);
@@ -49,20 +64,71 @@ public class MainActivity extends AppCompatActivity {
         MaterialButton dailyButton = findViewById(R.id.dailyButton);
         MaterialButton wrongButton = findViewById(R.id.wrongButton);
         MaterialButton mockButton = findViewById(R.id.mockButton);
+        MaterialButton favoriteButton = findViewById(R.id.favoriteButton);
         TextView restartDailyButton = findViewById(R.id.restartDailyButton);
         reverseOrderButton = findViewById(R.id.reverseOrderButton);
+        View menuButton = findViewById(R.id.menuButton);
+        View drawerHomeButton = findViewById(R.id.drawerHomeButton);
+        View drawerDownloadsButton = findViewById(R.id.drawerDownloadsButton);
+        View drawerAiSettingsButton = findViewById(R.id.drawerAiSettingsButton);
+        View drawerSettingsButton = findViewById(R.id.drawerSettingsButton);
+        View questionBankManageButton = findViewById(R.id.questionBankManageButton);
 
         selectedQuestionBankId = restoreSelectedQuestionBankId();
         setupQuestionBankEntry();
         refreshHomeContent();
+        setupNavigationDrawer(
+                menuButton,
+                drawerHomeButton,
+                drawerDownloadsButton,
+                drawerAiSettingsButton,
+                drawerSettingsButton
+        );
 
         dailyButton.setOnClickListener(view -> openMode(QuizActivity.MODE_DAILY));
         wrongButton.setOnClickListener(view -> openMode(QuizActivity.MODE_WRONG));
+        favoriteButton.setOnClickListener(view -> openMode(QuizActivity.MODE_FAVORITES));
         mockButton.setOnClickListener(view -> openMode(QuizActivity.MODE_MOCK));
         restartDailyButton.setOnClickListener(view -> confirmRestartDailyPractice());
         reverseOrderButton.setOnClickListener(view -> toggleDailyOrder());
         refreshHistoryButton.setOnClickListener(view -> clearDailyHistory());
         moreHistoryButton.setOnClickListener(view -> openAllHistory());
+        questionBankManageButton.setOnClickListener(view -> openQuestionBankPage());
+    }
+
+    private void setupNavigationDrawer(
+            View menuButton,
+            View drawerHomeButton,
+            View drawerDownloadsButton,
+            View drawerAiSettingsButton,
+            View drawerSettingsButton
+    ) {
+        drawerLayout.setScrimColor(0x990F172A);
+        drawerLayout.setDrawerElevation(dp(16));
+        menuButton.setOnClickListener(view -> drawerLayout.openDrawer(GravityCompat.START));
+        drawerHomeButton.setOnClickListener(view -> drawerLayout.closeDrawer(GravityCompat.START));
+        drawerDownloadsButton.setOnClickListener(view -> {
+            drawerLayout.closeDrawer(GravityCompat.START);
+            startActivity(new Intent(this, DownloadLibraryActivity.class));
+        });
+        drawerAiSettingsButton.setOnClickListener(view -> {
+            drawerLayout.closeDrawer(GravityCompat.START);
+            startActivity(new Intent(this, SettingsActivity.class));
+        });
+        drawerSettingsButton.setOnClickListener(view -> {
+            drawerLayout.closeDrawer(GravityCompat.START);
+            startActivity(new Intent(this, GeneralSettingsActivity.class));
+        });
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                } else {
+                    finish();
+                }
+            }
+        });
     }
 
     @Override
@@ -106,10 +172,11 @@ public class MainActivity extends AppCompatActivity {
                 questionBank.getDisplayName()
                         + " 题库共 "
                         + questions.size()
-                        + " 题，覆盖单选、多选、判断。"
+                        + " 题，支持单选、多选、判断、填空。"
         );
         wrongCountText.setText("错题本当前 " + store.getWrongCount(questionBank.getId()) + " 题");
-        reverseOrderButton.setText(store.isDailyOrderReversed(questionBank.getId()) ? "已倒序" : "倒序");
+        favoriteCountText.setText("当前题库已收藏 " + store.getFavoriteCount(questionBank.getId()) + " 题");
+        reverseOrderButton.setText(store.isDailyOrderReversed(questionBank.getId()) ? "已倒序" : "倒序刷题");
         reverseOrderButton.setAlpha(store.hasDailySessionInProgress(questionBank.getId()) ? 0.6f : 1f);
         bindDailyHistory(store, questionBank.getId());
     }
@@ -142,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         boolean reversed = store.toggleDailyOrderReversed(selectedQuestionBankId);
-        reverseOrderButton.setText(reversed ? "已倒序" : "倒序");
+        reverseOrderButton.setText(reversed ? "已倒序" : "倒序刷题");
         reverseOrderButton.setAlpha(1f);
         Toast.makeText(this, reversed ? "下一轮将按倒序刷题" : "下一轮将按正序刷题", Toast.LENGTH_SHORT).show();
     }

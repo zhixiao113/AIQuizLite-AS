@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ProgressStore {
     private static final String PREF_NAME = "quiz_progress";
@@ -19,6 +21,7 @@ public class ProgressStore {
     private static final String KEY_DAILY_SESSION = "daily_session";
     private static final String KEY_DAILY_ORDER_REVERSED = "daily_order_reversed";
     private static final String KEY_DAILY_HISTORY = "daily_history";
+    private static final String KEY_FAVORITES = "favorites";
 
     private final SharedPreferences preferences;
 
@@ -56,17 +59,29 @@ public class ProgressStore {
     }
 
     public void recordResult(String questionBankId, String questionId, boolean correct) {
+        recordResult(questionBankId, questionId, correct, true, 3);
+    }
+
+    public void recordResult(
+            String questionBankId,
+            String questionId,
+            boolean correct,
+            boolean autoAddWrongQuestion,
+            int removalThreshold
+    ) {
         Map<String, Integer> map = new HashMap<>(getWrongBook(questionBankId));
         if (correct) {
             if (map.containsKey(questionId)) {
+                int normalizedThreshold = GeneralSettingsRules
+                        .normalizeWrongRemovalThreshold(removalThreshold);
                 int next = map.get(questionId) + 1;
-                if (next >= 3) {
+                if (normalizedThreshold > 0 && next >= normalizedThreshold) {
                     map.remove(questionId);
-                } else {
+                } else if (normalizedThreshold > 0) {
                     map.put(questionId, next);
                 }
             }
-        } else {
+        } else if (autoAddWrongQuestion || map.containsKey(questionId)) {
             map.put(questionId, 0);
         }
         saveWrongBook(questionBankId, map);
@@ -77,6 +92,69 @@ public class ProgressStore {
         if (map.remove(questionId) != null) {
             saveWrongBook(questionBankId, map);
         }
+    }
+
+    public Set<String> getFavorites(String questionBankId) {
+        try {
+            String raw = preferences.getString(namespacedKey(KEY_FAVORITES, questionBankId), "[]");
+            JSONArray array = new JSONArray(raw);
+            Set<String> favorites = new HashSet<>();
+            for (int i = 0; i < array.length(); i++) {
+                String questionId = array.optString(i, "");
+                if (!questionId.isEmpty()) {
+                    favorites.add(questionId);
+                }
+            }
+            return favorites;
+        } catch (Exception e) {
+            return Collections.emptySet();
+        }
+    }
+
+    public int getFavoriteCount(String questionBankId) {
+        return getFavorites(questionBankId).size();
+    }
+
+    public boolean isFavorite(String questionBankId, String questionId) {
+        return getFavorites(questionBankId).contains(questionId);
+    }
+
+    public boolean toggleFavorite(String questionBankId, String questionId) {
+        Set<String> favorites = new HashSet<>(getFavorites(questionBankId));
+        boolean favorite;
+        if (favorites.contains(questionId)) {
+            favorites.remove(questionId);
+            favorite = false;
+        } else {
+            favorites.add(questionId);
+            favorite = true;
+        }
+        saveFavorites(questionBankId, favorites);
+        return favorite;
+    }
+
+    public void removeQuestionData(String questionBankId, String questionId) {
+        removeWrongQuestion(questionBankId, questionId);
+        Set<String> favorites = new HashSet<>(getFavorites(questionBankId));
+        if (favorites.remove(questionId)) {
+            saveFavorites(questionBankId, favorites);
+        }
+        DailySession session = getDailySession(questionBankId);
+        if (session != null && (questionId.equals(session.getQuestionId())
+                || session.getAnswerStates().containsKey(questionId)
+                || session.getDraftAnswers().containsKey(questionId))) {
+            clearDailySession(questionBankId);
+        }
+    }
+
+    public void clearQuestionBankData(String questionBankId) {
+        preferences.edit()
+                .remove(namespacedKey(KEY_WRONG_BOOK, questionBankId))
+                .remove(namespacedKey(KEY_DAILY_SESSION, questionBankId))
+                .remove(namespacedKey(KEY_DAILY_ORDER_REVERSED, questionBankId))
+                .remove(namespacedKey(KEY_DAILY_HISTORY, questionBankId))
+                .remove(namespacedKey(KEY_FAVORITES, questionBankId))
+                .apply();
     }
 
     public DailySession getDailySession(String questionBankId) {
@@ -107,6 +185,20 @@ public class ProgressStore {
                     ));
                 }
             }
+            Map<String, List<String>> draftAnswers = new HashMap<>();
+            JSONArray draftsArray = object.optJSONArray("draftAnswers");
+            if (draftsArray != null) {
+                for (int i = 0; i < draftsArray.length(); i++) {
+                    JSONObject draftObject = draftsArray.getJSONObject(i);
+                    String questionId = draftObject.optString("questionId", "");
+                    if (!questionId.isEmpty()) {
+                        draftAnswers.put(
+                                questionId,
+                                readStringList(draftObject.optJSONArray("selectedAnswers"))
+                        );
+                    }
+                }
+            }
 
             return new DailySession(
                     object.optString("questionId", ""),
@@ -115,7 +207,8 @@ public class ProgressStore {
                     object.optInt("correctCount", 0),
                     object.optBoolean("answerRevealed", false),
                     selectedAnswers,
-                    answerStates
+                    answerStates,
+                    draftAnswers
             );
         } catch (Exception e) {
             return null;
@@ -143,6 +236,15 @@ public class ProgressStore {
                 statesArray.put(stateObject);
             }
             object.put("answerStates", statesArray);
+
+            JSONArray draftsArray = new JSONArray();
+            for (Map.Entry<String, List<String>> entry : session.getDraftAnswers().entrySet()) {
+                JSONObject draftObject = new JSONObject();
+                draftObject.put("questionId", entry.getKey());
+                draftObject.put("selectedAnswers", toArray(entry.getValue()));
+                draftsArray.put(draftObject);
+            }
+            object.put("draftAnswers", draftsArray);
         } catch (Exception e) {
             throw new RuntimeException("Failed to save daily session", e);
         }
@@ -235,6 +337,16 @@ public class ProgressStore {
                 .apply();
     }
 
+    private void saveFavorites(String questionBankId, Set<String> favorites) {
+        JSONArray array = new JSONArray();
+        for (String questionId : favorites) {
+            array.put(questionId);
+        }
+        preferences.edit()
+                .putString(namespacedKey(KEY_FAVORITES, questionBankId), array.toString())
+                .apply();
+    }
+
     private List<String> readStringList(JSONArray array) {
         List<String> values = new ArrayList<>();
         if (array == null) {
@@ -269,6 +381,7 @@ public class ProgressStore {
         private final boolean answerRevealed;
         private final List<String> selectedAnswers;
         private final Map<String, AnswerState> answerStates;
+        private final Map<String, List<String>> draftAnswers;
 
         public DailySession(
                 String questionId,
@@ -278,7 +391,16 @@ public class ProgressStore {
                 boolean answerRevealed,
                 List<String> selectedAnswers
         ) {
-            this(questionId, currentIndex, answeredCount, correctCount, answerRevealed, selectedAnswers, Collections.emptyMap());
+            this(
+                    questionId,
+                    currentIndex,
+                    answeredCount,
+                    correctCount,
+                    answerRevealed,
+                    selectedAnswers,
+                    Collections.emptyMap(),
+                    Collections.emptyMap()
+            );
         }
 
         public DailySession(
@@ -290,6 +412,28 @@ public class ProgressStore {
                 List<String> selectedAnswers,
                 Map<String, AnswerState> answerStates
         ) {
+            this(
+                    questionId,
+                    currentIndex,
+                    answeredCount,
+                    correctCount,
+                    answerRevealed,
+                    selectedAnswers,
+                    answerStates,
+                    Collections.emptyMap()
+            );
+        }
+
+        public DailySession(
+                String questionId,
+                int currentIndex,
+                int answeredCount,
+                int correctCount,
+                boolean answerRevealed,
+                List<String> selectedAnswers,
+                Map<String, AnswerState> answerStates,
+                Map<String, List<String>> draftAnswers
+        ) {
             this.questionId = questionId;
             this.currentIndex = currentIndex;
             this.answeredCount = answeredCount;
@@ -297,6 +441,14 @@ public class ProgressStore {
             this.answerRevealed = answerRevealed;
             this.selectedAnswers = Collections.unmodifiableList(new ArrayList<>(selectedAnswers));
             this.answerStates = Collections.unmodifiableMap(new HashMap<>(answerStates));
+            Map<String, List<String>> immutableDraftAnswers = new HashMap<>();
+            for (Map.Entry<String, List<String>> entry : draftAnswers.entrySet()) {
+                immutableDraftAnswers.put(
+                        entry.getKey(),
+                        Collections.unmodifiableList(new ArrayList<>(entry.getValue()))
+                );
+            }
+            this.draftAnswers = Collections.unmodifiableMap(immutableDraftAnswers);
         }
 
         public String getQuestionId() {
@@ -325,6 +477,10 @@ public class ProgressStore {
 
         public Map<String, AnswerState> getAnswerStates() {
             return answerStates;
+        }
+
+        public Map<String, List<String>> getDraftAnswers() {
+            return draftAnswers;
         }
     }
 

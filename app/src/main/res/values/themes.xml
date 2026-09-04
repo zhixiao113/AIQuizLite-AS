@@ -8,7 +8,7 @@
         <item name="colorSurface">@color/brand_surface</item>
 
         <!-- Status Bar -->
-        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@color/brand_surface</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
 
         <!-- Window Background -->
@@ -98,6 +98,21 @@
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">@color/brand_card</item>
         <item name="android:minHeight">48dp</item>
+    </style>
+
+    <style name="ButtonStyle.HomeList" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="backgroundTint">@android:color/transparent</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/brand_ink</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:gravity">start|center_vertical</item>
+        <item name="android:minHeight">54dp</item>
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">0dp</item>
+        <item name="iconTint">@color/brand_primary</item>
+        <item name="iconPadding">16dp</item>
+        <item name="iconGravity">textStart</item>
     </style>
 
     <!-- Option Button Styles for Quiz -->

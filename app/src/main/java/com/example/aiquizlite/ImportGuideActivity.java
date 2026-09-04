@@ -117,7 +117,7 @@ public class ImportGuideActivity extends AppCompatActivity {
 
     private void addFormatTip(LinearLayout content) {
         TextView tip = new TextView(this);
-        tip.setText("格式提示：JSON 可以是题目数组，也可以是 {\"name\":\"题库名\",\"questions\":[...]}。每道题至少需要题干 stem、选项 options 和答案 answers。");
+        tip.setText("格式提示：JSON 可以是题目数组，也可以是 {\"name\":\"题库名\",\"questions\":[...]}。每道题需要题干 stem、选项 options、答案 answers，并可提供解析 explanation；填空题使用 type=fill_blank、options=[]，没有解析时 explanation=null。");
         tip.setTextColor(getColor(R.color.brand_text_secondary));
         tip.setTextSize(13);
         tip.setLineSpacing(dp(3), 1f);

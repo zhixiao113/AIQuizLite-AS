@@ -203,6 +203,13 @@ public final class QuestionRepository {
                         //noinspection ResultOfMethodCallIgnored
                         file.delete();
                     }
+                    File backup = new File(file.getParentFile(), file.getName() + ".bak");
+                    File temp = new File(file.getParentFile(), file.getName() + ".tmp");
+                    //noinspection ResultOfMethodCallIgnored
+                    backup.delete();
+                    //noinspection ResultOfMethodCallIgnored
+                    temp.delete();
+                    QuestionImageStore.deleteBankImages(context, questionBankId);
                     iterator.remove();
                 }
             }
@@ -214,6 +221,7 @@ public final class QuestionRepository {
         }
 
         removeBankOrder(context, questionBankId);
+        preferences(context).edit().remove(namespacedAnswerOverrideKey(questionBankId)).apply();
         CACHE.remove(questionBankId);
         resetCache();
         return true;
@@ -278,32 +286,217 @@ public final class QuestionRepository {
         CACHE.remove(questionBankId);
     }
 
+    public static synchronized void removeAnswerOverride(
+            Context context,
+            String questionBankId,
+            String questionId
+    ) {
+        Map<String, List<String>> overrides = readAnswerOverrides(context, questionBankId);
+        if (overrides.remove(questionId) == null) {
+            return;
+        }
+        saveAnswerOverrides(context, questionBankId, overrides);
+        CACHE.remove(questionBankId);
+    }
+
+    public static synchronized QuestionBank copyQuestionBankForEditing(
+            Context context,
+            String questionBankId
+    ) throws Exception {
+        QuestionBank source = findQuestionBank(context, questionBankId);
+        List<Question> sourceQuestions = load(context, source.getId());
+        JSONArray questions = questionsToJson(sourceQuestions);
+        QuestionBank copy = importQuestionBank(
+                context,
+                source.getDisplayName() + " - 自定义副本",
+                questions
+        );
+        try {
+            Map<String, String> copiedImages = new HashMap<>();
+            List<Question> copiedQuestions = new ArrayList<>();
+            for (Question question : sourceQuestions) {
+                String image = question.getImage();
+                String copiedImage = null;
+                if (image != null && !image.trim().isEmpty()) {
+                    copiedImage = copiedImages.get(image);
+                    if (copiedImage == null) {
+                        copiedImage = QuestionImageStore.copyToBank(
+                                context,
+                                source.getId(),
+                                image,
+                                copy.getId()
+                        );
+                        copiedImages.put(image, copiedImage);
+                    }
+                }
+                copiedQuestions.add(new Question(
+                        question.getId(),
+                        question.getIndex(),
+                        question.getPaper(),
+                        question.getNumberInPaper(),
+                        question.getType(),
+                        question.getStem(),
+                        question.getOptions(),
+                        question.getAnswers(),
+                        copiedImage,
+                        question.getExplanation()
+                ));
+            }
+            saveImportedQuestionBank(context, copy.getId(), copiedQuestions);
+            return findQuestionBank(context, copy.getId());
+        } catch (Exception e) {
+            deleteQuestionBank(context, copy.getId());
+            throw e;
+        }
+    }
+
+    public static synchronized void saveImportedQuestionBank(
+            Context context,
+            String questionBankId,
+            List<Question> questions
+    ) throws Exception {
+        QuestionBank bank = findQuestionBank(context, questionBankId);
+        if (!bank.isImported()) {
+            throw new IllegalArgumentException("内置题库不能直接编辑");
+        }
+        if (questions.isEmpty()) {
+            throw new IllegalArgumentException("题库至少需要保留一道题");
+        }
+
+        Set<String> ids = new HashSet<>();
+        for (Question question : questions) {
+            if (question.getId() == null || question.getId().trim().isEmpty()) {
+                throw new IllegalArgumentException("题目 ID 不能为空");
+            }
+            if (!ids.add(question.getId())) {
+                throw new IllegalArgumentException("题目 ID 重复：" + question.getId());
+            }
+        }
+
+        JSONArray jsonArray = questionsToJson(questions);
+        parseQuestions(jsonArray, bank.getDisplayName());
+        File target = new File(bank.getStorageName());
+        File temp = new File(target.getParentFile(), target.getName() + ".tmp");
+        File backup = new File(target.getParentFile(), target.getName() + ".bak");
+        writeJsonFile(temp, jsonArray);
+        if (target.exists()) {
+            copyFile(target, backup);
+        }
+        if (target.exists() && !target.delete()) {
+            //noinspection ResultOfMethodCallIgnored
+            temp.delete();
+            throw new IllegalStateException("无法替换原题库文件");
+        }
+        if (!temp.renameTo(target)) {
+            if (backup.exists()) {
+                copyFile(backup, target);
+            }
+            throw new IllegalStateException("保存题库失败，已保留备份");
+        }
+
+        List<QuestionBank> importedBanks = new ArrayList<>(readImportedBanks(context));
+        for (int i = 0; i < importedBanks.size(); i++) {
+            QuestionBank item = importedBanks.get(i);
+            if (item.getId().equals(questionBankId)) {
+                importedBanks.set(i, QuestionBank.imported(
+                        item.getId(),
+                        item.getDisplayName(),
+                        target.getAbsolutePath(),
+                        item.getImportedAt(),
+                        questions.size()
+                ));
+                break;
+            }
+        }
+        saveImportedBanks(context, importedBanks);
+        preferences(context).edit().remove(namespacedAnswerOverrideKey(questionBankId)).apply();
+        QuestionImageStore.cleanupOrphans(context, questionBankId, questions);
+        resetCache();
+    }
+
     public static synchronized void resetCache() {
         CACHE.clear();
         questionBanks = null;
+    }
+
+    public static synchronized int clearImportedQuestionBanks(Context context) {
+        List<QuestionBank> importedBanks = new ArrayList<>(readImportedBanks(context));
+        SharedPreferences.Editor editor = preferences(context).edit();
+        Set<String> importedIds = new HashSet<>();
+        for (QuestionBank bank : importedBanks) {
+            importedIds.add(bank.getId());
+            File file = new File(bank.getStorageName());
+            //noinspection ResultOfMethodCallIgnored
+            file.delete();
+            //noinspection ResultOfMethodCallIgnored
+            new File(file.getParentFile(), file.getName() + ".bak").delete();
+            //noinspection ResultOfMethodCallIgnored
+            new File(file.getParentFile(), file.getName() + ".tmp").delete();
+            QuestionImageStore.deleteBankImages(context, bank.getId());
+            editor.remove(namespacedAnswerOverrideKey(bank.getId()));
+        }
+        editor.putString(KEY_IMPORTED_BANKS, "[]");
+        try {
+            JSONArray previousOrder = new JSONArray(
+                    preferences(context).getString(KEY_BANK_ORDER, "[]")
+            );
+            JSONArray retainedOrder = new JSONArray();
+            for (int index = 0; index < previousOrder.length(); index++) {
+                String id = previousOrder.optString(index, "");
+                if (!importedIds.contains(id)) {
+                    retainedOrder.put(id);
+                }
+            }
+            editor.putString(KEY_BANK_ORDER, retainedOrder.toString());
+        } catch (Exception ignored) {
+            editor.remove(KEY_BANK_ORDER);
+        }
+        if (!editor.commit()) {
+            throw new IllegalStateException("无法清除导入题库");
+        }
+        File importDirectory = getImportDir(context);
+        File[] leftovers = importDirectory.listFiles();
+        if (leftovers != null) {
+            for (File file : leftovers) {
+                if (file.isFile()) {
+                    //noinspection ResultOfMethodCallIgnored
+                    file.delete();
+                }
+            }
+        }
+        resetCache();
+        return importedBanks.size();
     }
 
     private static List<Question> parseQuestions(JSONArray jsonArray, String fallbackPaper) throws Exception {
         List<Question> questions = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject item = jsonArray.getJSONObject(i);
-            JSONArray optionsArray = item.getJSONArray("options");
+            JSONArray optionsArray = item.optJSONArray("options");
             List<Question.Option> options = new ArrayList<>();
-            for (int j = 0; j < optionsArray.length(); j++) {
-                JSONObject optionItem = optionsArray.getJSONObject(j);
-                options.add(new Question.Option(
-                        optionItem.getString("key"),
-                        optionItem.getString("text")
-                ));
+            if (optionsArray != null) {
+                for (int j = 0; j < optionsArray.length(); j++) {
+                    JSONObject optionItem = optionsArray.getJSONObject(j);
+                    options.add(new Question.Option(
+                            optionItem.getString("key"),
+                            optionItem.getString("text")
+                    ));
+                }
             }
 
             JSONArray answersArray = item.getJSONArray("answers");
             List<String> answers = new ArrayList<>();
             for (int j = 0; j < answersArray.length(); j++) {
-                answers.add(answersArray.getString(j));
+                String answer = answersArray.getString(j).trim();
+                if (!answer.isEmpty()) {
+                    answers.add(answer);
+                }
+            }
+            if (answers.isEmpty()) {
+                throw new IllegalArgumentException("第 " + (i + 1) + " 题缺少有效答案");
             }
 
-            questions.add(new Question(
+            Question question = new Question(
                     item.optString("id", "q" + (i + 1)),
                     item.optInt("index", i + 1),
                     item.optString("paper", fallbackPaper),
@@ -312,10 +505,22 @@ public final class QuestionRepository {
                     item.getString("stem"),
                     options,
                     answers,
-                    item.isNull("image") ? null : item.optString("image", null)
-            ));
+                    item.isNull("image") ? null : item.optString("image", null),
+                    item.isNull("explanation") ? null : item.optString("explanation", null)
+            );
+            if (!question.isFillBlank() && options.isEmpty()) {
+                throw new IllegalArgumentException("第 " + (i + 1) + " 题缺少选项");
+            }
+            questions.add(question);
         }
         return questions;
+    }
+
+    static List<Question> parsePackagedQuestions(
+            JSONArray jsonArray,
+            String fallbackPaper
+    ) throws Exception {
+        return parseQuestions(jsonArray, fallbackPaper);
     }
 
     private static List<Question> applyAnswerOverrides(
@@ -338,11 +543,12 @@ public final class QuestionRepository {
                     question.getIndex(),
                     question.getPaper(),
                     question.getNumberInPaper(),
-                    override.size() > 1 ? "multi" : question.getType(),
+                    question.getType(),
                     question.getStem(),
                     question.getOptions(),
                     override,
-                    question.getImage()
+                    question.getImage(),
+                    question.getExplanation()
             ));
         }
         return updatedQuestions;
@@ -369,6 +575,28 @@ public final class QuestionRepository {
         } catch (Exception ignored) {
         }
         return overrides;
+    }
+
+    private static void saveAnswerOverrides(
+            Context context,
+            String questionBankId,
+            Map<String, List<String>> overrides
+    ) {
+        JSONObject object = new JSONObject();
+        try {
+            for (Map.Entry<String, List<String>> entry : overrides.entrySet()) {
+                JSONArray array = new JSONArray();
+                for (String answer : entry.getValue()) {
+                    array.put(answer);
+                }
+                object.put(entry.getKey(), array);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("保存题库答案修正失败", e);
+        }
+        preferences(context).edit()
+                .putString(namespacedAnswerOverrideKey(questionBankId), object.toString())
+                .apply();
     }
 
     private static String namespacedAnswerOverrideKey(String questionBankId) {
@@ -501,6 +729,57 @@ public final class QuestionRepository {
                 outputStream.write(buffer, 0, count);
             }
             return outputStream.toString(StandardCharsets.UTF_8.name());
+        }
+    }
+
+    static JSONArray questionsToJson(List<Question> questions) throws Exception {
+        JSONArray array = new JSONArray();
+        for (Question question : questions) {
+            JSONObject item = new JSONObject();
+            item.put("id", question.getId());
+            item.put("index", question.getIndex());
+            item.put("paper", question.getPaper());
+            item.put("numberInPaper", question.getNumberInPaper());
+            item.put("type", question.getType());
+            item.put("stem", question.getStem());
+            JSONArray options = new JSONArray();
+            for (Question.Option option : question.getOptions()) {
+                JSONObject optionItem = new JSONObject();
+                optionItem.put("key", option.getKey());
+                optionItem.put("text", option.getText());
+                options.put(optionItem);
+            }
+            item.put("options", options);
+            JSONArray answers = new JSONArray();
+            for (String answer : question.getAnswers()) {
+                answers.put(answer);
+            }
+            item.put("answers", answers);
+            item.put("explanation", question.getExplanation() == null
+                    ? JSONObject.NULL
+                    : question.getExplanation());
+            item.put("image", question.getImage() == null ? JSONObject.NULL : question.getImage());
+            array.put(item);
+        }
+        return array;
+    }
+
+    private static void writeJsonFile(File file, JSONArray questions) throws Exception {
+        try (FileOutputStream outputStream = new FileOutputStream(file)) {
+            outputStream.write(questions.toString(2).getBytes(StandardCharsets.UTF_8));
+            outputStream.getFD().sync();
+        }
+    }
+
+    private static void copyFile(File source, File target) throws Exception {
+        try (FileInputStream inputStream = new FileInputStream(source);
+             FileOutputStream outputStream = new FileOutputStream(target)) {
+            byte[] buffer = new byte[4096];
+            int count;
+            while ((count = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, count);
+            }
+            outputStream.getFD().sync();
         }
     }
 

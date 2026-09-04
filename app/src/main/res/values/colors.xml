@@ -3,10 +3,14 @@
     <color name="brand_primary">#2563EB</color>           <!-- Modern Blue - Trust & Knowledge -->
     <color name="brand_primary_light">#3B82F6</color>     <!-- Lighter variant for hover states -->
     <color name="brand_primary_dark">#1D4ED8</color>      <!-- Darker variant for pressed states -->
+    <color name="brand_primary_soft">#EEF4FF</color>
+    <color name="brand_primary_border">#DBE5FB</color>
 
     <!-- Semantic Colors -->
     <color name="brand_success">#10B981</color>           <!-- Modern Green - Correct answers -->
     <color name="brand_error">#EF4444</color>             <!-- Modern Red - Wrong answers -->
+    <color name="brand_error_dark">#B82A31</color>
+    <color name="brand_error_soft">#FFF3F3</color>
     <color name="brand_warning">#F59E0B</color>           <!-- Amber - Attention -->
 
     <!-- Neutral Colors -->

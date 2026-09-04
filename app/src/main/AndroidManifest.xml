@@ -1,13 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
     <application
         android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
         android:icon="@android:drawable/ic_menu_agenda"
         android:label="@string/app_name"
         android:roundIcon="@android:drawable/ic_menu_agenda"
         android:supportsRtl="true"
         android:theme="@style/Theme.AIQuizLite">
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+        <activity
+            android:name=".DownloadLibraryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BackupLibraryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BackupDataActivity"
+            android:exported="false" />
+        <activity
+            android:name=".GeneralSettingsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false" />
         <activity
             android:name=".DailyHistoryActivity"
             android:exported="false" />
@@ -16,7 +46,13 @@
             android:exported="false" />
         <activity
             android:name=".ImportQuestionBankActivity"
-            android:exported="true">
+            android:exported="false" />
+        <activity
+            android:name=".ExternalImportActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -25,6 +61,11 @@
                 <data android:mimeType="application/json" />
                 <data android:mimeType="text/json" />
                 <data android:mimeType="text/plain" />
+                <data android:mimeType="application/pdf" />
+                <data android:mimeType="application/x-pdf" />
+                <data android:mimeType="application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+                <data android:mimeType="application/msword" />
+                <data android:mimeType="application/octet-stream" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -34,13 +75,30 @@
                 <data android:mimeType="application/json" />
                 <data android:mimeType="text/json" />
                 <data android:mimeType="text/plain" />
+                <data android:mimeType="application/pdf" />
+                <data android:mimeType="application/x-pdf" />
+                <data android:mimeType="application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+                <data android:mimeType="application/msword" />
+                <data android:mimeType="application/octet-stream" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".QuestionBankEditorActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MaterialToQuizActivity"
+            android:exported="false" />
         <activity
             android:name=".QuestionBankActivity"
             android:exported="false" />
         <activity
             android:name=".QuizActivity"
+            android:exported="false" />
+        <activity
+            android:name=".QuestionImageViewerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MockResultActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
