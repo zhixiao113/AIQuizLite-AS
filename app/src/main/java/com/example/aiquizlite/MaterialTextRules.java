@@ -88,6 +88,46 @@ public final class MaterialTextRules {
         return chunk(chapters, DEFAULT_CHUNK_CHARACTERS);
     }
 
+    public static List<TextChunk> chunkWithOverlap(
+            List<Chapter> chapters,
+            int maximumCharacters,
+            int overlapCharacters
+    ) {
+        int max = Math.max(1, maximumCharacters);
+        int overlap = Math.max(0, Math.min(overlapCharacters, max / 2));
+        List<TextChunk> result = new ArrayList<>();
+        if (chapters == null) {
+            return result;
+        }
+        for (Chapter chapter : chapters) {
+            if (chapter == null || chapter.getContent().isEmpty()) {
+                continue;
+            }
+            String text = chapter.getContent();
+            int start = 0;
+            while (start < text.length()) {
+                int end = Math.min(text.length(), start + max);
+                if (end < text.length()) {
+                    int naturalBreak = bestBreak(text, end);
+                    if (naturalBreak > start + Math.max(1, max / 2)) {
+                        end = naturalBreak;
+                    }
+                }
+                int contextStart = start == 0 ? 0 : Math.max(0, start - overlap);
+                int contextEnd = end == text.length() ? end : Math.min(text.length(), end + overlap);
+                String value = text.substring(contextStart, contextEnd).trim();
+                if (!value.isEmpty()) {
+                    result.add(new TextChunk(chapter.getTitle(), value));
+                }
+                if (end <= start) {
+                    break;
+                }
+                start = end;
+            }
+        }
+        return Collections.unmodifiableList(result);
+    }
+
     public static int recommendQuestionCount(int selectedCharacterCount) {
         if (selectedCharacterCount <= 0) {
             return 0;

@@ -23,4 +23,18 @@ public class MaterialTextRulesTest {
         assertEquals("第一章 防火墙基础", chunks.get(0).getChapterTitle());
         assertEquals("2. 安全策略", chunks.get(chunks.size() - 1).getChapterTitle());
     }
+
+    @Test
+    public void questionBankChunksOverlapToProtectBoundaryQuestions() {
+        List<MaterialTextRules.Chapter> chapters = java.util.Collections.singletonList(
+                new MaterialTextRules.Chapter("题库", "1234567890abcdefghij")
+        );
+
+        List<MaterialTextRules.TextChunk> chunks =
+                MaterialTextRules.chunkWithOverlap(chapters, 10, 3);
+
+        assertEquals(2, chunks.size());
+        assertTrue(chunks.get(0).getText().endsWith("abc"));
+        assertTrue(chunks.get(1).getText().startsWith("890"));
+    }
 }

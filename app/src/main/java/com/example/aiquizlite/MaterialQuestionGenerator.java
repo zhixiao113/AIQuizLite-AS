@@ -14,6 +14,9 @@ import java.util.Set;
 
 public final class MaterialQuestionGenerator {
     public static final int MAX_REPAIR_ROUNDS = 3;
+    private static final int ANALYSIS_SAMPLE_CHARACTERS = 24_000;
+    private static final int QUESTION_BANK_CHUNK_CHARACTERS = 10_000;
+    private static final int QUESTION_BANK_CHUNK_OVERLAP = 1_000;
 
     private final OpenAiCompatibleClient client;
 
@@ -23,6 +26,145 @@ public final class MaterialQuestionGenerator {
 
     MaterialQuestionGenerator(OpenAiCompatibleClient client) {
         this.client = client;
+    }
+
+    public MaterialDocumentAnalysis analyzeDocument(
+            ApiConfig config,
+            String sourceName,
+            List<MaterialTextRules.Chapter> chapters
+    ) throws Exception {
+        String response = client.createChatCompletion(
+                config,
+                MaterialQuestionPromptBuilder.analysisSystemPrompt(),
+                MaterialQuestionPromptBuilder.analyzeDocument(
+                        sourceName,
+                        MaterialTextRules.countCharacters(chapters),
+                        chapters == null ? 0 : chapters.size(),
+                        representativeSample(chapters)
+                )
+        );
+        return MaterialDocumentAnalysis.fromModelText(response);
+    }
+
+    public MaterialGenerationPlan recommendLearningPlan(
+            ApiConfig config,
+            String bankName,
+            String sourceName,
+            List<MaterialTextRules.Chapter> chapters,
+            RecognitionProgressListener listener
+    ) throws Exception {
+        List<MaterialTextRules.TextChunk> chunks = MaterialTextRules.chunk(chapters);
+        if (chunks.isEmpty()) {
+            throw new IllegalArgumentException("资料中没有可分析的文字");
+        }
+        Map<String, MaterialTextRules.Chapter> chapterSources = new LinkedHashMap<>();
+        Map<String, Map<String, Integer>> matrix = new LinkedHashMap<>();
+        for (MaterialTextRules.Chapter chapter : chapters) {
+            if (chapter != null && !chapter.getContent().isEmpty()) {
+                chapterSources.put(chapter.getTitle(), chapter);
+                matrix.put(chapter.getTitle(), zeroTypes());
+            }
+        }
+        for (int i = 0; i < chunks.size(); i++) {
+            MaterialTextRules.TextChunk chunk = chunks.get(i);
+            if (listener != null) {
+                listener.onProgress(i, chunks.size(), "正在盘点知识点 · " + chunk.getChapterTitle());
+            }
+            String response = client.createChatCompletion(
+                    config,
+                    MaterialQuestionPromptBuilder.analysisSystemPrompt(),
+                    MaterialQuestionPromptBuilder.analyzeLearningChunk(
+                            sourceName,
+                            chunk.getChapterTitle(),
+                            chunk.getText()
+                    )
+            );
+            MaterialDocumentAnalysis analysis = MaterialDocumentAnalysis.fromModelText(response);
+            Map<String, Integer> row = matrix.get(chunk.getChapterTitle());
+            if (row == null) {
+                row = zeroTypes();
+                matrix.put(chunk.getChapterTitle(), row);
+            }
+            for (Map.Entry<String, Integer> entry : analysis.getTypeQuotas().entrySet()) {
+                row.put(entry.getKey(), row.get(entry.getKey()) + entry.getValue());
+            }
+        }
+        capMatrix(matrix, 100);
+        Map<String, Integer> totals = zeroTypes();
+        List<MaterialGenerationPlan.ChapterPlan> chapterPlans = new ArrayList<>();
+        Map<String, Map<String, Integer>> selectedMatrix = new LinkedHashMap<>();
+        for (Map.Entry<String, Map<String, Integer>> entry : matrix.entrySet()) {
+            int count = sum(entry.getValue());
+            if (count <= 0) {
+                continue;
+            }
+            MaterialTextRules.Chapter source = chapterSources.get(entry.getKey());
+            chapterPlans.add(new MaterialGenerationPlan.ChapterPlan(
+                    entry.getKey(), source == null ? "" : source.getContent(), count
+            ));
+            selectedMatrix.put(entry.getKey(), new LinkedHashMap<>(entry.getValue()));
+            for (Map.Entry<String, Integer> type : entry.getValue().entrySet()) {
+                totals.put(type.getKey(), totals.get(type.getKey()) + type.getValue());
+            }
+        }
+        if (chapterPlans.isEmpty()) {
+            throw new IllegalArgumentException("AI 没有从资料中识别出可考查知识点");
+        }
+        if (listener != null) {
+            listener.onProgress(chunks.size(), chunks.size(), "知识点与建议题量分析完成");
+        }
+        return new MaterialGenerationPlan(
+                bankName, sourceName, chapterPlans, totals, selectedMatrix
+        );
+    }
+
+    public QuestionBankConversionResult convertQuestionBank(
+            ApiConfig config,
+            String bankName,
+            List<MaterialTextRules.Chapter> chapters,
+            RecognitionProgressListener listener
+    ) throws Exception {
+        List<MaterialTextRules.TextChunk> chunks = MaterialTextRules.chunkWithOverlap(
+                chapters,
+                QUESTION_BANK_CHUNK_CHARACTERS,
+                QUESTION_BANK_CHUNK_OVERLAP
+        );
+        if (chunks.isEmpty()) {
+            throw new IllegalArgumentException("题库中没有可识别文字");
+        }
+        JSONArray pool = new JSONArray();
+        for (int i = 0; i < chunks.size(); i++) {
+            MaterialTextRules.TextChunk chunk = chunks.get(i);
+            if (listener != null) {
+                listener.onProgress(i, chunks.size(), "正在识别 · " + chunk.getChapterTitle());
+            }
+            String response = client.createChatCompletion(
+                    config,
+                    MaterialQuestionPromptBuilder.systemPrompt(),
+                    MaterialQuestionPromptBuilder.convertQuestionBankChunk(
+                            bankName,
+                            chunk.getChapterTitle(),
+                            chunk.getText()
+                    )
+            );
+            JSONArray parsed = parseModelQuestions(response);
+            attachChapter(parsed, chunk.getChapterTitle(), bankName, "AI 识别原题");
+            append(pool, parsed);
+        }
+        MaterialQuestionRules.ValidationResult validation =
+                MaterialQuestionRules.validateDetected(pool, bankName);
+        if (validation.getAccepted().length() == 0) {
+            throw new IllegalArgumentException("AI 没有识别出答案完整、可转换的题目");
+        }
+        if (listener != null) {
+            listener.onProgress(chunks.size(), chunks.size(), "题库识别与格式校验完成");
+        }
+        return new QuestionBankConversionResult(
+                pool.length(),
+                validation.getAccepted(),
+                validation.getDuplicateCount(),
+                validation.getInvalidCount()
+        );
     }
 
     public GenerationResult generate(
@@ -251,6 +393,76 @@ public final class MaterialQuestionGenerator {
         return Math.max(1, count);
     }
 
+    public static int estimateQuestionBankRequests(List<MaterialTextRules.Chapter> chapters) {
+        return Math.max(1, MaterialTextRules.chunkWithOverlap(
+                chapters,
+                QUESTION_BANK_CHUNK_CHARACTERS,
+                QUESTION_BANK_CHUNK_OVERLAP
+        ).size());
+    }
+
+    public static int estimateLearningPlanRequests(List<MaterialTextRules.Chapter> chapters) {
+        return Math.max(1, MaterialTextRules.chunk(chapters).size());
+    }
+
+    private static void capMatrix(Map<String, Map<String, Integer>> matrix, int maximum) {
+        int total = 0;
+        for (Map<String, Integer> row : matrix.values()) {
+            total += sum(row);
+        }
+        while (total > maximum) {
+            Map<String, Integer> largestRow = null;
+            String largestType = null;
+            int largest = 0;
+            for (Map<String, Integer> row : matrix.values()) {
+                for (Map.Entry<String, Integer> entry : row.entrySet()) {
+                    if (entry.getValue() > largest) {
+                        largest = entry.getValue();
+                        largestRow = row;
+                        largestType = entry.getKey();
+                    }
+                }
+            }
+            if (largestRow == null || largest <= 0) {
+                break;
+            }
+            largestRow.put(largestType, largest - 1);
+            total--;
+        }
+    }
+
+    private static String representativeSample(List<MaterialTextRules.Chapter> chapters) {
+        if (chapters == null || chapters.isEmpty()) {
+            return "";
+        }
+        int perChapter = Math.max(400, ANALYSIS_SAMPLE_CHARACTERS / chapters.size());
+        StringBuilder result = new StringBuilder();
+        for (MaterialTextRules.Chapter chapter : chapters) {
+            if (chapter == null || chapter.getContent().isEmpty()) {
+                continue;
+            }
+            int remaining = ANALYSIS_SAMPLE_CHARACTERS - result.length();
+            if (remaining <= 0) {
+                break;
+            }
+            int allowance = Math.min(perChapter, remaining);
+            String text = chapter.getContent();
+            String sample;
+            if (text.length() <= allowance) {
+                sample = text;
+            } else {
+                int head = allowance / 2;
+                int tail = allowance - head;
+                sample = text.substring(0, head) + "\n…\n" + text.substring(text.length() - tail);
+            }
+            if (result.length() > 0) {
+                result.append("\n\n");
+            }
+            result.append("【").append(chapter.getTitle()).append("】\n").append(sample);
+        }
+        return result.toString();
+    }
+
     private static List<MaterialTextRules.TextChunk> sampledChunks(
             MaterialGenerationPlan.ChapterPlan chapter
     ) {
@@ -394,6 +606,45 @@ public final class MaterialQuestionGenerator {
 
     public interface ProgressListener {
         void onProgress(Snapshot snapshot);
+    }
+
+    public interface RecognitionProgressListener {
+        void onProgress(int completedRequests, int totalRequests, String message);
+    }
+
+    public static final class QuestionBankConversionResult {
+        private final int returnedCount;
+        private final JSONArray accepted;
+        private final int duplicateCount;
+        private final int invalidCount;
+
+        QuestionBankConversionResult(
+                int returnedCount,
+                JSONArray accepted,
+                int duplicateCount,
+                int invalidCount
+        ) {
+            this.returnedCount = returnedCount;
+            this.accepted = accepted;
+            this.duplicateCount = duplicateCount;
+            this.invalidCount = invalidCount;
+        }
+
+        public int getReturnedCount() {
+            return returnedCount;
+        }
+
+        public JSONArray getAccepted() {
+            return accepted;
+        }
+
+        public int getDuplicateCount() {
+            return duplicateCount;
+        }
+
+        public int getInvalidCount() {
+            return invalidCount;
+        }
     }
 
     public static final class Snapshot {

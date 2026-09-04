@@ -55,7 +55,7 @@ public class MaterialToQuizActivity extends AppCompatActivity {
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final ActivityResultLauncher<String[]> documentPicker =
-            registerForActivityResult(new ActivityResultContracts.OpenDocument(), this::handleDocument);
+            registerForActivityResult(new ActivityResultContracts.OpenDocument(), this::processDocument);
     private final List<ChapterChoice> chapterChoices = new ArrayList<>();
     private final Map<String, Integer> typeQuotas = new LinkedHashMap<>();
 
@@ -69,6 +69,9 @@ public class MaterialToQuizActivity extends AppCompatActivity {
     private String bankName = "";
     private boolean automaticAttemptsExhausted;
     private boolean suppressDraftSave;
+    private boolean convertedQuestionBank;
+    private boolean openPickerAfterAiSetup;
+    private android.net.Uri pendingDocumentUri;
     private LinearLayout content;
     private LinearLayout footer;
     private TextView planTotalsText;
@@ -95,7 +98,7 @@ public class MaterialToQuizActivity extends AppCompatActivity {
         JSONObject saved = draftStore.load();
         if (externalUri != null) {
             renderWelcome();
-            handleDocument(externalUri);
+            beginExternalDocumentFlow(externalUri);
         } else if (saved == null) {
             renderWelcome();
         } else {
@@ -106,6 +109,22 @@ public class MaterialToQuizActivity extends AppCompatActivity {
                     .setNegativeButton("删除草稿", (dialog, which) -> draftStore.clear())
                     .setPositiveButton("继续", (dialog, which) -> restoreDraft(saved))
                     .show();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!new ApiConfigStore(this).getConfig().isComplete()) {
+            return;
+        }
+        if (pendingDocumentUri != null) {
+            android.net.Uri uri = pendingDocumentUri;
+            pendingDocumentUri = null;
+            confirmTokenUse("开始 AI 识别", () -> processDocument(uri));
+        } else if (openPickerAfterAiSetup) {
+            openPickerAfterAiSetup = false;
+            confirmTokenUse("选择资料", this::launchDocumentPicker);
         }
     }
 
@@ -132,21 +151,17 @@ public class MaterialToQuizActivity extends AppCompatActivity {
         TextView heroTitle = titleText("导入资料，AI 自动出题");
         heroBody.addView(heroTitle);
         TextView heroCopy = bodyText(
-                "支持 TXT、文字版 PDF 和 DOCX。资料在本机提取文字，再按章节分段发送给你已配置的 AI。"
+                "支持 TXT、文字版 PDF 和 DOCX。AI 会先判断是学习资料还是现成题库，再生成新题或忠实转换原题。"
         );
         heroBody.addView(heroCopy, topMargin(dp(8)));
         hero.addView(heroBody);
         content.addView(hero, bottomMargin(dp(14)));
 
         MaterialButton choose = primaryButton("选择资料");
-        choose.setOnClickListener(view -> documentPicker.launch(new String[]{
-                "text/plain",
-                "application/pdf",
-                "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        }));
+        choose.setOnClickListener(view -> beginPickerFlow());
         content.addView(choose, matchWrap());
 
-        TextView limits = bodyText("单文件不超过 20 MB · 选中内容不超过 10 万字 · 扫描版 PDF 暂不支持");
+        TextView limits = bodyText("需要先配置 AI · 会消耗 Token · 单文件不超过 20 MB · 文字不超过 10 万字 · 扫描版 PDF 暂不支持");
         limits.setTextSize(13);
         content.addView(limits, topMargin(dp(10)));
 
@@ -155,25 +170,155 @@ public class MaterialToQuizActivity extends AppCompatActivity {
         content.addView(json, topMargin(dp(22)));
     }
 
-    private void handleDocument(android.net.Uri uri) {
+    private void beginPickerFlow() {
+        if (!new ApiConfigStore(this).getConfig().isComplete()) {
+            openPickerAfterAiSetup = true;
+            showAiSetupRequired();
+            return;
+        }
+        confirmTokenUse("选择资料", this::launchDocumentPicker);
+    }
+
+    private void beginExternalDocumentFlow(android.net.Uri uri) {
+        if (!new ApiConfigStore(this).getConfig().isComplete()) {
+            pendingDocumentUri = uri;
+            showAiSetupRequired();
+            return;
+        }
+        confirmTokenUse("开始 AI 识别", () -> processDocument(uri));
+    }
+
+    private void showAiSetupRequired() {
+        new AlertDialog.Builder(this)
+                .setTitle("请先配置 AI")
+                .setMessage("识别 TXT、PDF 或 DOCX 前，需要先填写 API 地址、API Key 和模型。配置完成后会自动继续。")
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> {
+                    openPickerAfterAiSetup = false;
+                    pendingDocumentUri = null;
+                })
+                .setPositiveButton("前往 AI 设置", (dialog, which) ->
+                        startActivity(new Intent(this, SettingsActivity.class)))
+                .show();
+    }
+
+    private void confirmTokenUse(String positiveLabel, Runnable action) {
+        new AlertDialog.Builder(this)
+                .setTitle("AI 识别会消耗 Token")
+                .setMessage("应用会把本地提取的文字分段发送给你配置的 AI。学习资料会按知识点建议题量；现成题库会逐题转换为 JSON。")
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(positiveLabel, (dialog, which) -> action.run())
+                .show();
+    }
+
+    private void launchDocumentPicker() {
+        documentPicker.launch(new String[]{
+                "text/plain",
+                "application/pdf",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        });
+    }
+
+    private void processDocument(android.net.Uri uri) {
         if (uri == null) {
             return;
         }
-        renderLoading("正在读取资料", "本地提取文字，不会复制原始文件");
+        ApiConfig config = new ApiConfigStore(this).getConfig();
+        if (!config.isComplete()) {
+            pendingDocumentUri = uri;
+            showAiSetupRequired();
+            return;
+        }
+        renderLoading("正在读取并分析资料", "本地提取文字后由 AI 判断资料类型和建议题量");
         executor.execute(() -> {
             try {
                 MaterialDocumentExtractor.DocumentData result =
                         new MaterialDocumentExtractor().extract(this, uri);
                 List<MaterialTextRules.Chapter> chapters =
                         MaterialTextRules.detectChapters(result.getText());
-                MaterialGenerationPlan recommended = MaterialGenerationPlan.recommended(
-                        stripExtension(result.getDisplayName()), result.getDisplayName(), chapters
+                if (MaterialTextRules.countCharacters(chapters)
+                        > MaterialTextRules.MAX_SELECTED_CHARACTERS) {
+                    throw new IllegalArgumentException("资料文字超过 10 万字，请拆分文件后再导入，避免产生不可控的 Token 消耗");
+                }
+                MaterialDocumentAnalysis analysis = new MaterialQuestionGenerator().analyzeDocument(
+                        config, result.getDisplayName(), chapters
+                );
+                runOnUiThread(() -> showDocumentAnalysisDecision(result, chapters, analysis));
+            } catch (Exception e) {
+                runOnUiThread(() -> {
+                    renderWelcome();
+                    showError("资料识别失败", e);
+                });
+            }
+        });
+    }
+
+    private void showDocumentAnalysisDecision(
+            MaterialDocumentExtractor.DocumentData result,
+            List<MaterialTextRules.Chapter> chapters,
+            MaterialDocumentAnalysis analysis
+    ) {
+        int confidence = (int) Math.round(analysis.getConfidence() * 100d);
+        String detected = analysis.isQuestionBank() ? "现成题库" : "学习资料";
+        String detail = analysis.isQuestionBank()
+                ? "AI 估计约有 " + analysis.getDetectedQuestionCount() + " 道原题，将逐段识别并转换。"
+                : "AI 将遍历全文知识点，再确定建议题量和题型。";
+        Runnable learningAction = () -> startLearningPlanAnalysis(result, chapters);
+        Runnable bankAction = () -> startQuestionBankConversion(result, chapters);
+        new AlertDialog.Builder(this)
+                .setTitle("AI 判断：" + detected)
+                .setMessage(analysis.getReason() + "\n\n" + detail + "\n判断置信度：" + confidence + "%\n\n如果判断有误，可选择另一种处理方式。")
+                .setNegativeButton("重新选择", (dialog, which) -> renderWelcome())
+                .setNeutralButton(analysis.isQuestionBank() ? "按资料出题" : "按题库转换",
+                        (dialog, which) -> {
+                            if (analysis.isQuestionBank()) {
+                                learningAction.run();
+                            } else {
+                                bankAction.run();
+                            }
+                        })
+                .setPositiveButton(analysis.isQuestionBank() ? "识别并转换" : "采用 AI 建议",
+                        (dialog, which) -> {
+                            if (analysis.isQuestionBank()) {
+                                bankAction.run();
+                            } else {
+                                learningAction.run();
+                            }
+                        })
+                .show();
+    }
+
+    private void startLearningPlanAnalysis(
+            MaterialDocumentExtractor.DocumentData result,
+            List<MaterialTextRules.Chapter> chapters
+    ) {
+        ApiConfig config = new ApiConfigStore(this).getConfig();
+        if (!config.isComplete()) {
+            showAiSetupRequired();
+            return;
+        }
+        document = result;
+        bankName = stripExtension(result.getDisplayName());
+        convertedQuestionBank = false;
+        int requests = MaterialQuestionGenerator.estimateLearningPlanRequests(chapters);
+        renderLoading("AI 正在盘点知识点", "预计 " + requests + " 次分析请求 · 完成后可调整题量");
+        executor.execute(() -> {
+            try {
+                MaterialGenerationPlan recommended = new MaterialQuestionGenerator().recommendLearningPlan(
+                        config,
+                        bankName,
+                        result.getDisplayName(),
+                        chapters,
+                        (completed, total, message) -> runOnUiThread(() ->
+                                renderLoading(
+                                        "AI 正在盘点知识点",
+                                        completed + " / " + total + " 次请求 · " + message
+                                ))
                 );
                 runOnUiThread(() -> applyDocument(result, recommended));
             } catch (Exception e) {
                 runOnUiThread(() -> {
                     renderWelcome();
-                    showError("读取资料失败", e);
+                    showError("知识点分析失败", e);
                 });
             }
         });
@@ -183,6 +328,7 @@ public class MaterialToQuizActivity extends AppCompatActivity {
             MaterialDocumentExtractor.DocumentData result,
             MaterialGenerationPlan recommended
     ) {
+        convertedQuestionBank = false;
         document = result;
         bankName = stripExtension(result.getDisplayName());
         chapterChoices.clear();
@@ -199,6 +345,123 @@ public class MaterialToQuizActivity extends AppCompatActivity {
         automaticAttemptsExhausted = false;
         renderPlan();
         persistDraftQuietly();
+    }
+
+    private void startQuestionBankConversion(
+            MaterialDocumentExtractor.DocumentData result,
+            List<MaterialTextRules.Chapter> chapters
+    ) {
+        ApiConfig config = new ApiConfigStore(this).getConfig();
+        if (!config.isComplete()) {
+            pendingDocumentUri = null;
+            showAiSetupRequired();
+            return;
+        }
+        convertedQuestionBank = true;
+        document = result;
+        bankName = stripExtension(result.getDisplayName());
+        questions = new JSONArray();
+        generationResult = null;
+        automaticAttemptsExhausted = false;
+        stage = Stage.WELCOME;
+        int requests = MaterialQuestionGenerator.estimateQuestionBankRequests(chapters);
+        renderLoading("AI 正在识别题库", "预计 " + requests + " 次请求 · 正在准备分段转换");
+        executor.execute(() -> {
+            try {
+                MaterialQuestionGenerator.QuestionBankConversionResult converted =
+                        new MaterialQuestionGenerator().convertQuestionBank(
+                                config,
+                                bankName,
+                                chapters,
+                                (completed, total, message) -> runOnUiThread(() ->
+                                        renderLoading(
+                                                "AI 正在识别题库",
+                                                completed + " / " + total + " 次请求 · " + message
+                                        ))
+                        );
+                runOnUiThread(() -> applyQuestionBankConversion(chapters, converted));
+            } catch (Exception e) {
+                runOnUiThread(() -> {
+                    stage = Stage.WELCOME;
+                    renderWelcome();
+                    showError("题库转换失败", e);
+                });
+            }
+        });
+    }
+
+    private void applyQuestionBankConversion(
+            List<MaterialTextRules.Chapter> chapters,
+            MaterialQuestionGenerator.QuestionBankConversionResult converted
+    ) {
+        try {
+            questions = copyJson(converted.getAccepted());
+            rebuildConvertedPlan(chapters);
+            MaterialQuestionGenerator.PlanValidationResult checked =
+                    MaterialQuestionGenerator.validatePlan(questions, plan);
+            generationResult = new MaterialQuestionGenerator.GenerationResult(
+                    converted.getReturnedCount(),
+                    0,
+                    checked,
+                    converted.getDuplicateCount(),
+                    converted.getInvalidCount()
+            );
+            stage = Stage.PREVIEW;
+            persistDraftQuietly();
+            renderPreview();
+        } catch (Exception e) {
+            renderWelcome();
+            showError("无法整理识别结果", e);
+        }
+    }
+
+    private void rebuildConvertedPlan(List<MaterialTextRules.Chapter> sourceChapters) throws Exception {
+        plan = MaterialGenerationPlan.fromDetectedQuestions(
+                bankName,
+                document.getDisplayName(),
+                sourceChapters,
+                questions
+        );
+        chapterChoices.clear();
+        for (MaterialGenerationPlan.ChapterPlan chapter : plan.getChapters()) {
+            chapterChoices.add(new ChapterChoice(
+                    chapter.getTitle(), chapter.getText(), true, chapter.getQuestionCount()
+            ));
+        }
+        typeQuotas.clear();
+        typeQuotas.putAll(plan.getTypeQuotas());
+    }
+
+    private List<MaterialTextRules.Chapter> currentSourceChapters() {
+        List<MaterialTextRules.Chapter> result = new ArrayList<>();
+        for (ChapterChoice choice : chapterChoices) {
+            result.add(new MaterialTextRules.Chapter(choice.title, choice.text));
+        }
+        return result;
+    }
+
+    private void applyConvertedEdits(JSONArray candidates) throws Exception {
+        MaterialQuestionRules.ValidationResult detected =
+                MaterialQuestionRules.validateDetected(candidates, bankName);
+        if (detected.getAccepted().length() == 0) {
+            throw new IllegalArgumentException("至少保留一道答案完整的题目");
+        }
+        int returned = generationResult == null
+                ? candidates.length()
+                : Math.max(generationResult.getReturnedCount(), candidates.length());
+        int removedDuplicates = (generationResult == null ? 0 : generationResult.getRemovedDuplicateCount())
+                + detected.getDuplicateCount();
+        int removedInvalid = (generationResult == null ? 0 : generationResult.getRemovedInvalidCount())
+                + detected.getInvalidCount();
+        questions = copyJson(detected.getAccepted());
+        rebuildConvertedPlan(currentSourceChapters());
+        MaterialQuestionGenerator.PlanValidationResult checked =
+                MaterialQuestionGenerator.validatePlan(questions, plan);
+        generationResult = new MaterialQuestionGenerator.GenerationResult(
+                returned, 0, checked, removedDuplicates, removedInvalid
+        );
+        persistDraftQuietly();
+        renderPreview();
     }
 
     private void renderPlan() {
@@ -548,12 +811,19 @@ public class MaterialToQuizActivity extends AppCompatActivity {
                 returned, rounds, validation, removedDuplicates, removedInvalid
         );
 
-        beginScreen("校对工作台", questions.length() + " 题 · 保存前最后检查", view -> renderPlan());
+        beginScreen("校对工作台", questions.length() + " 题 · 保存前最后检查",
+                view -> {
+                    if (convertedQuestionBank) {
+                        renderWelcome();
+                    } else {
+                        renderPlan();
+                    }
+                });
         addSteps(4);
         MaterialCardView summary = validation.isComplete() ? successCard() : warningCard();
         LinearLayout summaryBody = vertical(dp(16));
         summaryBody.addView(titleText(validation.isComplete()
-                ? "✓ 两轮严格校验通过"
+                ? (convertedQuestionBank ? "✓ AI 原题识别与格式校验完成" : "✓ 两轮严格校验通过")
                 : "还缺 " + validation.getMissingCount() + " 题"));
         summaryBody.addView(bodyText(
                 questions.length() + " / " + plan.getTargetCount() + " 有效 · 移除重复 "
@@ -646,9 +916,11 @@ public class MaterialToQuizActivity extends AppCompatActivity {
         MaterialButton edit = compactButton("编辑");
         edit.setOnClickListener(view -> showQuestionEditor(index, question));
         actions.addView(edit);
-        MaterialButton regenerate = compactButton("重新生成");
-        regenerate.setOnClickListener(view -> regenerateQuestion(index, question));
-        actions.addView(regenerate);
+        if (!convertedQuestionBank) {
+            MaterialButton regenerate = compactButton("重新生成");
+            regenerate.setOnClickListener(view -> regenerateQuestion(index, question));
+            actions.addView(regenerate);
+        }
         MaterialButton delete = compactButton("删除");
         delete.setTextColor(getColor(R.color.brand_error));
         delete.setOnClickListener(view -> deleteQuestion(index));
@@ -758,20 +1030,12 @@ public class MaterialToQuizActivity extends AppCompatActivity {
             Toast.makeText(this, "请先粘贴完整题目", Toast.LENGTH_SHORT).show();
             return;
         }
-        try {
-            JSONArray local = MaterialManualQuestionParser.parse(pasted);
-            if (local.length() > 0) {
-                addManualCandidates(local, validation);
-                return;
-            }
-        } catch (Exception ignored) {
-        }
         ApiConfig config = new ApiConfigStore(this).getConfig();
         if (!config.isComplete()) {
-            showError("无法解析", new IllegalArgumentException("本地未识别出完整格式，且 AI 尚未配置"));
+            showError("无法解析", new IllegalArgumentException("请先配置 API 地址、API Key 和模型"));
             return;
         }
-        Toast.makeText(this, "本地格式未识别，正在请 AI 结构化…", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "正在请 AI 识别全部粘贴题目，将消耗 Token…", Toast.LENGTH_SHORT).show();
         executor.execute(() -> {
             try {
                 JSONArray parsed = new MaterialQuestionGenerator().parsePastedWithAi(
@@ -929,6 +1193,10 @@ public class MaterialToQuizActivity extends AppCompatActivity {
         for (int i = 0; i < questions.length(); i++) {
             combined.put(i == index ? updated : questions.getJSONObject(i));
         }
+        if (convertedQuestionBank) {
+            applyConvertedEdits(combined);
+            return;
+        }
         MaterialQuestionGenerator.PlanValidationResult checked =
                 MaterialQuestionGenerator.validatePlan(combined, plan);
         questions = copyJson(checked.getAccepted());
@@ -944,7 +1212,9 @@ public class MaterialToQuizActivity extends AppCompatActivity {
     private void deleteQuestion(int index) {
         new AlertDialog.Builder(this)
                 .setTitle("删除这道题？")
-                .setMessage("删除后会产生题型缺口，需要重新补齐才能保存题库。")
+                .setMessage(convertedQuestionBank
+                        ? "这道原题会从转换结果中移除。"
+                        : "删除后会产生题型缺口，需要重新补齐才能保存题库。")
                 .setNegativeButton(android.R.string.cancel, null)
                 .setPositiveButton("删除", (dialog, which) -> {
                     try {
@@ -953,6 +1223,10 @@ public class MaterialToQuizActivity extends AppCompatActivity {
                             if (i != index) {
                                 remaining.put(questions.getJSONObject(i));
                             }
+                        }
+                        if (convertedQuestionBank) {
+                            applyConvertedEdits(remaining);
+                            return;
                         }
                         MaterialQuestionGenerator.PlanValidationResult checked =
                                 MaterialQuestionGenerator.validatePlan(remaining, plan);
@@ -1025,7 +1299,10 @@ public class MaterialToQuizActivity extends AppCompatActivity {
             Intent result = new Intent();
             result.putExtra(EXTRA_CREATED_BANK_ID, created.getId());
             setResult(RESULT_OK, result);
-            Toast.makeText(this, "已生成题库：" + created.getDisplayName(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this,
+                    (convertedQuestionBank ? "已转换题库：" : "已生成题库：") + created.getDisplayName(),
+                    Toast.LENGTH_LONG
+            ).show();
             finish();
         } catch (Exception e) {
             showError("保存题库失败", e);
@@ -1105,7 +1382,11 @@ public class MaterialToQuizActivity extends AppCompatActivity {
             return;
         }
         if (stage == Stage.PREVIEW) {
-            renderPlan();
+            if (convertedQuestionBank) {
+                renderWelcome();
+            } else {
+                renderPlan();
+            }
             return;
         }
         if (stage == Stage.PLAN) {
@@ -1159,6 +1440,7 @@ public class MaterialToQuizActivity extends AppCompatActivity {
             root.put("typeMatrix", matrixJson);
         }
         root.put("questions", questions);
+        root.put("convertedQuestionBank", convertedQuestionBank);
         root.put("automaticAttemptsExhausted", automaticAttemptsExhausted);
         root.put("returnedCount", generationResult == null ? questions.length() : generationResult.getReturnedCount());
         root.put("repairRounds", generationResult == null ? 0 : generationResult.getRepairRounds());
@@ -1191,6 +1473,7 @@ public class MaterialToQuizActivity extends AppCompatActivity {
             typeQuotas.put(MaterialQuestionRules.JUDGE, types.optInt(MaterialQuestionRules.JUDGE));
             typeQuotas.put(MaterialQuestionRules.FILL_BLANK, types.optInt(MaterialQuestionRules.FILL_BLANK));
             questions = copyJson(saved.optJSONArray("questions"));
+            convertedQuestionBank = saved.optBoolean("convertedQuestionBank", false);
             automaticAttemptsExhausted = saved.optBoolean("automaticAttemptsExhausted", false);
             plan = buildPlan();
             JSONObject savedMatrix = saved.optJSONObject("typeMatrix");

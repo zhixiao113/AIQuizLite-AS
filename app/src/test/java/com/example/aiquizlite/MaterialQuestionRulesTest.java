@@ -31,6 +31,33 @@ public class MaterialQuestionRulesTest {
         assertEquals(0, result.getMissingByType().get("fill_blank").intValue());
     }
 
+    @Test
+    public void detectedQuestionValidationDoesNotDropValidTypesBecauseOfPresetQuotas() throws Exception {
+        JSONArray candidates = new JSONArray()
+                .put(choice("single", "第一道单选题", "A"))
+                .put(choice("judge", "一道判断题", "A"))
+                .put(fill("一道填空题", "答案"));
+
+        MaterialQuestionRules.ValidationResult result =
+                MaterialQuestionRules.validateDetected(candidates, "原题库");
+
+        assertEquals(3, result.getAccepted().length());
+        assertEquals(0, result.getInvalidCount());
+        assertEquals(0, result.getOverflowCount());
+    }
+
+    @Test
+    public void detectedFillQuestionKeepsMultipleExplicitAcceptedAnswers() throws Exception {
+        JSONObject question = fill("设备所在安全区域是______。", "Local")
+                .put("answers", new JSONArray().put("Local").put("Local区域"));
+
+        MaterialQuestionRules.ValidationResult result =
+                MaterialQuestionRules.validateDetected(new JSONArray().put(question), "原题库");
+
+        assertEquals(1, result.getAccepted().length());
+        assertEquals(2, result.getAccepted().getJSONObject(0).getJSONArray("answers").length());
+    }
+
     private static JSONObject choice(String type, String stem, String answer) throws Exception {
         return new JSONObject()
                 .put("type", type)

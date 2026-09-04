@@ -1,5 +1,9 @@
 package com.example.aiquizlite;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -76,6 +80,61 @@ public final class MaterialGenerationPlan {
                 sourceName,
                 chapterPlans,
                 recommendTypes(target)
+        );
+    }
+
+    public static MaterialGenerationPlan fromDetectedQuestions(
+            String bankName,
+            String sourceName,
+            List<MaterialTextRules.Chapter> sourceChapters,
+            JSONArray questions
+    ) throws JSONException {
+        Map<String, String> sourceText = new LinkedHashMap<>();
+        if (sourceChapters != null) {
+            for (MaterialTextRules.Chapter chapter : sourceChapters) {
+                if (chapter != null) {
+                    sourceText.put(chapter.getTitle(), chapter.getContent());
+                }
+            }
+        }
+        Map<String, Map<String, Integer>> matrix = new LinkedHashMap<>();
+        Map<String, Integer> totals = emptyTypeCounts();
+        JSONArray safeQuestions = questions == null ? new JSONArray() : questions;
+        for (int i = 0; i < safeQuestions.length(); i++) {
+            JSONObject question = safeQuestions.optJSONObject(i);
+            if (question == null) {
+                continue;
+            }
+            String type = MaterialQuestionRules.normalizeType(question.optString("type", ""));
+            if (type == null) {
+                continue;
+            }
+            String chapter = question.optString("sourceChapter", "").trim();
+            if (chapter.isEmpty()) {
+                chapter = "全文";
+                question.put("sourceChapter", chapter);
+            }
+            matrix.computeIfAbsent(chapter, key -> emptyTypeCounts());
+            matrix.get(chapter).put(type, matrix.get(chapter).get(type) + 1);
+            totals.put(type, totals.get(type) + 1);
+        }
+        List<ChapterPlan> chapterPlans = new ArrayList<>();
+        for (Map.Entry<String, Map<String, Integer>> entry : matrix.entrySet()) {
+            chapterPlans.add(new ChapterPlan(
+                    entry.getKey(),
+                    sourceText.getOrDefault(entry.getKey(), ""),
+                    sum(entry.getValue())
+            ));
+        }
+        if (chapterPlans.isEmpty()) {
+            throw new IllegalArgumentException("AI 没有识别出可用题目");
+        }
+        return new MaterialGenerationPlan(
+                bankName,
+                sourceName,
+                chapterPlans,
+                totals,
+                matrix
         );
     }
 
@@ -194,6 +253,16 @@ public final class MaterialGenerationPlan {
         if (!columns.equals(typeQuotas)) {
             throw new IllegalArgumentException("章节题型分配与题型总量不一致");
         }
+    }
+
+    private static int sum(Map<String, Integer> values) {
+        int total = 0;
+        if (values != null) {
+            for (Integer value : values.values()) {
+                total += value == null ? 0 : Math.max(0, value);
+            }
+        }
+        return total;
     }
 
     private static Map<String, Map<String, Integer>> normalizeExplicitMatrix(

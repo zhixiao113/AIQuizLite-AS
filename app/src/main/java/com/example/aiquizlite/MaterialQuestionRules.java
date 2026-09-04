@@ -78,6 +78,19 @@ public final class MaterialQuestionRules {
         );
     }
 
+    public static ValidationResult validateDetected(
+            JSONArray candidates,
+            String fallbackPaper
+    ) throws JSONException {
+        int maximum = Math.max(1, candidates == null ? 0 : candidates.length());
+        Map<String, Integer> permissiveQuotas = new LinkedHashMap<>();
+        permissiveQuotas.put(SINGLE, maximum);
+        permissiveQuotas.put(MULTI, maximum);
+        permissiveQuotas.put(JUDGE, maximum);
+        permissiveQuotas.put(FILL_BLANK, maximum);
+        return validate(candidates, permissiveQuotas, fallbackPaper);
+    }
+
     private static NormalizedQuestion normalize(JSONObject raw, String fallbackPaper) throws JSONException {
         if (raw == null) {
             return null;
@@ -138,7 +151,7 @@ public final class MaterialQuestionRules {
 
     private static boolean validAnswerShape(String type, JSONArray answers, Set<String> optionKeys) {
         if (FILL_BLANK.equals(type)) {
-            return optionKeys.isEmpty() && answers.length() == 1;
+            return optionKeys.isEmpty() && answers.length() >= 1;
         }
         if (optionKeys.size() < 2) {
             return false;

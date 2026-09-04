@@ -2,6 +2,8 @@ package com.example.aiquizlite;
 
 import static org.junit.Assert.assertEquals;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -29,6 +31,27 @@ public class MaterialGenerationPlanTest {
         assertEquals(2, column(matrix, MaterialQuestionRules.MULTI));
         assertEquals(2, column(matrix, MaterialQuestionRules.JUDGE));
         assertEquals(2, column(matrix, MaterialQuestionRules.FILL_BLANK));
+    }
+
+    @Test
+    public void convertedQuestionBankPlanUsesActualDetectedCounts() throws Exception {
+        JSONArray questions = new JSONArray()
+                .put(new JSONObject().put("type", "single").put("sourceChapter", "第一章"))
+                .put(new JSONObject().put("type", "fill_blank").put("sourceChapter", "第二章"));
+
+        MaterialGenerationPlan plan = MaterialGenerationPlan.fromDetectedQuestions(
+                "原题库",
+                "原题库.docx",
+                Arrays.asList(
+                        new MaterialTextRules.Chapter("第一章", "正文一"),
+                        new MaterialTextRules.Chapter("第二章", "正文二")
+                ),
+                questions
+        );
+
+        assertEquals(2, plan.getTargetCount());
+        assertEquals(1, column(plan.allocateTypeMatrix(), MaterialQuestionRules.SINGLE));
+        assertEquals(1, column(plan.allocateTypeMatrix(), MaterialQuestionRules.FILL_BLANK));
     }
 
     private static Map<String, Integer> quotas(int single, int multi, int judge, int fill) {
