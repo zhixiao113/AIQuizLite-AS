@@ -15,7 +15,8 @@ public final class MaterialGenerationPlan {
             MaterialQuestionRules.SINGLE,
             MaterialQuestionRules.MULTI,
             MaterialQuestionRules.JUDGE,
-            MaterialQuestionRules.FILL_BLANK
+            MaterialQuestionRules.FILL_BLANK,
+            MaterialQuestionRules.MATCHING
     };
 
     private final String bankName;

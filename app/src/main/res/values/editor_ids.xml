@@ -1,0 +1,4 @@
+<resources>
+    <item name="editor_bank_name" type="id" />
+    <item name="editor_search" type="id" />
+</resources>

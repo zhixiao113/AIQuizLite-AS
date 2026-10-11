@@ -6,6 +6,7 @@ public final class GeneralSettingsRules {
     public static final int AUTO_ADVANCE_DISABLED = 0;
     public static final int QUESTION_FONT_STANDARD = 0;
     public static final int QUESTION_FONT_LARGE = 1;
+    public static final int QUESTION_FONT_SMALL = 2;
     public static final int QUIZ_DENSITY_STANDARD = 0;
     public static final int QUIZ_DENSITY_COMPACT = 1;
 
@@ -30,7 +31,8 @@ public final class GeneralSettingsRules {
     }
 
     public static int normalizeQuestionFontMode(int value) {
-        return value == QUESTION_FONT_LARGE ? QUESTION_FONT_LARGE : QUESTION_FONT_STANDARD;
+        return value == QUESTION_FONT_SMALL || value == QUESTION_FONT_LARGE
+                ? value : QUESTION_FONT_STANDARD;
     }
 
     public static int normalizeQuizDensity(int value) {
@@ -38,7 +40,35 @@ public final class GeneralSettingsRules {
     }
 
     public static String questionFontLabel(int value) {
-        return normalizeQuestionFontMode(value) == QUESTION_FONT_LARGE ? "较大" : "标准";
+        switch (normalizeQuestionFontMode(value)) {
+            case QUESTION_FONT_SMALL: return "较小";
+            case QUESTION_FONT_LARGE: return "较大";
+            default: return "标准";
+        }
+    }
+
+    public static int questionStemSizeSp(int value) {
+        switch (normalizeQuestionFontMode(value)) {
+            case QUESTION_FONT_SMALL: return 16;
+            case QUESTION_FONT_LARGE: return 21;
+            default: return 18;
+        }
+    }
+
+    public static int questionOptionSizeSp(int value) {
+        switch (normalizeQuestionFontMode(value)) {
+            case QUESTION_FONT_SMALL: return 14;
+            case QUESTION_FONT_LARGE: return 18;
+            default: return 16;
+        }
+    }
+
+    public static int matchingItemSizeSp(int value) {
+        switch (normalizeQuestionFontMode(value)) {
+            case QUESTION_FONT_SMALL: return 12;
+            case QUESTION_FONT_LARGE: return 15;
+            default: return 13;
+        }
     }
 
     public static String quizDensityLabel(int value) {

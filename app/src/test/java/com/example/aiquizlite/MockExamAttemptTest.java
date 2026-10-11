@@ -81,6 +81,33 @@ public class MockExamAttemptTest {
                 attempt.getItems().get(0).getOptionKeyOrder());
     }
 
+    @Test
+    public void matchingSelectionStaysUnansweredUntilEveryRightItemIsConnected() {
+        MatchingData matching = new MatchingData(MatchingData.LEFT_REUSABLE,
+                Arrays.asList(new MatchingData.Item("L1", "左一"),
+                        new MatchingData.Item("L2", "左二")),
+                Arrays.asList(new MatchingData.Item("R1", "右一"),
+                        new MatchingData.Item("R2", "右二")),
+                Arrays.asList(new MatchingData.Pair("L1", "R1"),
+                        new MatchingData.Pair("L1", "R2")));
+        Question question = new Question("match", 1, "测试卷", 1, "matching", "连线",
+                Collections.emptyList(), Collections.emptyList(), null, null,
+                matching, Collections.emptyList());
+        MockExamAttempt attempt = MockExamAttempt.create("bank",
+                Collections.singletonList(question), new Random(1), 100L);
+        attempt.setMatchingSelection("match", Collections.singletonList(
+                new MatchingData.Pair("L1", "R1")));
+        assertEquals(1, attempt.getUnansweredCount());
+        attempt.setMatchingSelection("match", Arrays.asList(
+                new MatchingData.Pair("L1", "R1"), new MatchingData.Pair("L2", "R2")));
+        assertEquals(1, attempt.getWrongCount());
+        assertEquals(0, attempt.getUnansweredCount());
+        MockExamAttempt restored = MockExamAttempt.fromJson(attempt.toJson());
+        assertEquals(attempt.getItems().get(0).getSelectedPairs(),
+                restored.getItems().get(0).getSelectedPairs());
+        assertEquals(0, restored.getScore());
+    }
+
     private Question question(String id, String type, String answer) {
         return new Question(
                 id,

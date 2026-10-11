@@ -15,6 +15,10 @@ public class Question {
     private final List<String> answers;
     private final String image;
     private final String explanation;
+    private final MatchingData matching;
+    private final List<String> explanationImages;
+    private final String sourceChapter;
+    private final String sourceName;
 
     public Question(
             String id,
@@ -28,6 +32,32 @@ public class Question {
             String image,
             String explanation
     ) {
+        this(id, index, paper, numberInPaper, type, stem, options, answers,
+                image, explanation, null, Collections.emptyList());
+    }
+
+    public Question(
+            String id,
+            int index,
+            String paper,
+            int numberInPaper,
+            String type,
+            String stem,
+            List<Option> options,
+            List<String> answers,
+            String image,
+            String explanation,
+            MatchingData matching,
+            List<String> explanationImages
+    ) {
+        this(id, index, paper, numberInPaper, type, stem, options, answers, image,
+                explanation, matching, explanationImages, null, null);
+    }
+
+    public Question(String id, int index, String paper, int numberInPaper, String type,
+                    String stem, List<Option> options, List<String> answers, String image,
+                    String explanation, MatchingData matching, List<String> explanationImages,
+                    String sourceChapter, String sourceName) {
         this.id = id;
         this.index = index;
         this.paper = paper;
@@ -40,6 +70,14 @@ public class Question {
         this.explanation = explanation == null || explanation.trim().isEmpty()
                 ? null
                 : explanation.trim();
+        if ("matching".equals(this.type) && matching == null) {
+            throw new IllegalArgumentException("连线题缺少左右项目和标准关系");
+        }
+        this.matching = matching;
+        this.explanationImages = Collections.unmodifiableList(new ArrayList<>(
+                explanationImages == null ? Collections.emptyList() : explanationImages));
+        this.sourceChapter = sourceChapter;
+        this.sourceName = sourceName;
     }
 
     public String getId() {
@@ -82,6 +120,14 @@ public class Question {
         return explanation;
     }
 
+    public MatchingData getMatching() { return matching; }
+
+    public List<String> getExplanationImages() { return explanationImages; }
+    public String getSourceChapter() { return sourceChapter; }
+    public String getSourceName() { return sourceName; }
+
+    public boolean isMatching() { return "matching".equals(type); }
+
     public boolean isMultiChoice() {
         return "multi".equals(type);
     }
@@ -100,6 +146,8 @@ public class Question {
                 return "判断题";
             case "fill_blank":
                 return "填空题";
+            case "matching":
+                return "连线题";
             default:
                 return type;
         }
@@ -130,6 +178,11 @@ public class Question {
                 case "填空":
                 case "填空题":
                     return "fill_blank";
+                case "matching":
+                case "match":
+                case "连线":
+                case "连线题":
+                    return "matching";
                 default:
                     break;
             }

@@ -6,18 +6,35 @@ def externalBuildDir = System.getenv("AIQUIZ_BUILD_DIR")
 if (externalBuildDir != null && !externalBuildDir.isBlank()) {
     layout.buildDirectory.set(file(externalBuildDir))
 }
-def debugKeystoreFile = new File(rootProject.projectDir, ".debug/debug.keystore")
+
+// 签名文件与密码只保存在本机，不进入版本库。
+// 已分发的 Android Studio Signed APK 使用 ../app_sign.jks (alias key0)。
+// 默认沿用已分发签名；不能回退到 keystore/aiquizlite.jks。
+// scripts/build-device-release.ps1 从本机 DPAPI 文件解密并注入环境变量，密码不写入源码。
+def signingProps = new Properties()
+def signingPropsFile = rootProject.file('local.properties')
+if (signingPropsFile.exists()) {
+    signingPropsFile.withInputStream { signingProps.load(it) }
+}
+def releaseKeystoreFile = rootProject.file(System.getenv('AIQUIZ_RELEASE_STORE_FILE')
+        ?: signingProps.getProperty('aiquizlite.storeFile', '../app_sign.jks'))
+def releaseKeyAlias = System.getenv('AIQUIZ_RELEASE_KEY_ALIAS')
+        ?: signingProps.getProperty('aiquizlite.keyAlias', 'key0')
+def releaseStorePassword = System.getenv('AIQUIZ_RELEASE_STORE_PASSWORD')
+        ?: signingProps.getProperty('aiquizlite.storePassword', '')
+def releaseKeyPassword = System.getenv('AIQUIZ_RELEASE_KEY_PASSWORD')
+        ?: signingProps.getProperty('aiquizlite.keyPassword', '')
 
 android {
     namespace 'com.example.aiquizlite'
     compileSdk 35
 
     signingConfigs {
-        debug {
-            storeFile debugKeystoreFile
-            storePassword "android"
-            keyAlias "androiddebugkey"
-            keyPassword "android"
+        release {
+            storeFile releaseKeystoreFile
+            storePassword releaseStorePassword
+            keyAlias releaseKeyAlias
+            keyPassword releaseKeyPassword
         }
     }
 
@@ -25,21 +42,21 @@ android {
         applicationId "com.example.aiquizlite"
         minSdk 24
         targetSdk 35
-        versionCode 3
-        versionName "1.0.2"
+        versionCode 13
+        versionName "1.1.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         debug {
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
         }
 
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
         }
     }
 

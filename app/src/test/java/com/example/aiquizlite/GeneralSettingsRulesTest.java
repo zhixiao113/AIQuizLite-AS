@@ -29,9 +29,19 @@ public class GeneralSettingsRulesTest {
         assertEquals(100, GeneralSettingsRules.normalizeMockQuestionLimit(100));
         assertEquals(GeneralSettingsRules.QUESTION_FONT_LARGE,
                 GeneralSettingsRules.normalizeQuestionFontMode(GeneralSettingsRules.QUESTION_FONT_LARGE));
+        assertEquals(GeneralSettingsRules.QUESTION_FONT_SMALL,
+                GeneralSettingsRules.normalizeQuestionFontMode(GeneralSettingsRules.QUESTION_FONT_SMALL));
         assertEquals(GeneralSettingsRules.QUIZ_DENSITY_COMPACT,
                 GeneralSettingsRules.normalizeQuizDensity(GeneralSettingsRules.QUIZ_DENSITY_COMPACT));
         assertEquals("较大", GeneralSettingsRules.questionFontLabel(GeneralSettingsRules.QUESTION_FONT_LARGE));
+        assertEquals("较小", GeneralSettingsRules.questionFontLabel(GeneralSettingsRules.QUESTION_FONT_SMALL));
+        assertEquals(16, GeneralSettingsRules.questionStemSizeSp(GeneralSettingsRules.QUESTION_FONT_SMALL));
+        assertEquals(14, GeneralSettingsRules.questionOptionSizeSp(GeneralSettingsRules.QUESTION_FONT_SMALL));
+        assertEquals(12, GeneralSettingsRules.matchingItemSizeSp(GeneralSettingsRules.QUESTION_FONT_SMALL));
+        assertEquals(13, GeneralSettingsRules.matchingItemSizeSp(GeneralSettingsRules.QUESTION_FONT_STANDARD));
+        assertEquals(15, GeneralSettingsRules.matchingItemSizeSp(GeneralSettingsRules.QUESTION_FONT_LARGE));
+        assertEquals(18, GeneralSettingsRules.questionStemSizeSp(GeneralSettingsRules.QUESTION_FONT_STANDARD));
+        assertEquals(21, GeneralSettingsRules.questionStemSizeSp(GeneralSettingsRules.QUESTION_FONT_LARGE));
         assertEquals("紧凑", GeneralSettingsRules.quizDensityLabel(GeneralSettingsRules.QUIZ_DENSITY_COMPACT));
     }
 }

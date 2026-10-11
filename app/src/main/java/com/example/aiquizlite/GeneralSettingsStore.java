@@ -7,6 +7,7 @@ import android.net.Uri;
 public final class GeneralSettingsStore {
     private static final String PREF_NAME = "general_settings_v1";
     private static final String KEY_RESUME_DAILY = "resume_daily";
+    private static final String KEY_DAILY_HISTORY_REVIEW = "daily_history_review";
     private static final String KEY_AUTO_ADD_WRONG = "auto_add_wrong";
     private static final String KEY_WRONG_REMOVAL_THRESHOLD = "wrong_removal_threshold";
     private static final String KEY_CORRECT_AUTO_ADVANCE = "correct_auto_advance";
@@ -25,6 +26,7 @@ public final class GeneralSettingsStore {
     private static final String KEY_IMAGE_FULLSCREEN = "image_fullscreen";
     private static final String KEY_HAPTIC_FEEDBACK = "haptic_feedback";
     private static final String KEY_MOCK_KEEP_SCREEN_ON = "mock_keep_screen_on";
+    private static final String KEY_UPDATE_SERVER_URL = "update_server_url";
 
     private final SharedPreferences preferences;
 
@@ -35,6 +37,14 @@ public final class GeneralSettingsStore {
 
     public boolean shouldResumeDailyPractice() {
         return preferences.getBoolean(KEY_RESUME_DAILY, true);
+    }
+
+    public boolean shouldReviewDailyHistory() {
+        return preferences.getBoolean(KEY_DAILY_HISTORY_REVIEW, false);
+    }
+
+    public void setReviewDailyHistory(boolean enabled) {
+        preferences.edit().putBoolean(KEY_DAILY_HISTORY_REVIEW, enabled).apply();
     }
 
     public void setResumeDailyPractice(boolean enabled) {
@@ -233,5 +243,16 @@ public final class GeneralSettingsStore {
                 .remove(KEY_DOWNLOAD_TREE_URI)
                 .remove(KEY_DOWNLOAD_TREE_LABEL)
                 .apply();
+    }
+
+    public String getUpdateServerUrl() {
+        String saved = preferences.getString(KEY_UPDATE_SERVER_URL, "");
+        return saved == null || saved.trim().isEmpty()
+                ? UpdateChecker.DEFAULT_SERVER_URL
+                : saved.trim();
+    }
+
+    public void setUpdateServerUrl(String url) {
+        preferences.edit().putString(KEY_UPDATE_SERVER_URL, url == null ? "" : url.trim()).apply();
     }
 }

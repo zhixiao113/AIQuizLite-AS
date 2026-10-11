@@ -5,6 +5,7 @@ import java.util.Locale;
 final class ExternalImportRules {
     enum Destination {
         QUESTION_BANK_JSON,
+        QUESTION_BANK_ZIP,
         MATERIAL,
         LEGACY_WORD_UNSUPPORTED,
         UNSUPPORTED
@@ -25,6 +26,9 @@ final class ExternalImportRules {
         if (name.endsWith(".json")) {
             return Destination.QUESTION_BANK_JSON;
         }
+        if (name.endsWith(".zip")) {
+            return Destination.QUESTION_BANK_ZIP;
+        }
         if (name.endsWith(".txt") || name.endsWith(".pdf") || name.endsWith(".docx")) {
             return Destination.MATERIAL;
         }
@@ -34,6 +38,9 @@ final class ExternalImportRules {
 
         if ("application/json".equals(mime) || "text/json".equals(mime)) {
             return Destination.QUESTION_BANK_JSON;
+        }
+        if ("application/zip".equals(mime) || "application/x-zip-compressed".equals(mime)) {
+            return Destination.QUESTION_BANK_ZIP;
         }
         if ("application/pdf".equals(mime)
                 || "application/x-pdf".equals(mime)

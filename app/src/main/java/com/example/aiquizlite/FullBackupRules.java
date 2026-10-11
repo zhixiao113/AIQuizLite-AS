@@ -6,11 +6,15 @@ import java.util.Locale;
 import java.util.Collection;
 
 public final class FullBackupRules {
-    public static final int FORMAT_VERSION = 1;
+    public static final int FORMAT_VERSION = 2;
     public static final int MAX_ENTRY_COUNT = 10_000;
     public static final long MAX_UNCOMPRESSED_BYTES = 512L * 1024L * 1024L;
 
     private FullBackupRules() {
+    }
+
+    public static boolean supportsVersion(int version) {
+        return version == 1 || version == FORMAT_VERSION;
     }
 
     public static String fileName(long timestamp) {

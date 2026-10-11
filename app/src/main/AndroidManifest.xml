@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
@@ -13,7 +14,8 @@
         android:label="@string/app_name"
         android:roundIcon="@android:drawable/ic_menu_agenda"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AIQuizLite">
+        android:theme="@style/Theme.AIQuizLite"
+        android:usesCleartextTraffic="true">
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -59,6 +61,8 @@
                 <category android:name="android.intent.category.DEFAULT" />
 
                 <data android:mimeType="application/json" />
+                <data android:mimeType="application/zip" />
+                <data android:mimeType="application/x-zip-compressed" />
                 <data android:mimeType="text/json" />
                 <data android:mimeType="text/plain" />
                 <data android:mimeType="application/pdf" />
@@ -73,6 +77,8 @@
                 <category android:name="android.intent.category.DEFAULT" />
 
                 <data android:mimeType="application/json" />
+                <data android:mimeType="application/zip" />
+                <data android:mimeType="application/x-zip-compressed" />
                 <data android:mimeType="text/json" />
                 <data android:mimeType="text/plain" />
                 <data android:mimeType="application/pdf" />

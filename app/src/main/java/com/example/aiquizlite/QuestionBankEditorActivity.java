@@ -2,6 +2,7 @@ package com.example.aiquizlite;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.GradientDrawable;
 import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.os.Looper;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -29,9 +31,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.textfield.TextInputLayout;
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
 import java.io.InputStream;
@@ -42,8 +49,8 @@ import java.util.Set;
 
 public class QuestionBankEditorActivity extends AppCompatActivity {
     private static final long DRAG_HOLD_MS = 650L;
-    private static final String[] TYPE_CODES = {"single", "multi", "judge", "fill_blank"};
-    private static final String[] TYPE_LABELS = {"单选题", "多选题", "判断题", "填空题"};
+    private static final String[] TYPE_CODES = {"single", "multi", "judge", "fill_blank", "matching"};
+    private static final String[] TYPE_LABELS = {"单选题", "多选题", "判断题", "填空题", "连线题"};
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final List<Question> workingQuestions = new ArrayList<>();
@@ -54,6 +61,10 @@ public class QuestionBankEditorActivity extends AppCompatActivity {
     private QuestionRepository.QuestionBank questionBank;
     private String questionBankId;
     private EditText searchEdit;
+    private EditText nameEdit;
+    private TextInputLayout nameLayout;
+    private TextView questionCount;
+    private TextView sortingHint;
     private LinearLayout listContainer;
     private ScrollView listScrollView;
     private boolean dirty;
@@ -87,55 +98,108 @@ public class QuestionBankEditorActivity extends AppCompatActivity {
     private void buildLayout() {
         LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
-        root.setPadding(dp(20), dp(52), dp(20), dp(20));
+        root.setBackgroundColor(getColor(R.color.brand_card));
+        root.setFocusableInTouchMode(true);
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         setContentView(root);
+        WindowCompat.getInsetsController(getWindow(), root).setAppearanceLightStatusBars(true);
+        WindowCompat.getInsetsController(getWindow(), root).setAppearanceLightNavigationBars(true);
+        ViewCompat.setOnApplyWindowInsetsListener(root, (view, insets) -> {
+            androidx.core.graphics.Insets bars = insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
+            int keyboard = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom;
+            view.setPadding(bars.left + dp(16), bars.top + dp(4),
+                    bars.right + dp(16), Math.max(bars.bottom, keyboard));
+            return insets;
+        });
+        ViewCompat.requestApplyInsets(root);
 
         LinearLayout header = new LinearLayout(this);
         header.setGravity(Gravity.CENTER_VERTICAL);
         root.addView(header, matchWrap());
 
-        MaterialButton backButton = new MaterialButton(this);
-        backButton.setText("返回");
+        MaterialButton backButton = actionButton("", R.color.brand_ink, R.color.brand_card,
+                R.drawable.ic_editor_back);
+        backButton.setContentDescription("返回");
+        backButton.setIconPadding(0);
         backButton.setOnClickListener(view -> confirmExitIfNeeded());
-        header.addView(backButton, wrapWrap());
+        header.addView(backButton, new LinearLayout.LayoutParams(dp(48), dp(48)));
 
         TextView title = new TextView(this);
-        title.setText(questionBank.getDisplayName());
+        title.setText("编辑题库");
         title.setTextColor(getColor(R.color.brand_ink));
-        title.setTextSize(21);
+        title.setTextSize(20);
+        title.setGravity(Gravity.CENTER);
         title.setTypeface(title.getTypeface(), android.graphics.Typeface.BOLD);
         LinearLayout.LayoutParams titleParams = new LinearLayout.LayoutParams(
                 0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f
         );
-        titleParams.leftMargin = dp(10);
         header.addView(title, titleParams);
 
-        MaterialButton saveButton = new MaterialButton(this);
-        saveButton.setText("保存题库");
+        MaterialButton saveButton = actionButton("保存", R.color.brand_card,
+                R.color.brand_primary, 0);
         saveButton.setOnClickListener(view -> saveQuestionBank());
         header.addView(saveButton, wrapWrap());
 
+        nameLayout = new TextInputLayout(this);
+        nameLayout.setHint("题库名称");
+        nameLayout.setBoxBackgroundMode(TextInputLayout.BOX_BACKGROUND_OUTLINE);
+        nameLayout.setBoxCornerRadii(dp(12), dp(12), dp(12), dp(12));
+        nameLayout.setBoxStrokeColor(getColor(R.color.brand_primary));
+        nameLayout.setDefaultHintTextColor(ColorStateList.valueOf(getColor(R.color.brand_text_secondary)));
+        nameLayout.setEndIconMode(TextInputLayout.END_ICON_CUSTOM);
+        nameLayout.setEndIconDrawable(R.drawable.ic_editor_edit);
+        nameLayout.setEndIconContentDescription("修改题库名称");
+        nameEdit = new TextInputEditText(nameLayout.getContext());
+        nameEdit.setId(R.id.editor_bank_name);
+        nameEdit.setText(questionBank.getDisplayName());
+        nameEdit.setTextColor(getColor(R.color.brand_ink));
+        nameEdit.setTextSize(16);
+        nameEdit.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        nameEdit.setSingleLine(false);
+        nameEdit.setMaxLines(3);
+        nameEdit.setHorizontallyScrolling(false);
+        nameEdit.setImeOptions(android.view.inputmethod.EditorInfo.IME_ACTION_DONE);
+        nameLayout.addView(nameEdit, matchWrap());
+        nameLayout.setEndIconOnClickListener(view -> {
+            nameEdit.requestFocus();
+            nameEdit.setSelection(nameEdit.length());
+            WindowCompat.getInsetsController(getWindow(), nameEdit).show(WindowInsetsCompat.Type.ime());
+        });
+        LinearLayout.LayoutParams nameParams = matchWrap();
+        nameParams.topMargin = dp(12);
+        root.addView(nameLayout, nameParams);
+        nameEdit.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+                nameLayout.setError(null);
+            }
+            @Override public void afterTextChanged(Editable s) { }
+        });
+
         TextView hint = new TextView(this);
-        hint.setText("搜索、编辑、新增或删除题目；清空搜索后长按题目卡片可拖动排序。修改只会在点击“保存题库”后写入。图片暂不可更换。");
+        hint.setText("名称和题目修改后统一保存");
         hint.setTextColor(getColor(R.color.brand_text_secondary));
         hint.setTextSize(13);
         LinearLayout.LayoutParams hintParams = matchWrap();
-        hintParams.topMargin = dp(10);
+        hintParams.topMargin = dp(6);
         root.addView(hint, hintParams);
 
-        LinearLayout tools = new LinearLayout(this);
-        tools.setGravity(Gravity.CENTER_VERTICAL);
-        LinearLayout.LayoutParams toolsParams = matchWrap();
-        toolsParams.topMargin = dp(14);
-        root.addView(tools, toolsParams);
-
         searchEdit = new EditText(this);
+        searchEdit.setId(R.id.editor_search);
         searchEdit.setHint("搜索题干、题号或试卷");
         searchEdit.setSingleLine(true);
+        searchEdit.setTextSize(14);
         searchEdit.setTextColor(getColor(R.color.brand_ink));
-        tools.addView(searchEdit, new LinearLayout.LayoutParams(
-                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f
-        ));
+        searchEdit.setHintTextColor(getColor(R.color.brand_text_secondary));
+        searchEdit.setBackground(roundedBackground(R.color.brand_surface, 12));
+        searchEdit.setPadding(dp(14), dp(10), dp(14), dp(10));
+        searchEdit.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_editor_search, 0, 0, 0);
+        searchEdit.setCompoundDrawablePadding(dp(10));
+        LinearLayout.LayoutParams searchParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(48));
+        searchParams.topMargin = dp(12);
+        root.addView(searchEdit, searchParams);
         searchEdit.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -144,14 +208,26 @@ public class QuestionBankEditorActivity extends AppCompatActivity {
             @Override public void afterTextChanged(Editable s) { }
         });
 
-        MaterialButton addButton = new MaterialButton(this);
-        addButton.setText("新增");
+        LinearLayout tools = new LinearLayout(this);
+        tools.setGravity(Gravity.CENTER_VERTICAL);
+        LinearLayout.LayoutParams toolsParams = matchWrap();
+        toolsParams.topMargin = dp(10);
+        root.addView(tools, toolsParams);
+        questionCount = label("题目");
+        questionCount.setTextSize(17);
+        questionCount.setTextColor(getColor(R.color.brand_ink));
+        questionCount.setPadding(0, 0, 0, 0);
+        tools.addView(questionCount, new LinearLayout.LayoutParams(0,
+                ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        MaterialButton addButton = actionButton("新增题目", R.color.brand_primary,
+                R.color.brand_primary_soft, R.drawable.ic_editor_add);
         addButton.setOnClickListener(view -> showQuestionDialog(null));
         LinearLayout.LayoutParams addParams = wrapWrap();
         addParams.leftMargin = dp(10);
         tools.addView(addButton, addParams);
 
         listScrollView = new ScrollView(this);
+        listScrollView.setClipToPadding(false);
         LinearLayout.LayoutParams scrollParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f
         );
@@ -164,6 +240,13 @@ public class QuestionBankEditorActivity extends AppCompatActivity {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
         ));
+        sortingHint = new TextView(this);
+        sortingHint.setTextColor(getColor(R.color.brand_text_secondary));
+        sortingHint.setTextSize(12);
+        sortingHint.setGravity(Gravity.CENTER);
+        sortingHint.setPadding(0, dp(8), 0, dp(8));
+        root.addView(sortingHint, matchWrap());
+        root.requestFocus();
     }
 
     private void renderQuestions() {
@@ -179,10 +262,14 @@ public class QuestionBankEditorActivity extends AppCompatActivity {
             }
             listContainer.addView(createQuestionRow(question, i));
         }
+        int visibleCount = listContainer.getChildCount();
+        questionCount.setText(query.isEmpty() ? "题目 · " + workingQuestions.size()
+                : "匹配 " + visibleCount + " / " + workingQuestions.size());
+        sortingHint.setText(query.isEmpty() ? "长按题目或右侧手柄拖动排序" : "清空搜索后可拖动排序");
         if (listContainer.getChildCount() == 0) {
             TextView empty = new TextView(this);
-            empty.setText("没有匹配的题目");
-            empty.setTextColor(getColor(R.color.brand_text_muted));
+            empty.setText("没有匹配的题目，试试其他关键词");
+            empty.setTextColor(getColor(R.color.brand_text_secondary));
             empty.setGravity(Gravity.CENTER);
             empty.setPadding(0, dp(40), 0, dp(40));
             listContainer.addView(empty, matchWrap());
@@ -193,6 +280,14 @@ public class QuestionBankEditorActivity extends AppCompatActivity {
         if (query.isEmpty()) {
             return true;
         }
+        if (question.isMatching()) {
+            for (MatchingData.Item item : question.getMatching().getLeftItems()) {
+                if (item.getText().toLowerCase(Locale.ROOT).contains(query)) return true;
+            }
+            for (MatchingData.Item item : question.getMatching().getRightItems()) {
+                if (item.getText().toLowerCase(Locale.ROOT).contains(query)) return true;
+            }
+        }
         return question.getStem().toLowerCase(Locale.ROOT).contains(query)
                 || question.getPaper().toLowerCase(Locale.ROOT).contains(query)
                 || question.getId().toLowerCase(Locale.ROOT).contains(query)
@@ -202,39 +297,72 @@ public class QuestionBankEditorActivity extends AppCompatActivity {
     private View createQuestionRow(Question question, int workingIndex) {
         MaterialCardView card = new MaterialCardView(this);
         card.setCardBackgroundColor(getColor(R.color.brand_card));
-        card.setRadius(dp(10));
-        card.setCardElevation(dp(2));
+        card.setRadius(dp(12));
+        card.setCardElevation(0);
+        card.setStrokeWidth(dp(1));
+        card.setStrokeColor(getColor(R.color.brand_border));
         LinearLayout.LayoutParams cardParams = matchWrap();
         cardParams.bottomMargin = dp(10);
         card.setLayoutParams(cardParams);
 
         LinearLayout row = new LinearLayout(this);
-        row.setGravity(Gravity.CENTER_VERTICAL);
-        row.setPadding(dp(14), dp(12), dp(10), dp(12));
+        row.setOrientation(LinearLayout.VERTICAL);
+        row.setPadding(dp(14), dp(6), dp(14), dp(6));
         card.addView(row);
 
+        LinearLayout metadata = new LinearLayout(this);
+        metadata.setGravity(Gravity.CENTER_VERTICAL);
+        row.addView(metadata, matchWrap());
+        TextView number = chip(String.format(Locale.ROOT, "%02d", workingIndex + 1));
+        metadata.addView(number, wrapWrap());
+        TextView type = chip(question.typeLabel());
+        LinearLayout.LayoutParams typeParams = wrapWrap();
+        typeParams.leftMargin = dp(8);
+        metadata.addView(type, typeParams);
+        metadata.addView(new View(this), new LinearLayout.LayoutParams(0, 1, 1f));
+        ImageView handle = new ImageView(this);
+        handle.setImageResource(R.drawable.ic_editor_drag);
+        handle.setPadding(dp(14), dp(14), dp(14), dp(14));
+        handle.setContentDescription("长按拖动第 " + (workingIndex + 1) + " 题排序");
+        metadata.addView(handle, new LinearLayout.LayoutParams(dp(48), dp(48)));
+
         TextView summary = new TextView(this);
-        summary.setText(
-                (workingIndex + 1) + ". [" + question.typeLabel() + "] " + question.getStem()
-                        + "\n" + question.getPaper() + " · 原卷第 " + question.getNumberInPaper() + " 题"
-        );
+        summary.setText(question.getStem());
         summary.setTextColor(getColor(R.color.brand_ink));
-        summary.setTextSize(14);
+        summary.setTextSize(16);
+        summary.setLineSpacing(dp(3), 1f);
         summary.setMaxLines(4);
-        row.addView(summary, new LinearLayout.LayoutParams(
-                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f
-        ));
+        summary.setEllipsize(TextUtils.TruncateAt.END);
+        row.addView(summary, matchWrap());
+        TextView source = new TextView(this);
+        source.setText(question.getPaper() + " · 原卷第 " + question.getNumberInPaper() + " 题");
+        source.setTextSize(12);
+        source.setTextColor(getColor(R.color.brand_text_secondary));
+        source.setMaxLines(1);
+        source.setEllipsize(TextUtils.TruncateAt.END);
+        source.setPadding(0, dp(6), 0, dp(10));
+        row.addView(source, matchWrap());
+        View divider = new View(this);
+        divider.setBackgroundColor(getColor(R.color.brand_border_light));
+        row.addView(divider, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(1)));
+        LinearLayout actions = new LinearLayout(this);
+        actions.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
+        row.addView(actions, matchWrap());
 
-        MaterialButton editButton = smallButton("编辑");
+        MaterialButton editButton = actionButton("编辑", R.color.brand_text_secondary,
+                R.color.brand_surface, R.drawable.ic_editor_edit);
         editButton.setOnClickListener(view -> showQuestionDialog(question));
-        row.addView(editButton, wrapWrap());
+        actions.addView(editButton, wrapWrap());
 
-        MaterialButton deleteButton = smallButton("删除");
-        deleteButton.setTextColor(getColor(R.color.brand_error));
+        MaterialButton deleteButton = actionButton("删除", R.color.brand_error_dark,
+                R.color.brand_error_soft, R.drawable.ic_delete_compact);
         deleteButton.setOnClickListener(view -> confirmDeleteQuestion(question));
-        row.addView(deleteButton, wrapWrap());
+        LinearLayout.LayoutParams deleteParams = wrapWrap();
+        deleteParams.leftMargin = dp(10);
+        actions.addView(deleteButton, deleteParams);
 
         bindDrag(summary, card, workingIndex);
+        bindDrag(handle, card, workingIndex);
         return card;
     }
 
@@ -320,7 +448,7 @@ public class QuestionBankEditorActivity extends AppCompatActivity {
         draggingRow = null;
         dragFromIndex = -1;
         dragTargetIndex = -1;
-        row.setElevation(dp(2));
+        row.setElevation(0);
         row.animate().translationY(0f).scaleX(1f).scaleY(1f).setDuration(120)
                 .withEndAction(this::renderQuestions).start();
         listScrollView.requestDisallowInterceptTouchEvent(false);
@@ -363,13 +491,35 @@ public class QuestionBankEditorActivity extends AppCompatActivity {
                 true
         );
         content.addView(optionsEdit, matchWrap());
-        content.addView(label("正确答案"), matchWrap());
+        TextView answersTitle = label("正确答案");
+        content.addView(answersTitle, matchWrap());
         EditText answersEdit = field(
                 "每行一个；填空题可填写多个可接受答案",
                 creating ? "" : String.join("\n", existing.getAnswers()),
                 true
         );
         content.addView(answersEdit, matchWrap());
+        LinearLayout matchingFields = new LinearLayout(this);
+        matchingFields.setOrientation(LinearLayout.VERTICAL);
+        matchingFields.addView(label("左侧项目（每行：L1 | 内容）"), matchWrap());
+        EditText leftEdit = field("L1 | 左侧内容", creating || !existing.isMatching()
+                ? "" : formatMatchingItems(existing.getMatching().getLeftItems()), true);
+        matchingFields.addView(leftEdit, matchWrap());
+        matchingFields.addView(label("右侧项目（每行：R1 | 内容）"), matchWrap());
+        EditText rightEdit = field("R1 | 右侧内容", creating || !existing.isMatching()
+                ? "" : formatMatchingItems(existing.getMatching().getRightItems()), true);
+        matchingFields.addView(rightEdit, matchWrap());
+        matchingFields.addView(label("标准连线（每行：L1 | R1）"), matchWrap());
+        EditText pairsEdit = field("L1 | R1", creating || !existing.isMatching()
+                ? "" : formatMatchingPairs(existing.getMatching().getCorrectPairs()), true);
+        matchingFields.addView(pairsEdit, matchWrap());
+        Spinner matchingMode = new Spinner(this);
+        matchingMode.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item,
+                new String[]{"左侧最多连接一次", "左侧可重复使用"}));
+        matchingMode.setSelection(!creating && existing.isMatching()
+                && MatchingData.LEFT_REUSABLE.equals(existing.getMatching().getMode()) ? 1 : 0);
+        matchingFields.addView(matchingMode, matchWrap());
+        content.addView(matchingFields, matchWrap());
         content.addView(label("解析"), matchWrap());
         EditText explanationEdit = field(
                 "可留空",
@@ -381,13 +531,36 @@ public class QuestionBankEditorActivity extends AppCompatActivity {
         content.addView(label("题目图片"), matchWrap());
         ImageEditSession imageSession = createImageEditSession(existing);
         content.addView(imageSession.card, matchWrap());
+        content.addView(label("解析图片（提交后显示）"), matchWrap());
+        LinearLayout explanationImageContainer = new LinearLayout(this);
+        explanationImageContainer.setOrientation(LinearLayout.VERTICAL);
+        List<ImageEditSession> explanationImageSessions = new ArrayList<>();
+        if (!creating) {
+            for (String reference : existing.getExplanationImages()) {
+                ImageEditSession session = createImageEditSession(reference);
+                explanationImageSessions.add(session);
+                explanationImageContainer.addView(session.card, matchWrap());
+            }
+        }
+        MaterialButton addExplanationImage = smallButton("添加解析图片");
+        addExplanationImage.setOnClickListener(view -> {
+            ImageEditSession session = createImageEditSession((String) null);
+            explanationImageSessions.add(session);
+            explanationImageContainer.addView(session.card, matchWrap());
+        });
+        content.addView(explanationImageContainer, matchWrap());
+        content.addView(addExplanationImage, matchWrap());
 
         typeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                int visibility = "fill_blank".equals(TYPE_CODES[position]) ? View.GONE : View.VISIBLE;
+                int visibility = "fill_blank".equals(TYPE_CODES[position])
+                        || "matching".equals(TYPE_CODES[position]) ? View.GONE : View.VISIBLE;
                 optionsTitle.setVisibility(visibility);
                 optionsEdit.setVisibility(visibility);
+                answersTitle.setVisibility("matching".equals(TYPE_CODES[position]) ? View.GONE : View.VISIBLE);
+                answersEdit.setVisibility("matching".equals(TYPE_CODES[position]) ? View.GONE : View.VISIBLE);
+                matchingFields.setVisibility("matching".equals(TYPE_CODES[position]) ? View.VISIBLE : View.GONE);
             }
             @Override public void onNothingSelected(AdapterView<?> parent) { }
         });
@@ -411,7 +584,11 @@ public class QuestionBankEditorActivity extends AppCompatActivity {
                         optionsEdit,
                         answersEdit,
                         explanationEdit,
-                        imageSession.imageReference
+                        imageSession.imageReference,
+                        leftEdit,
+                        rightEdit,
+                        pairsEdit,
+                        matchingMode
                 );
                 if (imageSession.pendingUri != null) {
                     String importedImage = QuestionImageStore.importFromUri(
@@ -421,6 +598,16 @@ public class QuestionBankEditorActivity extends AppCompatActivity {
                     );
                     updated = copyQuestionWithImage(updated, importedImage);
                 }
+                List<String> explanationImages = new ArrayList<>();
+                for (ImageEditSession session : explanationImageSessions) {
+                    if (session.pendingUri != null) {
+                        explanationImages.add(QuestionImageStore.importFromUri(
+                                this, questionBankId, session.pendingUri));
+                    } else if (session.imageReference != null) {
+                        explanationImages.add(session.imageReference);
+                    }
+                }
+                updated = copyQuestionWithExplanationImages(updated, explanationImages);
                 if (creating) {
                     workingQuestions.add(updated);
                 } else {
@@ -437,7 +624,8 @@ public class QuestionBankEditorActivity extends AppCompatActivity {
             }
         }));
         dialog.setOnDismissListener(ignored -> {
-            if (activeImageEditSession == imageSession) {
+            if (activeImageEditSession == imageSession
+                    || explanationImageSessions.contains(activeImageEditSession)) {
                 activeImageEditSession = null;
             }
         });
@@ -453,7 +641,11 @@ public class QuestionBankEditorActivity extends AppCompatActivity {
             EditText optionsEdit,
             EditText answersEdit,
             EditText explanationEdit,
-            String imageReference
+            String imageReference,
+            EditText leftEdit,
+            EditText rightEdit,
+            EditText pairsEdit,
+            Spinner matchingMode
     ) {
         String stem = stemEdit.getText().toString().trim();
         if (stem.isEmpty()) {
@@ -470,14 +662,16 @@ public class QuestionBankEditorActivity extends AppCompatActivity {
             throw new IllegalArgumentException("原卷题号需要是数字");
         }
         String type = TYPE_CODES[typeSpinner.getSelectedItemPosition()];
-        List<String> answers = parseNonEmptyLines(answersEdit.getText().toString());
-        if (answers.isEmpty()) {
+        boolean matchingType = "matching".equals(type);
+        List<String> answers = matchingType ? new ArrayList<>()
+                : parseNonEmptyLines(answersEdit.getText().toString());
+        if (!matchingType && answers.isEmpty()) {
             throw new IllegalArgumentException("至少需要一个正确答案");
         }
-        List<Question.Option> options = "fill_blank".equals(type)
+        List<Question.Option> options = "fill_blank".equals(type) || matchingType
                 ? new ArrayList<>()
                 : parseOptions(optionsEdit.getText().toString());
-        if (!"fill_blank".equals(type)) {
+        if (!"fill_blank".equals(type) && !matchingType) {
             Set<String> optionKeys = new HashSet<>();
             for (Question.Option option : options) {
                 optionKeys.add(option.getKey());
@@ -495,6 +689,12 @@ public class QuestionBankEditorActivity extends AppCompatActivity {
         String id = existing == null
                 ? "custom_" + System.currentTimeMillis() + "_" + workingQuestions.size()
                 : existing.getId();
+        MatchingData matching = matchingType ? new MatchingData(
+                matchingMode.getSelectedItemPosition() == 1
+                        ? MatchingData.LEFT_REUSABLE : MatchingData.ONE_TO_ONE,
+                parseMatchingItems(leftEdit.getText().toString()),
+                parseMatchingItems(rightEdit.getText().toString()),
+                parseMatchingPairs(pairsEdit.getText().toString())) : null;
         return new Question(
                 id,
                 existing == null ? workingQuestions.size() + 1 : existing.getIndex(),
@@ -505,7 +705,11 @@ public class QuestionBankEditorActivity extends AppCompatActivity {
                 options,
                 answers,
                 imageReference,
-                explanation.isEmpty() ? null : explanation
+                explanation.isEmpty() ? null : explanation,
+                matching,
+                existing == null ? new ArrayList<>() : existing.getExplanationImages(),
+                existing == null ? null : existing.getSourceChapter(),
+                existing == null ? null : existing.getSourceName()
         );
     }
 
@@ -520,13 +724,27 @@ public class QuestionBankEditorActivity extends AppCompatActivity {
                 question.getOptions(),
                 question.getAnswers(),
                 imageReference,
-                question.getExplanation()
+                question.getExplanation(),
+                question.getMatching(),
+                question.getExplanationImages(), question.getSourceChapter(), question.getSourceName()
         );
     }
 
+    private Question copyQuestionWithExplanationImages(Question question, List<String> images) {
+        return new Question(question.getId(), question.getIndex(), question.getPaper(),
+                question.getNumberInPaper(), question.getType(), question.getStem(),
+                question.getOptions(), question.getAnswers(), question.getImage(),
+                question.getExplanation(), question.getMatching(), images,
+                question.getSourceChapter(), question.getSourceName());
+    }
+
     private ImageEditSession createImageEditSession(Question existing) {
+        return createImageEditSession(existing == null ? null : existing.getImage());
+    }
+
+    private ImageEditSession createImageEditSession(String imageReference) {
         ImageEditSession session = new ImageEditSession();
-        session.imageReference = existing == null ? null : existing.getImage();
+        session.imageReference = imageReference;
 
         MaterialCardView card = new MaterialCardView(this);
         card.setCardBackgroundColor(getColor(R.color.brand_card));
@@ -617,7 +835,7 @@ public class QuestionBankEditorActivity extends AppCompatActivity {
                 : QuestionImageStore.displayName(session.imageReference));
         session.status.setText(session.pendingUri != null
                 ? "保存时自动压缩至最长边1600px"
-                : hasImage ? "已保存到题库" : "每道题最多一张图片");
+                : hasImage ? "已保存到题库" : "点击添加图片");
         session.thumbnail.setImageDrawable(null);
         if (!hasImage) {
             session.thumbnail.setImageResource(android.R.drawable.ic_menu_gallery);
@@ -726,7 +944,19 @@ public class QuestionBankEditorActivity extends AppCompatActivity {
     }
 
     private void saveQuestionBank() {
+        String displayName = nameEdit.getText().toString().trim();
+        if (displayName.isEmpty()) {
+            nameLayout.setError("请输入题库名称");
+            nameEdit.requestFocus();
+            return;
+        }
         try {
+            if (!dirty) {
+                QuestionRepository.renameImportedQuestionBank(this, questionBankId, displayName);
+                Toast.makeText(this, "题库已保存", Toast.LENGTH_SHORT).show();
+                finish();
+                return;
+            }
             List<Question> normalized = new ArrayList<>();
             for (int i = 0; i < workingQuestions.size(); i++) {
                 Question question = workingQuestions.get(i);
@@ -740,13 +970,16 @@ public class QuestionBankEditorActivity extends AppCompatActivity {
                         question.getOptions(),
                         question.getAnswers(),
                         question.getImage(),
-                        question.getExplanation()
+                        question.getExplanation(),
+                        question.getMatching(),
+                        question.getExplanationImages(), question.getSourceChapter(), question.getSourceName()
                 ));
             }
-            QuestionRepository.saveImportedQuestionBank(this, questionBankId, normalized);
+            QuestionRepository.saveImportedQuestionBank(this, questionBankId, displayName, normalized);
             ProgressStore progressStore = new ProgressStore(this);
             boolean resetDailyProgress = progressStore.hasDailySessionInProgress(questionBankId);
             progressStore.clearDailySession(questionBankId);
+            progressStore.clearTypeSessions(questionBankId);
             for (String questionId : deletedQuestionIds) {
                 progressStore.removeQuestionData(questionBankId, questionId);
                 QuestionRepository.removeAnswerOverride(this, questionBankId, questionId);
@@ -796,6 +1029,44 @@ public class QuestionBankEditorActivity extends AppCompatActivity {
         return 0;
     }
 
+    private static String formatMatchingItems(List<MatchingData.Item> items) {
+        List<String> lines = new ArrayList<>();
+        for (MatchingData.Item item : items) {
+            lines.add(item.getId() + " | " + item.getText());
+        }
+        return TextUtils.join("\n", lines);
+    }
+
+    private static String formatMatchingPairs(List<MatchingData.Pair> pairs) {
+        List<String> lines = new ArrayList<>();
+        for (MatchingData.Pair pair : pairs) {
+            lines.add(pair.getLeftId() + " | " + pair.getRightId());
+        }
+        return TextUtils.join("\n", lines);
+    }
+
+    private static List<MatchingData.Item> parseMatchingItems(String raw) {
+        List<MatchingData.Item> result = new ArrayList<>();
+        for (String line : raw.split("\\r?\\n")) {
+            if (line.trim().isEmpty()) continue;
+            String[] parts = line.split("\\s*[|｜]\\s*", 2);
+            if (parts.length != 2) throw new IllegalArgumentException("连线项目格式应为 ID | 内容");
+            result.add(new MatchingData.Item(parts[0], parts[1]));
+        }
+        return result;
+    }
+
+    private static List<MatchingData.Pair> parseMatchingPairs(String raw) {
+        List<MatchingData.Pair> result = new ArrayList<>();
+        for (String line : raw.split("\\r?\\n")) {
+            if (line.trim().isEmpty()) continue;
+            String[] parts = line.split("\\s*[|｜]\\s*", 2);
+            if (parts.length != 2) throw new IllegalArgumentException("标准连线格式应为 左ID | 右ID");
+            result.add(new MatchingData.Pair(parts[0], parts[1]));
+        }
+        return result;
+    }
+
     private EditText field(String hint, String value, boolean multiline) {
         EditText editText = new EditText(this);
         editText.setHint(hint);
@@ -834,8 +1105,52 @@ public class QuestionBankEditorActivity extends AppCompatActivity {
         return button;
     }
 
+    private GradientDrawable roundedBackground(int color, int radius) {
+        GradientDrawable background = new GradientDrawable();
+        background.setColor(getColor(color));
+        background.setCornerRadius(dp(radius));
+        return background;
+    }
+
+    private TextView chip(String value) {
+        TextView chip = new TextView(this);
+        chip.setText(value);
+        chip.setTextSize(12);
+        chip.setTextColor(getColor(R.color.brand_primary_dark));
+        chip.setPadding(dp(8), dp(4), dp(8), dp(4));
+        chip.setBackground(roundedBackground(R.color.brand_primary_soft, 6));
+        return chip;
+    }
+
+    private MaterialButton actionButton(String text, int foreground, int background, int icon) {
+        MaterialButton button = new MaterialButton(this);
+        button.setText(text);
+        button.setTextSize(14);
+        button.setAllCaps(false);
+        button.setTextColor(getColor(foreground));
+        button.setBackgroundTintList(ColorStateList.valueOf(getColor(background)));
+        button.setMinWidth(0);
+        button.setMinimumWidth(0);
+        button.setMinHeight(dp(48));
+        button.setMinimumHeight(dp(48));
+        button.setPadding(dp(12), 0, dp(12), 0);
+        button.setInsetTop(dp(6));
+        button.setInsetBottom(dp(6));
+        button.setCornerRadius(dp(8));
+        button.setElevation(0);
+        button.setStateListAnimator(null);
+        if (icon != 0) {
+            button.setIconResource(icon);
+            button.setIconTint(ColorStateList.valueOf(getColor(foreground)));
+            button.setIconSize(dp(18));
+            button.setIconPadding(dp(6));
+            button.setIconGravity(MaterialButton.ICON_GRAVITY_TEXT_START);
+        }
+        return button;
+    }
+
     private void confirmExitIfNeeded() {
-        if (!dirty) {
+        if (!dirty && nameEdit.getText().toString().trim().equals(questionBank.getDisplayName())) {
             finish();
             return;
         }

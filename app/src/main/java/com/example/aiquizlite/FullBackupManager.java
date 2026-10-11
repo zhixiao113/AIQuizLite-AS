@@ -85,7 +85,7 @@ public final class FullBackupManager {
     public static synchronized void restore(Context context, PreparedBackup prepared) throws Exception {
         File incoming = extractValidated(context, prepared.file);
         BackupSummary verified = readSummary(incoming);
-        if (verified.formatVersion != FullBackupRules.FORMAT_VERSION) {
+        if (!FullBackupRules.supportsVersion(verified.formatVersion)) {
             deleteRecursively(incoming);
             throw new IllegalArgumentException("不支持的备份版本");
         }
@@ -145,6 +145,7 @@ public final class FullBackupManager {
     public static void clearLearningRecords(Context context) {
         preferences(context, PREF_PROGRESS).edit().clear().commit();
         preferences(context, PREF_MOCK).edit().clear().commit();
+        new DailyPracticeHistoryStore(context).clear();
     }
 
     @SuppressLint("ApplySharedPref")
@@ -173,6 +174,8 @@ public final class FullBackupManager {
                     FILE_ROOT + QUESTION_BANK_DIR + "/");
             writeDirectory(zip, new File(context.getFilesDir(), QUESTION_IMAGE_DIR),
                     FILE_ROOT + QUESTION_IMAGE_DIR + "/");
+            writeDirectory(zip, new File(context.getFilesDir(), DailyPracticeHistoryStore.DIRECTORY),
+                    FILE_ROOT + DailyPracticeHistoryStore.DIRECTORY + "/");
         }
     }
 
@@ -227,7 +230,7 @@ public final class FullBackupManager {
             throw new IllegalArgumentException("备份缺少清单文件");
         }
         BackupSummary summary = BackupSummary.fromJson(readJson(manifest));
-        if (summary.formatVersion != FullBackupRules.FORMAT_VERSION) {
+        if (!FullBackupRules.supportsVersion(summary.formatVersion)) {
             throw new IllegalArgumentException("不支持的备份版本");
         }
         return summary;
@@ -242,6 +245,8 @@ public final class FullBackupManager {
                 new File(context.getFilesDir(), QUESTION_IMAGE_DIR),
                 new File(extracted, FILE_ROOT + QUESTION_IMAGE_DIR)
         );
+        replaceDirectory(new File(context.getFilesDir(), DailyPracticeHistoryStore.DIRECTORY),
+                new File(extracted, FILE_ROOT + DailyPracticeHistoryStore.DIRECTORY));
 
         for (String prefName : BACKED_UP_PREFERENCES) {
             JSONObject snapshot = readJson(new File(extracted, DATA_ROOT + prefName + ".json"));

@@ -222,10 +222,10 @@ public class MockResultActivity extends AppCompatActivity {
                 true
         );
         metaBody.addView(progress);
-        String status = item.getSelectedAnswers().isEmpty()
+        String status = !item.isAnswered()
                 ? "未作答"
                 : item.isCorrect() ? "回答正确" : "回答错误";
-        int statusColor = item.getSelectedAnswers().isEmpty()
+        int statusColor = !item.isAnswered()
                 ? R.color.brand_warning
                 : item.isCorrect() ? R.color.brand_success : R.color.brand_error;
         TextView statusText = text(status, 14, statusColor, true);
@@ -244,7 +244,7 @@ public class MockResultActivity extends AppCompatActivity {
         questionBody.addView(source);
         TextView stem = text(
                 question.getIndex() + ". " + question.getStem(),
-                isLargeQuestionFont() ? 22 : 19,
+                GeneralSettingsRules.questionStemSizeSp(generalSettings.getQuestionFontMode()) + 1,
                 R.color.brand_ink,
                 true
         );
@@ -254,9 +254,12 @@ public class MockResultActivity extends AppCompatActivity {
         addOptionRows(questionBody, session, item);
 
         TextView answerSummary = text(
-                "你的答案：" + formatMappedAnswers(session, question, item.getSelectedAnswers())
-                        + "\n正确答案：" + formatMappedAnswers(session, question, item.getCorrectAnswers()),
-                isLargeQuestionFont() ? 17 : 15,
+                question.isMatching()
+                        ? "你的连线：" + formatMatchingPairs(question, item.getSelectedPairs())
+                                + "\n正确连线：" + formatMatchingPairs(question, item.getCorrectPairs())
+                        : "你的答案：" + formatMappedAnswers(session, question, item.getSelectedAnswers())
+                                + "\n正确答案：" + formatMappedAnswers(session, question, item.getCorrectAnswers()),
+                answerTextSizeSp(),
                 R.color.brand_text_secondary,
                 false
         );
@@ -266,20 +269,28 @@ public class MockResultActivity extends AppCompatActivity {
         if (generalSettings.shouldShowSourceExplanation()) {
             TextView explanationTitle = text(
                     "题库解析",
-                    isLargeQuestionFont() ? 18 : 16,
+                    isLargeQuestionFont() ? 18 : isSmallQuestionFont() ? 15 : 16,
                     R.color.brand_ink,
                     true
             );
             questionBody.addView(explanationTitle, buttonParams(dp(18)));
             TextView explanation = text(
                     question.getExplanation() == null ? "暂无题库解析" : question.getExplanation(),
-                    isLargeQuestionFont() ? 17 : 15,
+                    answerTextSizeSp(),
                     question.getExplanation() == null
                             ? R.color.brand_text_muted : R.color.brand_text_secondary,
                     false
             );
             explanation.setLineSpacing(dp(4), 1f);
             questionBody.addView(explanation, buttonParams(dp(7)));
+        }
+        if (!question.getExplanationImages().isEmpty()) {
+            questionBody.addView(text("提交后解析图", isLargeQuestionFont() ? 18
+                    : isSmallQuestionFont() ? 15 : 16,
+                    R.color.brand_ink, true), buttonParams(dp(16)));
+            for (String imageReference : question.getExplanationImages()) {
+                addImage(questionBody, imageReference, "解析图片");
+            }
         }
 
         LinearLayout actions = horizontal();
@@ -299,10 +310,12 @@ public class MockResultActivity extends AppCompatActivity {
         ai.setOnClickListener(view -> AiExplanationDialogLauncher.show(
                 this,
                 attempt.getQuestionBankId(),
-                question,
-                item.getSelectedAnswers(),
-                item.getCorrectAnswers(),
-                item.isCorrect(),
+                 question,
+                 item.getSelectedAnswers(),
+                 item.getCorrectAnswers(),
+                 item.getSelectedPairs(),
+                 item.getCorrectPairs(),
+                 item.isCorrect(),
                 aiExecutor
         ));
         LinearLayout.LayoutParams aiParams = weightedButtonParams();
@@ -429,7 +442,10 @@ public class MockResultActivity extends AppCompatActivity {
     }
 
     private void addQuestionImage(LinearLayout parent, Question question) {
-        String imageReference = question.getImage();
+        addImage(parent, question.getImage(), "题目图片");
+    }
+
+    private void addImage(LinearLayout parent, String imageReference, String description) {
         if (imageReference == null || imageReference.trim().isEmpty()) {
             return;
         }
@@ -447,8 +463,7 @@ public class MockResultActivity extends AppCompatActivity {
             image.setAdjustViewBounds(true);
             image.setScaleType(ImageView.ScaleType.FIT_CENTER);
             image.setContentDescription(generalSettings.shouldOpenImagesFullscreen()
-                    ? "题目图片，点击全屏查看"
-                    : getString(R.string.question_image));
+                    ? description + "，点击全屏查看" : description);
             if (generalSettings.shouldOpenImagesFullscreen()) {
                 image.setClickable(true);
                 image.setFocusable(true);
@@ -475,6 +490,22 @@ public class MockResultActivity extends AppCompatActivity {
             SessionQuestion session,
             MockExamAttempt.Item item
     ) {
+        if (session.getQuestion().isMatching()) {
+            MatchingQuestionView matching = new MatchingQuestionView(this,
+                    session.getQuestion().getMatching(), GeneralSettingsRules.matchingItemSizeSp(
+                            generalSettings.getQuestionFontMode()));
+            matching.setSelectedPairs(item.getSelectedPairs());
+            matching.setSubmitted(true);
+            parent.addView(matching, buttonParams(dp(12)));
+            MaterialButton showCorrect = outlineButton("查看标准连线图");
+            showCorrect.setOnClickListener(view -> {
+                boolean correctDiagram = !"查看我的连线图".contentEquals(showCorrect.getText());
+                matching.setShowCorrect(correctDiagram);
+                showCorrect.setText(correctDiagram ? "查看我的连线图" : "查看标准连线图");
+            });
+            parent.addView(showCorrect, buttonParams(dp(8)));
+            return;
+        }
         for (Question.Option option : session.getDisplayOptions()) {
             boolean correct = item.getCorrectAnswers().contains(option.getKey());
             boolean selected = item.getSelectedAnswers().contains(option.getKey());
@@ -486,7 +517,7 @@ public class MockResultActivity extends AppCompatActivity {
                     : selected ? getColor(R.color.brand_error) : getColor(R.color.brand_border);
             TextView optionView = text(
                     session.displayText(option),
-                    isLargeQuestionFont() ? 18 : 16,
+                    GeneralSettingsRules.questionOptionSizeSp(generalSettings.getQuestionFontMode()),
                     R.color.brand_ink,
                     false
             );
@@ -502,6 +533,14 @@ public class MockResultActivity extends AppCompatActivity {
 
     private boolean isLargeQuestionFont() {
         return generalSettings.getQuestionFontMode() == GeneralSettingsRules.QUESTION_FONT_LARGE;
+    }
+
+    private boolean isSmallQuestionFont() {
+        return generalSettings.getQuestionFontMode() == GeneralSettingsRules.QUESTION_FONT_SMALL;
+    }
+
+    private int answerTextSizeSp() {
+        return isLargeQuestionFont() ? 17 : isSmallQuestionFont() ? 14 : 15;
     }
 
     private boolean isCompactDensity() {
@@ -523,12 +562,13 @@ public class MockResultActivity extends AppCompatActivity {
                 )
                 .setNegativeButton(android.R.string.cancel, null)
                 .setPositiveButton("修改题库答案", (dialog, which) -> {
-                    QuestionRepository.saveAnswerOverride(
-                            this,
-                            attempt.getQuestionBankId(),
-                            question.getId(),
-                            item.getSelectedAnswers()
-                    );
+                    if (question.isMatching()) {
+                        QuestionRepository.saveMatchingAnswerOverride(this,
+                                attempt.getQuestionBankId(), question, item.getSelectedPairs());
+                    } else {
+                        QuestionRepository.saveAnswerOverride(this,
+                                attempt.getQuestionBankId(), question.getId(), item.getSelectedAnswers());
+                    }
                     progressStore.removeWrongQuestion(attempt.getQuestionBankId(), question.getId());
                     attempt.markCorrected(question.getId());
                     mockExamStore.save(attempt);
@@ -574,6 +614,18 @@ public class MockResultActivity extends AppCompatActivity {
             }
         }
         return String.join("；", formatted);
+    }
+
+    private String formatMatchingPairs(Question question, List<MatchingData.Pair> pairs) {
+        if (pairs == null || pairs.isEmpty()) return "未作答";
+        StringBuilder result = new StringBuilder();
+        for (MatchingData.Pair pair : pairs) {
+            if (result.length() > 0) result.append("；");
+            result.append(question.getMatching().rightText(pair.getRightId()))
+                    .append(" → ")
+                    .append(question.getMatching().leftText(pair.getLeftId()));
+        }
+        return result.toString();
     }
 
     private void addHeader(String title, String subtitle, View.OnClickListener backAction) {

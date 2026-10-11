@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -126,9 +127,10 @@ public final class QuestionImageStore {
     ) {
         Set<String> referencedNames = new HashSet<>();
         for (Question question : questions) {
-            String image = question.getImage();
-            if (isLocal(image)) {
-                referencedNames.add(image.substring(LOCAL_PREFIX.length()));
+            for (String image : references(question)) {
+                if (isLocal(image)) {
+                    referencedNames.add(image.substring(LOCAL_PREFIX.length()));
+                }
             }
         }
         File directory = bankDirectory(context, questionBankId, false);
@@ -165,11 +167,18 @@ public final class QuestionImageStore {
     public static int countReferencedImages(List<Question> questions) {
         Set<String> references = new HashSet<>();
         for (Question question : questions) {
-            if (question.getImage() != null && !question.getImage().trim().isEmpty()) {
-                references.add(question.getImage());
+            for (String image : references(question)) {
+                if (image != null && !image.trim().isEmpty()) references.add(image);
             }
         }
         return references.size();
+    }
+
+    static List<String> references(Question question) {
+        List<String> result = new ArrayList<>();
+        if (question.getImage() != null) result.add(question.getImage());
+        result.addAll(question.getExplanationImages());
+        return result;
     }
 
     public static String displayName(String imageReference) {

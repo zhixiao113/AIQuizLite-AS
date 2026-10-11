@@ -13,6 +13,21 @@
 
 资料识别前必须先配置 API 地址、API Key 和模型，并会产生 Token 消耗。学习资料的自动补齐最多运行 3 轮；只有有效题量、章节题量和题型配额完全一致时才能保存。现成题库使用重叠分块减少边界漏题，AI 转换后仍需经过答案、选项、重复项和 JSON 格式校验。
 
+含图片的题库可打包为 ZIP，从「总题库 → ＋ ZIP 题库包 → 选择本地文件」导入，也可从微信/文件管理器分享到本应用。选择 ZIP 后会直接导入，JSON 文件仍可编辑后点击「完成」。
+
+```text
+图文题库.zip
+├── 题库.json
+└── image/
+    └── q1.png
+```
+
+JSON 根节点支持题目数组，或 `{"name":"图文题库","questions":[...]}`。题目的 `image` 字段填 `"image/q1.png"`，无图片时填 `null`；其他题目字段沿用现有 JSON 格式。也支持仅填图片文件名，若 `image/` 与 `images/` 内存在同名图片，须填写完整相对路径。
+
+兼容旧版 `question-bank.json + images/` 包；允许将 JSON 和图片文件夹一起放在 ZIP 内的一层外目录中，图片路径相对于 JSON。每包只放一个题库 JSON，文件名区分大小写。图片支持 PNG、JPEG、WebP；导入后保存在应用本地，并可在刷题时查看、放大。同名题库会另建副本，不覆盖已有题库。
+
+导入限制：JSON 不超过 4MB，单文件解压后不超过 25MB，总解压内容不超过 100MB，最多 500 个文件/目录条目。缺失图片、无效图片或异常路径会导致导入失败。
+
 本地题库生成：
 
 ```powershell
@@ -24,3 +39,22 @@ python .\tools\extract_questions.py
 ```powershell
 .\gradlew.bat assembleDebug
 ```
+
+在线更新发布：
+
+- 手机已安装包与更新包必须使用同一签名。已分发的 `app/release/app-release.apk` 使用 Android Studio 的 `../app_sign.jks`（alias `key0`）；项目中另一个 `keystore/aiquizlite.jks` 和 `.debug/debug.keystore` 均不兼容这个正式包。
+- 每个新的真机验收版本由代理递增 `versionCode` 和 `versionName`，运行 `scripts/build-device-release.ps1`，完成原证书 Release 构建、测试、签名和发布校验，直接交付安装包。不需要用户再次手动升级版本号并构建。
+- 首次在新电脑上执行 `scripts/configure-release-signing.ps1`，交互配置签名密码；Windows DPAPI 加密文件仅留本机。证书和密码不能提交 GitHub。
+- 双击 `启动更新服务器.bat`。自动选择当前代理构建包或已准备包，核对 APK 真实包名、版本、签名后才替换清单；无需为同一已准备版本重新打开 Android Studio 构建。旧 APK 或其他签名会拒绝发布。
+- 完整操作及故障处理见 [本地更新方法](docs/本地更新方法.md)。本地方式继续保留；[服务器自动更新方案](docs/deployment/服务器自动更新方案.md)目前只是待配置确认的方案，尚未部署。
+
+当前正式安装包：1.1.2 / versionCode 13，见 [GitHub 最新 Release](https://github.com/zhixiao113/AIQuizLite-AS/releases/latest)。仓库 `app/release/app-release.apk` 同步保留该已验证包；历史 Release 不删除。
+
+仅准备文件、不启动服务器，可执行：
+
+```powershell
+python update_server.py "更新说明" --prepare-only --output-dir artifacts/update-release
+python -m unittest discover -s tests -v
+```
+
+旧版签名不同的设备需要使用对应原密钥构建兼容包，不能靠更新代码绕过系统校验。不要直接卸载；需要迁移签名时先导出完整备份。具体排查记录见 `docs/qa/online-update-2026-09-18.md`。

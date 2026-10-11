@@ -50,14 +50,22 @@ public class ExternalImportRulesTest {
     }
 
     @Test
-    public void legacyDocAndUnrelatedZipAreNotAccepted() {
+    public void legacyDocIsNotAccepted() {
         assertEquals(
                 ExternalImportRules.Destination.LEGACY_WORD_UNSUPPORTED,
                 ExternalImportRules.resolve("application/msword", "旧讲义.doc", true, null)
         );
-        assertEquals(
-                ExternalImportRules.Destination.UNSUPPORTED,
-                ExternalImportRules.resolve("application/octet-stream", "照片.zip", true, null)
-        );
+    }
+
+    @Test
+    public void zipFilesUseQuestionBankImporterAndAreValidatedThere() {
+        assertEquals(ExternalImportRules.Destination.QUESTION_BANK_ZIP,
+                ExternalImportRules.resolve("application/octet-stream", "图文题库.ZIP", true, null));
+        assertEquals(ExternalImportRules.Destination.QUESTION_BANK_ZIP,
+                ExternalImportRules.resolve("application/zip; charset=binary", "", true, null));
+        assertEquals(ExternalImportRules.Destination.QUESTION_BANK_ZIP,
+                ExternalImportRules.resolve("application/x-zip-compressed", "", true, null));
+        assertEquals(ExternalImportRules.Destination.MATERIAL,
+                ExternalImportRules.resolve("application/zip", "讲义.docx", true, null));
     }
 }

@@ -29,6 +29,7 @@ public final class QuestionRepository {
     private static final String KEY_BANK_ORDER = "bank_order";
     private static final String KEY_HIDDEN_ASSET_BANKS = "hidden_asset_banks";
     private static final String KEY_ANSWER_OVERRIDES = "answer_overrides";
+    private static final String KEY_MATCHING_OVERRIDES = "matching_answer_overrides";
     private static final String IMPORT_DIR_NAME = "question_banks";
     private static final QuestionBank FALLBACK_DEFAULT_QUESTION_BANK =
             QuestionBank.asset("aihcia", "AI-HCIA", DEFAULT_ASSET_FILE_NAME, 0);
@@ -62,10 +63,10 @@ public final class QuestionRepository {
             JSONArray jsonArray = questionBank.isImported()
                     ? readQuestionArrayFromFile(questionBank.getStorageName())
                     : readQuestionArrayFromAsset(context, questionBank.getStorageName());
-            List<Question> questions = applyAnswerOverrides(
+            List<Question> questions = applyMatchingOverrides(applyAnswerOverrides(
                     parseQuestions(jsonArray, questionBank.getDisplayName()),
                     readAnswerOverrides(context, questionBank.getId())
-            );
+            ), readMatchingOverrides(context, questionBank.getId()));
             List<Question> immutableQuestions = Collections.unmodifiableList(questions);
             CACHE.put(questionBank.getId(), immutableQuestions);
             return immutableQuestions;
@@ -221,7 +222,8 @@ public final class QuestionRepository {
         }
 
         removeBankOrder(context, questionBankId);
-        preferences(context).edit().remove(namespacedAnswerOverrideKey(questionBankId)).apply();
+        preferences(context).edit().remove(namespacedAnswerOverrideKey(questionBankId))
+                .remove(KEY_MATCHING_OVERRIDES + "_" + questionBankId).apply();
         CACHE.remove(questionBankId);
         resetCache();
         return true;
@@ -292,11 +294,27 @@ public final class QuestionRepository {
             String questionId
     ) {
         Map<String, List<String>> overrides = readAnswerOverrides(context, questionBankId);
-        if (overrides.remove(questionId) == null) {
-            return;
+        if (overrides.remove(questionId) != null) {
+            saveAnswerOverrides(context, questionBankId, overrides);
         }
-        saveAnswerOverrides(context, questionBankId, overrides);
+        Map<String, List<MatchingData.Pair>> matchingOverrides = readMatchingOverrides(context,
+                questionBankId);
+        if (matchingOverrides.remove(questionId) != null) {
+            saveMatchingOverrides(context, questionBankId, matchingOverrides);
+        }
         CACHE.remove(questionBankId);
+    }
+
+    public static synchronized void saveMatchingAnswerOverride(Context context, String bankId,
+            Question question, List<MatchingData.Pair> pairs) {
+        if (question == null || !question.isMatching()
+                || !question.getMatching().isComplete(pairs)) {
+            throw new IllegalArgumentException("连线题修正答案必须完整且符合连接规则");
+        }
+        Map<String, List<MatchingData.Pair>> overrides = readMatchingOverrides(context, bankId);
+        overrides.put(question.getId(), new ArrayList<>(pairs));
+        saveMatchingOverrides(context, bankId, overrides);
+        CACHE.remove(bankId);
     }
 
     public static synchronized QuestionBank copyQuestionBankForEditing(
@@ -329,6 +347,16 @@ public final class QuestionRepository {
                         copiedImages.put(image, copiedImage);
                     }
                 }
+                List<String> copiedExplanationImages = new ArrayList<>();
+                for (String explanationImage : question.getExplanationImages()) {
+                    String copiedReference = copiedImages.get(explanationImage);
+                    if (copiedReference == null) {
+                        copiedReference = QuestionImageStore.copyToBank(
+                                context, source.getId(), explanationImage, copy.getId());
+                        copiedImages.put(explanationImage, copiedReference);
+                    }
+                    copiedExplanationImages.add(copiedReference);
+                }
                 copiedQuestions.add(new Question(
                         question.getId(),
                         question.getIndex(),
@@ -339,7 +367,9 @@ public final class QuestionRepository {
                         question.getOptions(),
                         question.getAnswers(),
                         copiedImage,
-                        question.getExplanation()
+                        question.getExplanation(),
+                        question.getMatching(),
+                        copiedExplanationImages, question.getSourceChapter(), question.getSourceName()
                 ));
             }
             saveImportedQuestionBank(context, copy.getId(), copiedQuestions);
@@ -355,8 +385,45 @@ public final class QuestionRepository {
             String questionBankId,
             List<Question> questions
     ) throws Exception {
+        saveImportedQuestionBank(context, questionBankId,
+                findQuestionBank(context, questionBankId).getDisplayName(), questions);
+    }
+
+    public static synchronized void renameImportedQuestionBank(
+            Context context, String questionBankId, String displayName
+    ) {
+        String name = requireDisplayName(displayName);
+        List<QuestionBank> banks = new ArrayList<>(readImportedBanks(context));
+        for (int i = 0; i < banks.size(); i++) {
+            QuestionBank bank = banks.get(i);
+            if (bank.getId().equals(questionBankId)) {
+                banks.set(i, QuestionBank.imported(bank.getId(), name, bank.getStorageName(),
+                        bank.getImportedAt(), bank.getQuestionCount()));
+                saveImportedBanks(context, banks);
+                resetCache();
+                return;
+            }
+        }
+        throw new IllegalArgumentException("找不到可编辑的题库");
+    }
+
+    private static String requireDisplayName(String displayName) {
+        String name = displayName == null ? "" : displayName.trim();
+        if (name.isEmpty()) {
+            throw new IllegalArgumentException("题库名称不能为空");
+        }
+        return name;
+    }
+
+    public static synchronized void saveImportedQuestionBank(
+            Context context,
+            String questionBankId,
+            String displayName,
+            List<Question> questions
+    ) throws Exception {
+        String name = requireDisplayName(displayName);
         QuestionBank bank = findQuestionBank(context, questionBankId);
-        if (!bank.isImported()) {
+        if (!bank.isImported() || !bank.getId().equals(questionBankId)) {
             throw new IllegalArgumentException("内置题库不能直接编辑");
         }
         if (questions.isEmpty()) {
@@ -374,7 +441,7 @@ public final class QuestionRepository {
         }
 
         JSONArray jsonArray = questionsToJson(questions);
-        parseQuestions(jsonArray, bank.getDisplayName());
+        parseQuestions(jsonArray, name);
         File target = new File(bank.getStorageName());
         File temp = new File(target.getParentFile(), target.getName() + ".tmp");
         File backup = new File(target.getParentFile(), target.getName() + ".bak");
@@ -400,7 +467,7 @@ public final class QuestionRepository {
             if (item.getId().equals(questionBankId)) {
                 importedBanks.set(i, QuestionBank.imported(
                         item.getId(),
-                        item.getDisplayName(),
+                        name,
                         target.getAbsolutePath(),
                         item.getImportedAt(),
                         questions.size()
@@ -409,7 +476,8 @@ public final class QuestionRepository {
             }
         }
         saveImportedBanks(context, importedBanks);
-        preferences(context).edit().remove(namespacedAnswerOverrideKey(questionBankId)).apply();
+        preferences(context).edit().remove(namespacedAnswerOverrideKey(questionBankId))
+                .remove(KEY_MATCHING_OVERRIDES + "_" + questionBankId).apply();
         QuestionImageStore.cleanupOrphans(context, questionBankId, questions);
         resetCache();
     }
@@ -434,6 +502,7 @@ public final class QuestionRepository {
             new File(file.getParentFile(), file.getName() + ".tmp").delete();
             QuestionImageStore.deleteBankImages(context, bank.getId());
             editor.remove(namespacedAnswerOverrideKey(bank.getId()));
+            editor.remove(KEY_MATCHING_OVERRIDES + "_" + bank.getId());
         }
         editor.putString(KEY_IMPORTED_BANKS, "[]");
         try {
@@ -470,8 +539,14 @@ public final class QuestionRepository {
 
     private static List<Question> parseQuestions(JSONArray jsonArray, String fallbackPaper) throws Exception {
         List<Question> questions = new ArrayList<>();
+        Set<String> questionIds = new HashSet<>();
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject item = jsonArray.getJSONObject(i);
+            String questionId = item.has("id")
+                    ? (item.isNull("id") ? "" : item.getString("id").trim()) : "q" + (i + 1);
+            if (questionId.isEmpty() || !questionIds.add(questionId)) {
+                throw new IllegalArgumentException("第 " + (i + 1) + " 题的 ID 为空或重复：" + questionId);
+            }
             JSONArray optionsArray = item.optJSONArray("options");
             List<Question.Option> options = new ArrayList<>();
             if (optionsArray != null) {
@@ -484,31 +559,56 @@ public final class QuestionRepository {
                 }
             }
 
-            JSONArray answersArray = item.getJSONArray("answers");
+            String rawType = item.optString("type", "").trim();
+            String normalizedType = rawType.isEmpty() ? null
+                    : MaterialQuestionRules.normalizeType(rawType);
+            if (!rawType.isEmpty() && normalizedType == null) {
+                throw new IllegalArgumentException("第 " + (i + 1) + " 题的题型不受支持：" + rawType);
+            }
+            boolean matchingType = MaterialQuestionRules.MATCHING.equals(normalizedType);
+            JSONArray answersArray = item.optJSONArray("answers");
             List<String> answers = new ArrayList<>();
-            for (int j = 0; j < answersArray.length(); j++) {
-                String answer = answersArray.getString(j).trim();
-                if (!answer.isEmpty()) {
-                    answers.add(answer);
+            if (answersArray != null) {
+                for (int j = 0; j < answersArray.length(); j++) {
+                    String answer = answersArray.getString(j).trim();
+                    if (!answer.isEmpty()) {
+                        answers.add(answer);
+                    }
                 }
             }
-            if (answers.isEmpty()) {
+            if (!matchingType && answers.isEmpty()) {
                 throw new IllegalArgumentException("第 " + (i + 1) + " 题缺少有效答案");
             }
 
+            MatchingData matching = matchingType
+                    ? MatchingData.fromJson(item.optJSONObject("matching")) : null;
+            List<String> explanationImages = new ArrayList<>();
+            JSONArray explanationImageArray = item.optJSONArray("explanationImages");
+            if (explanationImageArray != null) {
+                for (int j = 0; j < explanationImageArray.length(); j++) {
+                    String reference = explanationImageArray.getString(j).trim();
+                    if (reference.isEmpty()) throw new IllegalArgumentException("解析图引用不能为空");
+                    explanationImages.add(reference);
+                }
+            }
+
             Question question = new Question(
-                    item.optString("id", "q" + (i + 1)),
+                    questionId,
                     item.optInt("index", i + 1),
                     item.optString("paper", fallbackPaper),
                     item.optInt("numberInPaper", i + 1),
-                    item.optString("type", answers.size() > 1 ? "multi" : "single"),
+                    normalizedType == null ? (answers.size() > 1 ? "multi" : "single") : normalizedType,
                     item.getString("stem"),
                     options,
                     answers,
                     item.isNull("image") ? null : item.optString("image", null),
-                    item.isNull("explanation") ? null : item.optString("explanation", null)
+                    item.isNull("explanation") ? null : item.optString("explanation", null),
+                    matching,
+                    explanationImages,
+                    item.isNull("sourceChapter") ? null : item.optString("sourceChapter", null),
+                    item.isNull("sourceName") ? null : item.optString("sourceName", null)
             );
-            if (!question.isFillBlank() && options.isEmpty()) {
+            if (!question.isFillBlank() && !question.isMatching() && options.isEmpty()) {
                 throw new IllegalArgumentException("第 " + (i + 1) + " 题缺少选项");
             }
             questions.add(question);
@@ -534,7 +634,7 @@ public final class QuestionRepository {
         List<Question> updatedQuestions = new ArrayList<>();
         for (Question question : questions) {
             List<String> override = overrides.get(question.getId());
-            if (override == null || override.isEmpty()) {
+            if (override == null || override.isEmpty() || question.isMatching()) {
                 updatedQuestions.add(question);
                 continue;
             }
@@ -548,7 +648,9 @@ public final class QuestionRepository {
                     question.getOptions(),
                     override,
                     question.getImage(),
-                    question.getExplanation()
+                    question.getExplanation(),
+                    question.getMatching(),
+                    question.getExplanationImages(), question.getSourceChapter(), question.getSourceName()
             ));
         }
         return updatedQuestions;
@@ -575,6 +677,61 @@ public final class QuestionRepository {
         } catch (Exception ignored) {
         }
         return overrides;
+    }
+
+    private static List<Question> applyMatchingOverrides(List<Question> questions,
+            Map<String, List<MatchingData.Pair>> overrides) {
+        if (overrides.isEmpty()) return questions;
+        List<Question> result = new ArrayList<>();
+        for (Question question : questions) {
+            List<MatchingData.Pair> pairs = overrides.get(question.getId());
+            if (!question.isMatching() || pairs == null) {
+                result.add(question);
+                continue;
+            }
+            try {
+                MatchingData old = question.getMatching();
+                MatchingData matching = new MatchingData(old.getMode(), old.getLeftItems(),
+                        old.getRightItems(), pairs);
+                result.add(new Question(question.getId(), question.getIndex(), question.getPaper(),
+                        question.getNumberInPaper(), question.getType(), question.getStem(),
+                        question.getOptions(), question.getAnswers(), question.getImage(),
+                        question.getExplanation(), matching, question.getExplanationImages(),
+                        question.getSourceChapter(), question.getSourceName()));
+            } catch (IllegalArgumentException invalid) {
+                result.add(question);
+            }
+        }
+        return result;
+    }
+
+    private static Map<String, List<MatchingData.Pair>> readMatchingOverrides(Context context,
+            String bankId) {
+        Map<String, List<MatchingData.Pair>> result = new HashMap<>();
+        try {
+            JSONObject root = new JSONObject(preferences(context).getString(
+                    KEY_MATCHING_OVERRIDES + "_" + bankId, "{}"));
+            Iterator<String> keys = root.keys();
+            while (keys.hasNext()) {
+                String key = keys.next();
+                result.put(key, MatchingData.pairsFromJson(root.optJSONArray(key)));
+            }
+        } catch (Exception ignored) { }
+        return result;
+    }
+
+    private static void saveMatchingOverrides(Context context, String bankId,
+            Map<String, List<MatchingData.Pair>> overrides) {
+        try {
+            JSONObject root = new JSONObject();
+            for (Map.Entry<String, List<MatchingData.Pair>> entry : overrides.entrySet()) {
+                root.put(entry.getKey(), MatchingData.pairsToJson(entry.getValue()));
+            }
+            preferences(context).edit().putString(KEY_MATCHING_OVERRIDES + "_" + bankId,
+                    root.toString()).apply();
+        } catch (Exception error) {
+            throw new IllegalStateException("保存连线题答案修正失败", error);
+        }
     }
 
     private static void saveAnswerOverrides(
@@ -742,6 +899,8 @@ public final class QuestionRepository {
             item.put("numberInPaper", question.getNumberInPaper());
             item.put("type", question.getType());
             item.put("stem", question.getStem());
+            item.put("sourceChapter", question.getSourceChapter());
+            item.put("sourceName", question.getSourceName());
             JSONArray options = new JSONArray();
             for (Question.Option option : question.getOptions()) {
                 JSONObject optionItem = new JSONObject();
@@ -759,6 +918,10 @@ public final class QuestionRepository {
                     ? JSONObject.NULL
                     : question.getExplanation());
             item.put("image", question.getImage() == null ? JSONObject.NULL : question.getImage());
+            if (question.isMatching()) {
+                item.put("matching", question.getMatching().toJson());
+            }
+            item.put("explanationImages", new JSONArray(question.getExplanationImages()));
             array.put(item);
         }
         return array;

@@ -15,8 +15,10 @@ public final class MaterialDraftStore {
     private static final String FILE_NAME = "material_workspace_draft.json";
 
     private final File file;
+    private final Context context;
 
     public MaterialDraftStore(Context context) {
+        this.context = context.getApplicationContext();
         file = new File(context.getFilesDir(), FILE_NAME);
     }
 
@@ -55,6 +57,7 @@ public final class MaterialDraftStore {
     }
 
     public synchronized void clear() {
+        DocxMediaStore.clear(context);
         if (file.exists()) {
             //noinspection ResultOfMethodCallIgnored
             file.delete();

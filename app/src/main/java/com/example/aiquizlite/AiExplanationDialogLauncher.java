@@ -33,6 +33,21 @@ public final class AiExplanationDialogLauncher {
             boolean correct,
             ExecutorService executor
     ) {
+        show(activity, questionBankId, question, selectedAnswers, correctAnswers,
+                null, null, correct, executor);
+    }
+
+    public static void show(
+            Activity activity,
+            String questionBankId,
+            Question question,
+            List<String> selectedAnswers,
+            List<String> correctAnswers,
+            List<MatchingData.Pair> selectedPairs,
+            List<MatchingData.Pair> correctPairs,
+            boolean correct,
+            ExecutorService executor
+    ) {
         ApiConfigStore configStore = new ApiConfigStore(activity);
         ApiConfig config = configStore.getConfig();
         if (!config.isComplete()) {
@@ -52,6 +67,8 @@ public final class AiExplanationDialogLauncher {
                 question,
                 selectedAnswers,
                 correctAnswers,
+                selectedPairs,
+                correctPairs,
                 correct,
                 config
         );
@@ -99,6 +116,8 @@ public final class AiExplanationDialogLauncher {
                 question,
                 selectedAnswers,
                 correctAnswers,
+                selectedPairs,
+                correctPairs,
                 correct,
                 config,
                 cacheKey,
@@ -142,6 +161,8 @@ public final class AiExplanationDialogLauncher {
             Question question,
             List<String> selectedAnswers,
             List<String> correctAnswers,
+            List<MatchingData.Pair> selectedPairs,
+            List<MatchingData.Pair> correctPairs,
             boolean correct,
             ApiConfig config,
             String cacheKey,
@@ -159,7 +180,9 @@ public final class AiExplanationDialogLauncher {
                 selectedAnswers,
                 correct,
                 formatAnswers(question, selectedAnswers),
-                formatAnswers(question, correctAnswers)
+                formatAnswers(question, correctAnswers),
+                selectedPairs,
+                correctPairs
         );
         executor.execute(() -> {
             try {

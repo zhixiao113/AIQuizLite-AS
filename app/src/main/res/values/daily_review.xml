@@ -1,0 +1,24 @@
+<resources>
+    <string name="daily_review_setting">回看日常答题记录</string>
+    <string name="daily_review_setting_detail">保存每轮答题明细，点击历史记录回看；会增加本地存储占用</string>
+    <string name="daily_review_enable_title">开启历史答题回看？</string>
+    <string name="daily_review_enable_message">开启后，每轮完成时会保存题目、你的答案和判题结果，增加本地存储空间占用。每个题库最多保留最近 50 轮记录。\n\n开启前的记录只有统计，无法补回明细。关闭后停止新增明细，已保存的记录会保留；可在首页清空答题记录时一并删除。</string>
+    <string name="daily_review_enable">开启并保存明细</string>
+    <string name="daily_review_open">查看答题明细 ›</string>
+    <string name="daily_review_no_detail">该记录未保存逐题明细</string>
+    <string name="daily_review_unavailable">无法读取答题明细，记录可能已被清理</string>
+    <string name="daily_review_disabled">请先在设置中开启“回看日常答题记录”</string>
+    <string name="daily_review_title">%1$s · 历史回看</string>
+    <string name="daily_review_back">返回记录</string>
+    <string name="daily_review_unanswered">当时未作答</string>
+    <string name="daily_review_feedback">%1$s\n当时答案：%2$s\n正确答案：%3$s</string>
+    <string name="daily_review_correct">✓ 当时答对</string>
+    <string name="daily_review_wrong">✕ 当时答错</string>
+    <string name="daily_review_corrected">✓ 当时已修正答案</string>
+    <string name="daily_review_save_failed">答题统计已保存，但明细保存失败，请检查存储空间</string>
+    <string name="question_jump_correct">第 %1$s 题，已答对，点击跳转</string>
+    <string name="question_jump_wrong">第 %1$s 题，已答错，点击跳转</string>
+    <string name="question_jump_status_hint">蓝色·当前　绿色·答对　红色·答错　白色·未答</string>
+    <color name="question_jump_correct">#15803D</color>
+    <color name="question_jump_wrong">#B91C1C</color>
+</resources>

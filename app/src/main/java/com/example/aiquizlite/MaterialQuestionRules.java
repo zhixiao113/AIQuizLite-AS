@@ -16,6 +16,7 @@ public final class MaterialQuestionRules {
     public static final String MULTI = "multi";
     public static final String JUDGE = "judge";
     public static final String FILL_BLANK = "fill_blank";
+    public static final String MATCHING = "matching";
 
     private MaterialQuestionRules() {
     }
@@ -59,7 +60,9 @@ public final class MaterialQuestionRules {
             acceptedByType.put(normalized.type, current + 1);
             normalized.value.put("id", "material_q" + (accepted.length() + 1));
             normalized.value.put("index", accepted.length() + 1);
-            normalized.value.put("numberInPaper", accepted.length() + 1);
+            int sourceNumber = normalized.value.optInt("numberInPaper", 0);
+            normalized.value.put("numberInPaper", sourceNumber > 0
+                    ? sourceNumber : accepted.length() + 1);
             accepted.put(normalized.value);
         }
 
@@ -88,6 +91,7 @@ public final class MaterialQuestionRules {
         permissiveQuotas.put(MULTI, maximum);
         permissiveQuotas.put(JUDGE, maximum);
         permissiveQuotas.put(FILL_BLANK, maximum);
+        permissiveQuotas.put(MATCHING, maximum);
         return validate(candidates, permissiveQuotas, fallbackPaper);
     }
 
@@ -97,6 +101,9 @@ public final class MaterialQuestionRules {
         }
         String type = normalizeType(raw.optString("type", ""));
         String stem = raw.optString("stem", "").trim();
+        if (MATCHING.equals(type)) {
+            return normalizeMatching(raw, fallbackPaper, stem);
+        }
         JSONArray rawAnswers = raw.optJSONArray("answers");
         if (type == null || stem.isEmpty() || rawAnswers == null || rawAnswers.length() == 0) {
             return null;
@@ -138,7 +145,7 @@ public final class MaterialQuestionRules {
         value.put("stem", stem);
         value.put("options", options);
         value.put("answers", answers);
-        value.put("image", JSONObject.NULL);
+        copyMedia(raw, value);
         String explanation = raw.isNull("explanation")
                 ? ""
                 : raw.optString("explanation", "").trim();
@@ -146,7 +153,53 @@ public final class MaterialQuestionRules {
         copyOptional(raw, value, "sourceChapter");
         copyOptional(raw, value, "sourceSnippet");
         copyOptional(raw, value, "qualityState");
+        copyNumber(raw, value);
         return new NormalizedQuestion(type, value);
+    }
+
+    private static NormalizedQuestion normalizeMatching(JSONObject raw, String fallbackPaper,
+                                                         String stem) throws JSONException {
+        if (stem.isEmpty()) return null;
+        MatchingData matching;
+        try {
+            matching = MatchingData.fromJson(raw.optJSONObject("matching"));
+        } catch (Exception invalid) {
+            return null;
+        }
+        JSONObject value = new JSONObject()
+                .put("paper", nonEmpty(raw.optString("paper", ""), fallbackPaper))
+                .put("type", MATCHING)
+                .put("stem", stem)
+                .put("options", new JSONArray())
+                .put("answers", new JSONArray());
+        try {
+            value.put("matching", matching.toJson());
+        } catch (Exception invalid) {
+            return null;
+        }
+        copyMedia(raw, value);
+        String explanation = raw.isNull("explanation")
+                ? "" : raw.optString("explanation", "").trim();
+        value.put("explanation", explanation.isEmpty() ? JSONObject.NULL : explanation);
+        copyOptional(raw, value, "sourceChapter");
+        copyOptional(raw, value, "sourceSnippet");
+        copyOptional(raw, value, "qualityState");
+        copyNumber(raw, value);
+        return new NormalizedQuestion(MATCHING, value);
+    }
+
+    private static void copyMedia(JSONObject raw, JSONObject value) throws JSONException {
+        String image = raw.optString("image", "").trim();
+        value.put("image", image.isEmpty() ? JSONObject.NULL : image);
+        JSONArray explanationImages = raw.optJSONArray("explanationImages");
+        if (explanationImages != null) {
+            value.put("explanationImages", new JSONArray(explanationImages.toString()));
+        }
+    }
+
+    private static void copyNumber(JSONObject raw, JSONObject value) throws JSONException {
+        int number = raw.optInt("numberInPaper", 0);
+        if (number > 0) value.put("numberInPaper", number);
     }
 
     private static boolean validAnswerShape(String type, JSONArray answers, Set<String> optionKeys) {
@@ -223,6 +276,11 @@ public final class MaterialQuestionRules {
             case "填空":
             case "填空题":
                 return FILL_BLANK;
+            case "matching":
+            case "match":
+            case "连线":
+            case "连线题":
+                return MATCHING;
             default:
                 return null;
         }

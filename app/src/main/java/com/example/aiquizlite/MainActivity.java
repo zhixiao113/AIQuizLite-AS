@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String PREF_NAME = "main_activity";
     public static final String KEY_SELECTED_BANK = "selected_bank";
     private static final int HISTORY_PREVIEW_LIMIT = 3;
+    private static boolean autoUpdateChecked = false;
 
     private String selectedQuestionBankId;
     private TextView summaryText;
@@ -72,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         View drawerDownloadsButton = findViewById(R.id.drawerDownloadsButton);
         View drawerAiSettingsButton = findViewById(R.id.drawerAiSettingsButton);
         View drawerSettingsButton = findViewById(R.id.drawerSettingsButton);
-        View questionBankManageButton = findViewById(R.id.questionBankManageButton);
+        View memorizeButton = findViewById(R.id.memorizeButton);
 
         selectedQuestionBankId = restoreSelectedQuestionBankId();
         setupQuestionBankEntry();
@@ -86,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
         );
 
         dailyButton.setOnClickListener(view -> openMode(QuizActivity.MODE_DAILY));
+        findViewById(R.id.typePracticeButton).setOnClickListener(view -> choosePracticeType());
         wrongButton.setOnClickListener(view -> openMode(QuizActivity.MODE_WRONG));
         favoriteButton.setOnClickListener(view -> openMode(QuizActivity.MODE_FAVORITES));
         mockButton.setOnClickListener(view -> openMode(QuizActivity.MODE_MOCK));
@@ -93,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         reverseOrderButton.setOnClickListener(view -> toggleDailyOrder());
         refreshHistoryButton.setOnClickListener(view -> clearDailyHistory());
         moreHistoryButton.setOnClickListener(view -> openAllHistory());
-        questionBankManageButton.setOnClickListener(view -> openQuestionBankPage());
+        memorizeButton.setOnClickListener(view -> openMode(QuizActivity.MODE_MEMORIZE));
     }
 
     private void setupNavigationDrawer(
@@ -138,6 +140,34 @@ public class MainActivity extends AppCompatActivity {
         selectedQuestionBankId = restoreSelectedQuestionBankId();
         setupQuestionBankEntry();
         refreshHomeContent();
+        checkUpdateSilently();
+    }
+
+    private void checkUpdateSilently() {
+        if (autoUpdateChecked || isFinishing()) {
+            return;
+        }
+        autoUpdateChecked = true;
+        String serverUrl = new GeneralSettingsStore(this).getUpdateServerUrl();
+        if (serverUrl == null || serverUrl.trim().isEmpty()) {
+            return;
+        }
+        UpdateChecker.checkUpdate(this, serverUrl, new UpdateChecker.Callback<UpdateChecker.UpdateInfo>() {
+            @Override
+            public void onResult(UpdateChecker.UpdateInfo info) {
+                if (isFinishing()) {
+                    return;
+                }
+                if (UpdateChecker.hasNewVersion(MainActivity.this, info)) {
+                    UpdateDialog.startUpdateFlow(MainActivity.this, serverUrl, info);
+                }
+            }
+
+            @Override
+            public void onError(String message) {
+                // 静默失败，不打扰用户
+            }
+        });
     }
 
     private void setupQuestionBankEntry() {
@@ -172,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
                 questionBank.getDisplayName()
                         + " 题库共 "
                         + questions.size()
-                        + " 题，支持单选、多选、判断、填空。"
+                        + " 题，支持单选、多选、判断、填空、连线。"
         );
         wrongCountText.setText("错题本当前 " + store.getWrongCount(questionBank.getId()) + " 题");
         favoriteCountText.setText("当前题库已收藏 " + store.getFavoriteCount(questionBank.getId()) + " 题");
@@ -186,6 +216,32 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(QuizActivity.EXTRA_MODE, mode);
         intent.putExtra(QuizActivity.EXTRA_QUESTION_BANK, selectedQuestionBankId);
         startActivity(intent);
+    }
+
+    private void choosePracticeType() {
+        List<Question> questions = QuestionRepository.load(this, selectedQuestionBankId);
+        List<String> types = new ArrayList<>();
+        List<String> labels = new ArrayList<>();
+        ProgressStore store = new ProgressStore(this);
+        for (String type : TypePracticeRules.TYPES) {
+            int count = TypePracticeRules.filter(questions, type).size();
+            if (count == 0) continue;
+            types.add(type);
+            labels.add(TypePracticeRules.label(type) + " · " + count + " 题"
+                    + (store.getTypeSession(selectedQuestionBankId, type) == null ? "" : " · 继续练习"));
+        }
+        if (types.isEmpty()) {
+            Toast.makeText(this, R.string.empty_question_bank, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        new AlertDialog.Builder(this).setTitle("按题型练习")
+                .setItems(labels.toArray(new String[0]), (dialog, which) -> {
+                    Intent intent = new Intent(this, QuizActivity.class);
+                    intent.putExtra(QuizActivity.EXTRA_MODE, QuizActivity.MODE_TYPE);
+                    intent.putExtra(QuizActivity.EXTRA_QUESTION_BANK, selectedQuestionBankId);
+                    intent.putExtra(QuizActivity.EXTRA_QUESTION_TYPE, types.get(which));
+                    startActivity(intent);
+                }).setNegativeButton(android.R.string.cancel, null).show();
     }
 
     private void confirmRestartDailyPractice() {
@@ -313,6 +369,7 @@ public class MainActivity extends AppCompatActivity {
 
         row.addView(title);
         row.addView(detail);
+        DailyHistoryNavigation.bind(this, row, selectedQuestionBankId, record.getDetailId(), false);
         return row;
     }
 
@@ -347,6 +404,7 @@ public class MainActivity extends AppCompatActivity {
 
         row.addView(title);
         row.addView(detail);
+        DailyHistoryNavigation.bind(this, row, selectedQuestionBankId, null, true);
         return row;
     }
 

@@ -57,6 +57,20 @@ public final class AiExplanationCache {
             boolean correct,
             ApiConfig config
     ) {
+        return keyFor(questionBankId, question, selectedAnswers, correctAnswers,
+                null, null, correct, config);
+    }
+
+    public static String keyFor(
+            String questionBankId,
+            Question question,
+            List<String> selectedAnswers,
+            List<String> correctAnswers,
+            List<MatchingData.Pair> selectedPairs,
+            List<MatchingData.Pair> correctPairs,
+            boolean correct,
+            ApiConfig config
+    ) {
         StringBuilder value = new StringBuilder();
         value.append(questionBankId).append('\n')
                 .append(question.getId()).append('\n')
@@ -67,7 +81,13 @@ public final class AiExplanationCache {
         }
         value.append(correctAnswers).append('\n')
                 .append(selectedAnswers).append('\n')
-                .append(correct).append('\n')
+                .append(question.getExplanationImages()).append('\n');
+        if (question.isMatching()) {
+            try { value.append(question.getMatching().toJson()); }
+            catch (Exception invalid) { value.append(question.getMatching().getCorrectPairs()); }
+            value.append('\n').append(correctPairs).append('\n').append(selectedPairs).append('\n');
+        }
+        value.append(correct).append('\n')
                 .append(question.getExplanation()).append('\n')
                 .append(AiEndpoint.normalizeBaseUrl(config.getBaseUrl())).append('\n')
                 .append(config.getModel());

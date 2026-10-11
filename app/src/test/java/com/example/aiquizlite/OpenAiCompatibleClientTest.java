@@ -3,8 +3,14 @@ package com.example.aiquizlite;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class OpenAiCompatibleClientTest {
+    @Test
+    public void materialRequestsAllowAtLeastThreeMinutesForLongAiResponses() {
+        assertTrue(OpenAiCompatibleClient.longReadTimeoutMillis() >= 180_000);
+    }
+
     @Test
     public void parsesStringMessageContent() throws Exception {
         assertEquals(

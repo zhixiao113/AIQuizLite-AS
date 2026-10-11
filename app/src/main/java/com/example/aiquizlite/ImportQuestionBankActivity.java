@@ -19,29 +19,62 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.button.MaterialButton;
 
 import org.json.JSONArray;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ImportQuestionBankActivity extends AppCompatActivity {
     private EditText bankNameEdit;
     private EditText jsonEdit;
     private TextView importHintText;
+    private final List<android.view.View> importControls = new ArrayList<>();
+    private QuestionBankFileImportModel fileImportModel;
     private final ActivityResultLauncher<String[]> pickJsonLauncher =
             registerForActivityResult(new ActivityResultContracts.OpenDocument(), this::handlePickedJson);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        fileImportModel = new ViewModelProvider(this).get(QuestionBankFileImportModel.class);
         buildLayout();
+        if (savedInstanceState != null) {
+            bankNameEdit.setText(savedInstanceState.getString("bankName", ""));
+            jsonEdit.setText(fileImportModel.draftJson);
+        }
+        setFileImportRunning(fileImportModel.isRunning());
+        fileImportModel.result.observe(this, result -> {
+            if (result == null) {
+                return;
+            }
+            fileImportModel.consumeResult();
+            setFileImportRunning(false);
+            if (result.error != null) {
+                showFileImportError(result.error);
+            } else if (result.bank != null) {
+                completeImport(result.bank);
+            } else {
+                try {
+                    fillImportedJson(result.rawJson, result.displayName);
+                } catch (Exception e) {
+                    showFileImportError(e.getMessage());
+                }
+            }
+        });
         if (savedInstanceState == null) {
             handleExternalImportIntent(getIntent());
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putString("bankName", bankNameEdit.getText().toString());
+        fileImportModel.draftJson = jsonEdit.getText().toString();
+        super.onSaveInstanceState(outState);
     }
 
     private void buildLayout() {
@@ -68,6 +101,7 @@ public class ImportQuestionBankActivity extends AppCompatActivity {
         MaterialButton doneButton = new MaterialButton(this);
         doneButton.setText("完成");
         doneButton.setOnClickListener(view -> finishImport());
+        importControls.add(doneButton);
         header.addView(doneButton);
 
         ScrollView scrollView = new ScrollView(this);
@@ -88,9 +122,11 @@ public class ImportQuestionBankActivity extends AppCompatActivity {
         bankNameEdit.setSingleLine(true);
         bankNameEdit.setTextColor(getColor(R.color.brand_ink));
         content.addView(bankNameEdit, matchWrap());
+        importControls.add(bankNameEdit);
 
         MaterialButton pickButton = new MaterialButton(this);
-        pickButton.setText("选择本地 .json 文件");
+        pickButton.setText("选择本地 JSON / ZIP 文件");
+        importControls.add(pickButton);
         pickButton.setIconResource(R.drawable.ic_import_question_bank);
         pickButton.setIconPadding(dp(8));
         pickButton.setOnClickListener(view -> pickJsonFile());
@@ -100,6 +136,7 @@ public class ImportQuestionBankActivity extends AppCompatActivity {
 
         MaterialButton pasteButton = new MaterialButton(this);
         pasteButton.setText("粘贴 AI JSON");
+        importControls.add(pasteButton);
         pasteButton.setOnClickListener(view -> pasteAiJson());
         LinearLayout.LayoutParams pasteParams = matchWrap();
         pasteParams.topMargin = dp(10);
@@ -113,7 +150,7 @@ public class ImportQuestionBankActivity extends AppCompatActivity {
         content.addView(importGuideRow, guideRowParams);
 
         importHintText = new TextView(this);
-        importHintText.setText("导入说明：支持本地文件、AI JSON、微信分享导入");
+        importHintText.setText("JSON 可编辑后保存；选择 ZIP 后直接导入题库与图片。ZIP 内放一个 JSON 和 image 文件夹，题目的 image 填写 image/图片名.png。");
         importHintText.setTextColor(getColor(R.color.brand_text_secondary));
         importHintText.setTextSize(14);
         importGuideRow.addView(importHintText, new LinearLayout.LayoutParams(
@@ -134,6 +171,7 @@ public class ImportQuestionBankActivity extends AppCompatActivity {
         ));
 
         jsonEdit = new EditText(this);
+        importControls.add(jsonEdit);
         jsonEdit.setHint("导入框：题目 JSON 会显示在这里");
         jsonEdit.setMinLines(12);
         jsonEdit.setGravity(Gravity.TOP | Gravity.START);
@@ -175,7 +213,7 @@ public class ImportQuestionBankActivity extends AppCompatActivity {
     }
 
     private void pickJsonFile() {
-        pickJsonLauncher.launch(new String[]{"application/json", "text/json", "text/plain", "*/*"});
+        pickJsonLauncher.launch(new String[]{"application/json", "application/zip", "application/x-zip-compressed", "text/json", "text/plain", "*/*"});
     }
 
     private void handlePickedJson(Uri uri) {
@@ -183,14 +221,9 @@ public class ImportQuestionBankActivity extends AppCompatActivity {
             return;
         }
         try {
-            String raw = readUri(uri);
-            fillImportedJson(raw, resolveNameFromUri(uri));
+            importExternalUri(uri);
         } catch (Exception e) {
-            new AlertDialog.Builder(this)
-                    .setTitle("导入失败")
-                    .setMessage("文件不是可识别的题库 JSON：" + e.getMessage())
-                    .setPositiveButton(android.R.string.ok, null)
-                    .show();
+            showFileImportError(e.getMessage());
         }
     }
 
@@ -230,15 +263,33 @@ public class ImportQuestionBankActivity extends AppCompatActivity {
         } catch (Exception e) {
             new AlertDialog.Builder(this)
                     .setTitle("微信导入失败")
-                    .setMessage("微信文件不是可识别的题库 JSON：" + e.getMessage())
+                    .setMessage("无法读取题库 JSON / ZIP：" + e.getMessage())
                     .setPositiveButton(android.R.string.ok, null)
                     .show();
         }
     }
 
     private void importExternalUri(Uri uri) throws Exception {
-        String raw = readUri(uri);
-        fillImportedJson(raw, resolveNameFromUri(uri, "微信导入题库"));
+        fileImportModel.importFile(uri, resolveNameFromUri(uri), getContentResolver().getType(uri));
+        setFileImportRunning(true);
+    }
+
+    private void setFileImportRunning(boolean running) {
+        for (android.view.View control : importControls) {
+            control.setEnabled(!running);
+        }
+        if (running) {
+            importHintText.setText("正在读取题库并导入图片，请稍候…");
+        }
+    }
+
+    private void showFileImportError(String message) {
+        importHintText.setText("导入失败，请检查 ZIP 内的 JSON 和 image 图片路径后重新选择。");
+        new AlertDialog.Builder(this)
+                .setTitle("导入失败")
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok, null)
+                .show();
     }
 
     private void pasteAiJson() {
@@ -281,6 +332,9 @@ public class ImportQuestionBankActivity extends AppCompatActivity {
     }
 
     private void finishImport() {
+        if (fileImportModel.isRunning()) {
+            return;
+        }
         String raw = jsonEdit.getText().toString();
         if (raw.trim().isEmpty()) {
             Toast.makeText(this, "请先选择或粘贴题库 JSON", Toast.LENGTH_SHORT).show();
@@ -294,12 +348,7 @@ public class ImportQuestionBankActivity extends AppCompatActivity {
                     bankNameEdit.getText().toString(),
                     questions
             );
-            getSharedPreferences(MainActivity.PREF_NAME, MODE_PRIVATE)
-                    .edit()
-                    .putString(MainActivity.KEY_SELECTED_BANK, bank.getId())
-                    .apply();
-            Toast.makeText(this, "已导入：" + bank.getDisplayName(), Toast.LENGTH_SHORT).show();
-            finish();
+            completeImport(bank);
         } catch (Exception e) {
             new AlertDialog.Builder(this)
                     .setTitle("保存失败")
@@ -309,19 +358,15 @@ public class ImportQuestionBankActivity extends AppCompatActivity {
         }
     }
 
-    private String readUri(Uri uri) throws Exception {
-        try (InputStream inputStream = getContentResolver().openInputStream(uri);
-             ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            if (inputStream == null) {
-                throw new IllegalArgumentException("无法读取文件");
-            }
-            byte[] buffer = new byte[4096];
-            int count;
-            while ((count = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, count);
-            }
-            return outputStream.toString(StandardCharsets.UTF_8.name());
-        }
+    private void completeImport(QuestionRepository.QuestionBank bank) {
+        getSharedPreferences(MainActivity.PREF_NAME, MODE_PRIVATE)
+                .edit()
+                .putString(MainActivity.KEY_SELECTED_BANK, bank.getId())
+                .apply();
+        Toast.makeText(this, "已导入：" + bank.getDisplayName(), Toast.LENGTH_SHORT).show();
+        setResult(RESULT_OK, new Intent().putExtra(
+                DownloadLibraryActivity.EXTRA_IMPORTED_BANK_ID, bank.getId()));
+        finish();
     }
 
     private String resolveNameFromUri(Uri uri) {
@@ -338,6 +383,9 @@ public class ImportQuestionBankActivity extends AppCompatActivity {
                 }
             }
         } catch (Exception ignored) {
+        }
+        if (name == null || name.trim().isEmpty()) {
+            name = fallbackName;
         }
         if (name.endsWith(".json")) {
             name = name.substring(0, name.length() - ".json".length());
@@ -357,11 +405,13 @@ public class ImportQuestionBankActivity extends AppCompatActivity {
     private String buildFormatPrompt() {
         return "请根据我提供的文档生成题库 JSON。要求只输出 JSON，不要 Markdown。\n"
                 + "根节点可以是数组，也可以是 {\"name\":\"题库名\",\"questions\":[...]}。\n"
-                + "每道题必须包含：id、index、paper、numberInPaper、type、stem、options、answers、explanation、image。\n"
-                + "type 只能是 single、multi、judge、fill_blank。\n"
+                + "每道题必须包含：id、index、paper、numberInPaper、type、stem、options、answers、explanation、image；可另有 matching、explanationImages。\n"
+                + "type 只能是 single、multi、judge、fill_blank、matching。\n"
                 + "单选题 answers 只有一个选项 key，多选题 answers 有多个 key，判断题建议用 A/B 表示正确/错误。\n"
                 + "填空题只支持单空，type 使用 fill_blank，options 必须是 []，answers 写一个或多个明确可接受的完整答案。不要自行扩展近义词。\n"
+                + "连线题 type=matching，options=[]、answers=[]；matching 包含 mode(one_to_one 或 left_reusable)、leftItems/rightItems（各项 id、text）和 correctPairs（leftId、rightId）。每个右侧项恰好对应一个左侧项；左侧可复用时用 left_reusable。不可把连线题转成多选或填空。\n"
                 + "explanation 保存答案解析，原文没有解析时必须设为 null；该字段适用于所有题型。\n"
+                + "含图片时请将 JSON 和 image 文件夹一起压缩为 ZIP；作答前必须可见的题图放 image，例如 image/q1.png；答案图只放 explanationImages 数组，提交后显示。没有题图填 null，没有答案图填 []。若图片角色或答案无法确定，请标出原题号供人工核对，不得猜测。\n"
                 + "清理原文中的题号、[填空题]/(填空题)标签、我的答案、分值、正确答案标题、(1)答案序号和无正文的AI讲解标签。只把正确答案正文写入 answers，把答案解析正文写入 explanation。\n\n"
                 + "示例：\n"
                 + "[\n"
@@ -412,7 +462,8 @@ public class ImportQuestionBankActivity extends AppCompatActivity {
                 + "    \"answers\": [\"安全区域\"],\n"
                 + "    \"explanation\": \"华为 USG 防火墙接口只能加入一个安全区域\",\n"
                 + "    \"image\": null\n"
-                + "  }\n"
+                + "  },\n"
+                + "  {\"id\":\"q5\",\"index\":5,\"paper\":\"示例题库\",\"numberInPaper\":5,\"type\":\"matching\",\"stem\":\"连接左右项目\",\"options\":[],\"answers\":[],\"matching\":{\"mode\":\"left_reusable\",\"leftItems\":[{\"id\":\"L1\",\"text\":\"属性 A\"}],\"rightItems\":[{\"id\":\"R1\",\"text\":\"描述一\"},{\"id\":\"R2\",\"text\":\"描述二\"}],\"correctPairs\":[{\"leftId\":\"L1\",\"rightId\":\"R1\"},{\"leftId\":\"L1\",\"rightId\":\"R2\"}]},\"explanation\":null,\"image\":null,\"explanationImages\":[]}\n"
                 + "]";
     }
 

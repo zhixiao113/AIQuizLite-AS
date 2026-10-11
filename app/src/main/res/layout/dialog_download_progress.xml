@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:background="@drawable/bg_dialog_card"
+    android:paddingStart="28dp"
+    android:paddingEnd="28dp"
+    android:paddingTop="30dp"
+    android:paddingBottom="24dp">
+
+    <com.example.aiquizlite.RingProgressView
+        android:id="@+id/ringProgress"
+        android:layout_width="128dp"
+        android:layout_height="128dp" />
+
+    <TextView
+        android:id="@+id/downloadTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:text="正在下载更新"
+        android:textColor="@color/brand_ink"
+        android:textSize="17sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/downloadSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:text="AIQuizLite v1.0.4"
+        android:textColor="@color/brand_text_secondary"
+        android:textSize="11.5sp" />
+
+    <TextView
+        android:id="@+id/downloadFiles"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="正在连接更新服务器…"
+        android:textColor="@color/brand_text_muted"
+        android:textSize="10.5sp" />
+
+    <TextView
+        android:id="@+id/cancelButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/bg_btn_outline"
+        android:paddingStart="28dp"
+        android:paddingEnd="28dp"
+        android:paddingTop="9dp"
+        android:paddingBottom="9dp"
+        android:text="取消下载"
+        android:textColor="@color/brand_primary"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+</LinearLayout>

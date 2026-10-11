@@ -37,12 +37,13 @@ public class ExternalImportActivity extends Activity {
             return;
         }
         if (destination == ExternalImportRules.Destination.UNSUPPORTED) {
-            Toast.makeText(this, "无法识别该文件，仅支持 JSON、TXT、文字版 PDF 和 DOCX", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "无法识别该文件，仅支持 JSON、ZIP 题库包、TXT、文字版 PDF 和 DOCX", Toast.LENGTH_LONG).show();
             finish();
             return;
         }
 
         Class<?> targetClass = destination == ExternalImportRules.Destination.QUESTION_BANK_JSON
+                || destination == ExternalImportRules.Destination.QUESTION_BANK_ZIP
                 ? ImportQuestionBankActivity.class
                 : MaterialToQuizActivity.class;
         Intent target = copyForTarget(source, targetClass);

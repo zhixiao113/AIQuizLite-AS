@@ -3,6 +3,9 @@
     <cache-path
         name="question_bank_exports"
         path="question_bank_exports/" />
+    <cache-path
+        name="updates"
+        path="updates/" />
     <external-path
         name="download_library"
         path="Download/AIQuizLite/" />

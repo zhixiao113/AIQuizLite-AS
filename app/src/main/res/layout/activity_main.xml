@@ -118,6 +118,14 @@
                 app:iconGravity="textStart"
                 app:iconPadding="8dp" />
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/typePracticeButton"
+                style="@style/ButtonStyle.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/type_practice" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -249,12 +257,12 @@
                         android:background="@color/brand_divider" />
 
                     <com.google.android.material.button.MaterialButton
-                        android:id="@+id/questionBankManageButton"
+                        android:id="@+id/memorizeButton"
                         style="@style/ButtonStyle.HomeList"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/question_bank_management"
-                        app:icon="@android:drawable/ic_menu_manage" />
+                        android:text="@string/memorize"
+                        app:icon="@drawable/ic_memorize" />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -262,7 +270,7 @@
                         android:layout_marginStart="48dp"
                         android:layout_marginTop="-8dp"
                         android:layout_marginBottom="10dp"
-                        android:text="@string/question_bank_management_description"
+                        android:text="@string/memorize_description"
                         android:textColor="@color/brand_text_secondary"
                         android:textSize="13sp" />
                 </LinearLayout>

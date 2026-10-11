@@ -50,8 +50,8 @@
     <string name="feature_under_construction">功能建设中</string>
     <string name="learner_name">学习者</string>
     <string name="learner_subtitle">专注每一次练习</string>
-    <string name="question_bank_management">题库管理</string>
-    <string name="question_bank_management_description">切换、导入和编辑题库</string>
+    <string name="memorize">背题</string>
+    <string name="memorize_description">直接显示正确答案与解析，按题序快速过题记忆</string>
     <string name="home_title">AI 刷题</string>
     <string name="home_subtitle">今天也要稳稳进步</string>
     <string name="current_question_bank">当前题库</string>
@@ -126,4 +126,5 @@
     <string name="ai_cache_cleared">AI讲解缓存已清除</string>
     <string name="ai_configuration_required_detail">配置API地址、API Key和模型名称后即可生成讲解。</string>
     <string name="ai_explanation_copied">讲解已复制</string>
+    <string name="type_practice">按题型练习</string>
 </resources>

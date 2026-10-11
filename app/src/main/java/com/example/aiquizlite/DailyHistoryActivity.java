@@ -14,6 +14,7 @@ public class DailyHistoryActivity extends AppCompatActivity {
     private TextView summaryText;
     private TextView emptyText;
     private LinearLayout recordsContainer;
+    private String questionBankId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,9 +25,10 @@ public class DailyHistoryActivity extends AppCompatActivity {
         emptyText = findViewById(R.id.historyEmptyText);
         recordsContainer = findViewById(R.id.historyRecordsContainer);
 
-        String questionBankId = getIntent().getStringExtra(QuizActivity.EXTRA_QUESTION_BANK);
+        questionBankId = getIntent().getStringExtra(QuizActivity.EXTRA_QUESTION_BANK);
         QuestionRepository.QuestionBank questionBank =
                 QuestionRepository.findQuestionBank(this, questionBankId);
+        questionBankId = questionBank.getId();
         List<ProgressStore.DailyPracticeRecord> records =
                 new ProgressStore(this).getDailyPracticeRecords(questionBank.getId());
 
@@ -84,6 +86,7 @@ public class DailyHistoryActivity extends AppCompatActivity {
 
         row.addView(title);
         row.addView(detail);
+        DailyHistoryNavigation.bind(this, row, questionBankId, record.getDetailId(), false);
         return row;
     }
 

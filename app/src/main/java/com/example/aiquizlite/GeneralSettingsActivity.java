@@ -88,6 +88,23 @@ public class GeneralSettingsActivity extends AppCompatActivity {
                 "续刷上次练习", "回到日常刷题时继续上次未完成的位置",
                 settings.shouldResumeDailyPractice(), settings::setResumeDailyPractice);
         addDivider(practice);
+        addSwitchRow(practice, R.drawable.ic_general_practice,
+                getString(R.string.daily_review_setting), getString(R.string.daily_review_setting_detail),
+                settings.shouldReviewDailyHistory(), enabled -> {
+                    if (!enabled) {
+                        settings.setReviewDailyHistory(false);
+                        return;
+                    }
+                    new AlertDialog.Builder(this)
+                            .setTitle(R.string.daily_review_enable_title)
+                            .setMessage(R.string.daily_review_enable_message)
+                            .setNegativeButton(android.R.string.cancel, null)
+                            .setPositiveButton(R.string.daily_review_enable, (dialog, which) ->
+                                    settings.setReviewDailyHistory(true))
+                            .setOnDismissListener(dialog -> buildLayout())
+                            .show();
+                });
+        addDivider(practice);
         addSwitchRow(practice, R.drawable.ic_general_wrong,
                 "自动加入错题本", "答错后自动加入；关闭后只显示本次反馈",
                 settings.shouldAutoAddWrongQuestion(), settings::setAutoAddWrongQuestion);
@@ -174,6 +191,48 @@ public class GeneralSettingsActivity extends AppCompatActivity {
         addChoiceRow(about, R.drawable.ic_general_info,
                 "AIQuizLite", "为个人学习与备考设计的本地题库练习工具",
                 BuildConfig.VERSION_NAME, null);
+        addDivider(about);
+        addChoiceRow(about, R.drawable.ic_general_update,
+                "检查更新", "连接内置更新服务器，检测是否有新版本可安装",
+                "检查", view -> checkForUpdates());
+    }
+
+    private void checkForUpdates() {
+        AlertDialog checking = new AlertDialog.Builder(this)
+                .setTitle("正在检查更新")
+                .setMessage("正在连接更新服务器…")
+                .setCancelable(false)
+                .show();
+        UpdateChecker.checkUpdate(this, settings.getUpdateServerUrl(), new UpdateChecker.Callback<UpdateChecker.UpdateInfo>() {
+            @Override
+            public void onResult(UpdateChecker.UpdateInfo info) {
+                if (isFinishing()) {
+                    return;
+                }
+                if (checking.isShowing()) {
+                    checking.dismiss();
+                }
+                if (UpdateChecker.hasNewVersion(GeneralSettingsActivity.this, info)) {
+                    UpdateDialog.startUpdateFlow(GeneralSettingsActivity.this,
+                            settings.getUpdateServerUrl(), info);
+                } else {
+                    Toast.makeText(GeneralSettingsActivity.this,
+                            "当前已是最新版本 v" + BuildConfig.VERSION_NAME, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onError(String message) {
+                if (isFinishing()) {
+                    return;
+                }
+                if (checking.isShowing()) {
+                    checking.dismiss();
+                }
+                Toast.makeText(GeneralSettingsActivity.this,
+                        "检查更新失败：" + message, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void addDisplayInteractionSection(LinearLayout content) {
@@ -227,10 +286,11 @@ public class GeneralSettingsActivity extends AppCompatActivity {
         addSegmentedSettingBlock(
                 controls,
                 "题目字体",
-                "预览同步显示实际题干和选项大小",
+                "题干、选项和连线文字同步调整",
                 settings.getQuestionFontMode(),
-                new String[]{"标准", "较大"},
-                new int[]{GeneralSettingsRules.QUESTION_FONT_STANDARD, GeneralSettingsRules.QUESTION_FONT_LARGE},
+                new String[]{"较小", "标准", "较大"},
+                new int[]{GeneralSettingsRules.QUESTION_FONT_SMALL,
+                        GeneralSettingsRules.QUESTION_FONT_STANDARD, GeneralSettingsRules.QUESTION_FONT_LARGE},
                 value -> {
                     settings.setQuestionFontMode(value);
                     refreshDisplayPreview();
@@ -293,16 +353,16 @@ public class GeneralSettingsActivity extends AppCompatActivity {
         if (displayPreviewState == null) {
             return;
         }
-        boolean large = settings.getQuestionFontMode() == GeneralSettingsRules.QUESTION_FONT_LARGE;
+        int fontMode = settings.getQuestionFontMode();
         boolean compact = settings.getQuizDensity() == GeneralSettingsRules.QUIZ_DENSITY_COMPACT;
         displayPreviewState.setText(getString(
                 R.string.display_preview_state,
                 GeneralSettingsRules.questionFontLabel(settings.getQuestionFontMode()),
                 GeneralSettingsRules.quizDensityLabel(settings.getQuizDensity())
         ));
-        displayPreviewQuestion.setTextSize(large ? 18 : 16);
-        displayPreviewOptionA.setTextSize(large ? 16 : 14);
-        displayPreviewOptionB.setTextSize(large ? 16 : 14);
+        displayPreviewQuestion.setTextSize(GeneralSettingsRules.questionStemSizeSp(fontMode) - 2);
+        displayPreviewOptionA.setTextSize(GeneralSettingsRules.questionOptionSizeSp(fontMode) - 2);
+        displayPreviewOptionB.setTextSize(GeneralSettingsRules.questionOptionSizeSp(fontMode) - 2);
         int verticalPadding = dp(compact ? 7 : 10);
         displayPreviewOptionA.setPadding(dp(12), verticalPadding, dp(12), verticalPadding);
         displayPreviewOptionB.setPadding(dp(12), verticalPadding, dp(12), verticalPadding);
@@ -342,7 +402,7 @@ public class GeneralSettingsActivity extends AppCompatActivity {
         segment.setBackground(rounded(0xFFF3F4F6, 12));
         top.addView(segment, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
-                dp(44)
+                dp(50)
         ));
         TextView[] choices = new TextView[labels.length];
         for (int index = 0; index < labels.length; index++) {
@@ -351,7 +411,7 @@ public class GeneralSettingsActivity extends AppCompatActivity {
                     value == selectedValue ? R.color.brand_card : R.color.brand_text_secondary,
                     true);
             choice.setGravity(Gravity.CENTER);
-            choice.setMinWidth(dp(62));
+            choice.setMinWidth(dp(labels.length > 2 ? 50 : 62));
             choice.setBackground(rounded(
                     value == selectedValue ? getColor(R.color.brand_primary) : Color.TRANSPARENT,
                     9
@@ -373,7 +433,8 @@ public class GeneralSettingsActivity extends AppCompatActivity {
                 }
             });
             choices[index] = choice;
-            segment.addView(choice, new LinearLayout.LayoutParams(dp(64), ViewGroup.LayoutParams.MATCH_PARENT));
+            segment.addView(choice, new LinearLayout.LayoutParams(
+                    dp(labels.length > 2 ? 52 : 64), ViewGroup.LayoutParams.MATCH_PARENT));
         }
 
         TextView help = text(description, 12, R.color.brand_text_secondary, false);

@@ -78,7 +78,9 @@ public final class MockExamAttempt {
                             : sourceOptionOrder(question),
                     question.getAnswers(),
                     Collections.emptyList(),
-                    false
+                    false,
+                    question.isMatching() ? question.getMatching().getCorrectPairs() : Collections.emptyList(),
+                    Collections.emptyList()
             ));
         }
         return new MockExamAttempt(
@@ -148,6 +150,13 @@ public final class MockExamAttempt {
         }
     }
 
+    public void setMatchingSelection(String questionId, List<MatchingData.Pair> pairs) {
+        Item item = findItem(questionId);
+        if (item != null && !completed && item.isMatching()) {
+            item.selectedPairs = immutablePairs(pairs);
+        }
+    }
+
     public void markCompleted(long now) {
         completed = true;
         completedAt = now;
@@ -183,7 +192,7 @@ public final class MockExamAttempt {
     public int getUnansweredCount() {
         int count = 0;
         for (Item item : items) {
-            if (item.selectedAnswers.isEmpty()) {
+            if (!item.isAnswered()) {
                 count++;
             }
         }
@@ -252,6 +261,11 @@ public final class MockExamAttempt {
         ));
     }
 
+    private static List<MatchingData.Pair> immutablePairs(List<MatchingData.Pair> source) {
+        return Collections.unmodifiableList(new ArrayList<>(
+                source == null ? Collections.emptyList() : source));
+    }
+
     private static JSONArray toArray(List<String> values) {
         JSONArray array = new JSONArray();
         for (String value : values) {
@@ -275,6 +289,8 @@ public final class MockExamAttempt {
         private final List<String> optionKeyOrder;
         private final List<String> correctAnswers;
         private List<String> selectedAnswers;
+        private final List<MatchingData.Pair> correctPairs;
+        private List<MatchingData.Pair> selectedPairs;
         private boolean corrected;
 
         private Item(
@@ -282,12 +298,16 @@ public final class MockExamAttempt {
                 List<String> optionKeyOrder,
                 List<String> correctAnswers,
                 List<String> selectedAnswers,
-                boolean corrected
+                boolean corrected,
+                List<MatchingData.Pair> correctPairs,
+                List<MatchingData.Pair> selectedPairs
         ) {
             this.questionId = questionId;
             this.optionKeyOrder = immutableCopy(optionKeyOrder);
             this.correctAnswers = immutableCopy(correctAnswers);
             this.selectedAnswers = immutableCopy(selectedAnswers);
+            this.correctPairs = immutablePairs(correctPairs);
+            this.selectedPairs = immutablePairs(selectedPairs);
             this.corrected = corrected;
         }
 
@@ -307,16 +327,28 @@ public final class MockExamAttempt {
             return selectedAnswers;
         }
 
+        public List<MatchingData.Pair> getCorrectPairs() { return correctPairs; }
+        public List<MatchingData.Pair> getSelectedPairs() { return selectedPairs; }
+        public boolean isMatching() { return !correctPairs.isEmpty(); }
+        public boolean isAnswered() {
+            return isMatching() ? selectedPairs.size() == correctPairs.size()
+                    : !selectedAnswers.isEmpty();
+        }
+
         public boolean isCorrected() {
             return corrected;
         }
 
         public boolean isCorrect() {
+            if (isMatching()) {
+                return isAnswered() && new LinkedHashSet<>(selectedPairs)
+                        .equals(new LinkedHashSet<>(correctPairs));
+            }
             return sameAnswers(selectedAnswers, correctAnswers);
         }
 
         public boolean isWrong() {
-            return !selectedAnswers.isEmpty() && !isCorrect();
+            return isAnswered() && !isCorrect();
         }
 
         private JSONObject toJson() throws Exception {
@@ -325,17 +357,21 @@ public final class MockExamAttempt {
             object.put("optionKeyOrder", toArray(optionKeyOrder));
             object.put("correctAnswers", toArray(correctAnswers));
             object.put("selectedAnswers", toArray(selectedAnswers));
+            object.put("correctPairs", MatchingData.pairsToJson(correctPairs));
+            object.put("selectedPairs", MatchingData.pairsToJson(selectedPairs));
             object.put("corrected", corrected);
             return object;
         }
 
-        private static Item fromJson(JSONObject object) {
+        private static Item fromJson(JSONObject object) throws Exception {
             return new Item(
                     object.optString("questionId", ""),
                     readArray(object.optJSONArray("optionKeyOrder")),
                     readArray(object.optJSONArray("correctAnswers")),
                     readArray(object.optJSONArray("selectedAnswers")),
-                    object.optBoolean("corrected", false)
+                    object.optBoolean("corrected", false),
+                    MatchingData.pairsFromJson(object.optJSONArray("correctPairs")),
+                    MatchingData.pairsFromJson(object.optJSONArray("selectedPairs"))
             );
         }
 

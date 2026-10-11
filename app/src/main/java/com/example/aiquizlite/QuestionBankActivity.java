@@ -156,7 +156,16 @@ public class QuestionBankActivity extends AppCompatActivity {
         MaterialButton zipImportButton = new MaterialButton(this);
         zipImportButton.setText("＋ ZIP 题库包");
         zipImportButton.setTextSize(14);
-        zipImportButton.setOnClickListener(view -> openDownloadLibraryForImport());
+        zipImportButton.setOnClickListener(view -> new AlertDialog.Builder(this)
+                .setTitle("导入 ZIP 题库包")
+                .setItems(new String[]{"选择本地文件", "从下载库导入"}, (dialog, which) -> {
+                    if (which == 0) {
+                        libraryImportLauncher.launch(new Intent(this, ImportQuestionBankActivity.class));
+                    } else {
+                        openDownloadLibraryForImport();
+                    }
+                })
+                .show());
         importToolbar.addView(zipImportButton, new LinearLayout.LayoutParams(
                 0,
                 ViewGroup.LayoutParams.WRAP_CONTENT,

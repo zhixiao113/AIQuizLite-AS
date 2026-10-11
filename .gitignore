@@ -18,6 +18,7 @@ build/
 *.jks
 *.keystore
 local.properties
+.local-signing/
 .DS_Store
 
 # Question banks (题库数据 - 不上传)
@@ -31,3 +32,13 @@ app/src/main/assets/question_images/
 .settings/
 *.class
 bin/
+
+# Local generated artifacts and tooling state (never publish signing credentials)
+artifacts/
+update-server/
+__pycache__/
+*.pyc
+.codegraph/
+.cursor/
+.debug/
+Build
