@@ -338,7 +338,7 @@ public final class UpdateChecker {
     private static String friendlyError(Exception error) {
         if (error instanceof javax.net.ssl.SSLException) { return "HTTPS 证书验证失败，未绕过安全检查。"; }
         if (error instanceof java.net.SocketTimeoutException) { return "连接超时，请检查网络后重试。"; }
-        if (error instanceof java.net.UnknownHostException) { return "无法连接更新源，请检查网络或手动选择备用源。"; }
+        if (error instanceof java.net.UnknownHostException) { return "无法连接更新服务，请检查网络后重试。"; }
         String message = error.getMessage();
         if (message == null || message.trim().isEmpty()) {
             return "连接失败";

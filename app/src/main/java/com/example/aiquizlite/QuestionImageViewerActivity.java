@@ -109,6 +109,13 @@ public class QuestionImageViewerActivity extends AppCompatActivity {
         resetParams.bottomMargin = dp(28);
         controls.addView(reset, resetParams);
 
+        if (new ImageViewerHintStore(this).claimGestureHint()) {
+            showGestureHint(root);
+        }
+        scheduleAutoHide();
+    }
+
+    private void showGestureHint(FrameLayout root) {
         gestureHint = new TextView(this);
         gestureHint.setText("轻点画面隐藏控制\n双指缩放 · 双击复位");
         gestureHint.setTextSize(12);
@@ -126,7 +133,6 @@ public class QuestionImageViewerActivity extends AppCompatActivity {
 
         gestureHint.animate().alpha(0f).setStartDelay(1600).setDuration(180)
                 .withEndAction(() -> gestureHint.setVisibility(View.GONE)).start();
-        scheduleAutoHide();
     }
 
     private void configureImmersiveWindow() {
@@ -214,6 +220,9 @@ public class QuestionImageViewerActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         handler.removeCallbacksAndMessages(null);
+        if (gestureHint != null) {
+            gestureHint.animate().cancel();
+        }
         if (zoomImage != null) {
             zoomImage.release();
         }

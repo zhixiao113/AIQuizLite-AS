@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Checkable;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -195,45 +194,8 @@ public class GeneralSettingsActivity extends AppCompatActivity {
                 BuildConfig.VERSION_NAME, null);
         addDivider(about);
         addChoiceRow(about, R.drawable.ic_general_update,
-                "更新源", "GitHub 在线更新；本地备用需手动选择，证书验证不会被跳过",
-                UpdateSourceRules.isGithub(settings.getUpdateServerUrl()) ? "GitHub" : "本地备用",
-                view -> showUpdateSources());
-        addDivider(about);
-        addChoiceRow(about, R.drawable.ic_general_update,
-                "检查更新", "连接所选更新源，校验新版本后由系统确认安装",
+                "检查更新", "检测新版本，下载并校验后由系统确认安装",
                 "检查", view -> checkForUpdates());
-    }
-
-    private void showUpdateSources() {
-        new AlertDialog.Builder(this).setTitle("选择更新源")
-                .setItems(new String[]{"GitHub（推荐）", "本地备用服务器"}, (dialog, which) -> {
-                    if (which == 0) {
-                        settings.setUpdateServerUrl(UpdateChecker.DEFAULT_SERVER_URL);
-                        buildLayout();
-                    } else {
-                        EditText input = new EditText(this);
-                        input.setSingleLine(true);
-                        input.setInputType(android.text.InputType.TYPE_CLASS_TEXT
-                                | android.text.InputType.TYPE_TEXT_VARIATION_URI);
-                        input.setText(settings.getLocalUpdateServerUrl());
-                        AlertDialog editor = new AlertDialog.Builder(this)
-                                .setTitle("本地备用更新地址")
-                                .setMessage("填写服务器根地址（不含 version.json）。HTTPS 必须有可信证书；HTTP 仅允许明确的内网 IP。旧穿透证书无效时请先修复，不会自动忽略验证。")
-                                .setView(input).setNegativeButton(android.R.string.cancel, null)
-                                .setPositiveButton("保存", null).create();
-                        editor.setOnShowListener(ignored -> editor.getButton(AlertDialog.BUTTON_POSITIVE)
-                                .setOnClickListener(view -> {
-                                    try {
-                                        String address = input.getText().toString().trim();
-                                        if (address.isEmpty()) { throw new IllegalArgumentException("请输入地址"); }
-                                        settings.setUpdateServerUrl(address);
-                                        editor.dismiss();
-                                        buildLayout();
-                                    } catch (IllegalArgumentException error) { input.setError(error.getMessage()); }
-                                }));
-                        editor.show();
-                    }
-                }).show();
     }
 
     private void checkForUpdates() {

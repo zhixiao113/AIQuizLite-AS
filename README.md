@@ -48,16 +48,18 @@ python .\tools\extract_questions.py
 - 双击 `启动更新服务器.bat`。自动选择当前代理构建包或已准备包，核对 APK 真实包名、版本、签名后才替换清单；无需为同一已准备版本重新打开 Android Studio 构建。旧 APK 或其他签名会拒绝发布。
 - 完整操作及故障处理见 [本地更新方法](docs/本地更新方法.md)。本地方式继续保留；[服务器自动更新方案](docs/deployment/服务器自动更新方案.md)目前只是待配置确认的方案，尚未部署。
 
-本次原签名验收包：1.1.3 / versionCode 14；仓库 `app/release/app-release.apk` 同步保留该包。在线正式版本以 [stable 更新清单](https://raw.githubusercontent.com/zhixiao113/AIQuizLite-AS/update-channel/stable.json) 为准；[GitHub Release](https://github.com/zhixiao113/AIQuizLite-AS/releases/latest)保留历史安装包。
+本次原签名验收包：1.1.4 / versionCode 15；仓库 `app/release/app-release.apk` 同步保留该包。在线正式版本以 [stable 更新清单](https://raw.githubusercontent.com/zhixiao113/AIQuizLite-AS/update-channel/stable.json) 为准；[GitHub Release](https://github.com/zhixiao113/AIQuizLite-AS/releases/latest)保留历史安装包。
 
 GitHub 应用内在线更新：
 
-- 新版「设置 → 更新源」默认 GitHub，不需要学校服务器、公网 IP、域名或穿透。手机网络必须能够访问 GitHub 清单和 APK 下载源。
+- 用户只需「设置 → 检查更新」，正式客户端固定使用 GitHub，界面不提供更新源或服务器地址选择。旧版本保存或旧备份恢复的本地地址不会改变更新目标。不需要学校服务器、公网 IP、域名或穿透；手机网络必须能够访问 GitHub 清单和 APK 下载源。
 - 保留“检查 → 提示 → 下载/取消 → 校验 → 系统确认安装”。HTTPS 不再忽略证书，云端安装包需核对哈希、大小、真实包名/版本和原签名；失败不会误报最新版。
 - Actions CI 自动测试但不分发无签名产物；正式发布工作流起步使用 main 的手动触发，完整构建/签名/上传/推广步骤自动执行，签名 Secrets 需用户明确授权。每个新验收版本由代理主动递增版本并构建。
 - 安装包先上传并通过公开下载核验，再切换独立 stable 清单；保留 previous、最高已用版本和审计记录，提供健康检查失败恢复及手动回滚。回滚不是 Android 降级。
-- 旧版仍指向穿透地址，需要通过原本地更新或一次性覆盖安装过渡包；不卸载。新版可手动选择本地备用地址，但旧 FRP 入口若证书无效不会绕过验证。
-- 具体命令见 [GitHub 在线更新操作](docs/deployment/GitHub在线更新操作.md)，测试边界见 [实施与验收记录](docs/qa/github-update-2026-10-12.md)。
+- 旧版仍指向穿透地址，需要通过原本地更新或一次性覆盖安装新版；不卸载。本地服务/BAT 仅保留给开发者和旧客户端迁移，不作为新版用户可切换的入口，证书检查不能绕过。
+- 具体命令见 [GitHub 在线更新操作](docs/deployment/GitHub在线更新操作.md)，本次测试与待验收项见 [用户更新与图片提示验收](docs/qa/user-update-image-hint-2026-10-12.md)，初始部署记录见 [GitHub 实施记录](docs/qa/github-update-2026-10-12.md)。
+
+所有题目与解析图片共用全屏查看器。操作提示只在本次安装首次成功打开图片时显示，后续换图片、换题库、重启或升级不重复；普通设置重置和学习数据备份恢复也不重置该提示。缩放、双击复位和关闭按钮保持不变。
 
 仅准备文件、不启动服务器，可执行：
 

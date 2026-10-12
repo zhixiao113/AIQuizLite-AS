@@ -30,22 +30,33 @@ public class UpdateSettingsTest {
         values.put("update_server_url",UpdateSourceRules.LEGACY_SERVER);
         GeneralSettingsStore store=store();
         assertEquals(UpdateSourceRules.GITHUB_MANIFEST,store.getUpdateServerUrl());
-        assertEquals(UpdateSourceRules.LEGACY_SERVER,store.getLocalUpdateServerUrl());
+        assertEquals(UpdateSourceRules.LEGACY_SERVER,values.get("update_server_url"));
     }
-    @Test public void explicitlySelectedLocalRootPersists() {
-        store().setUpdateServerUrl("http://192.168.1.2:4387/");
-        assertEquals("http://192.168.1.2:4387",store().getUpdateServerUrl());
-    }
-    @Test public void resetGithubDoesNotEraseLocalAddressOrLearningSettings() {
-        values.put("resume_daily",false);
-        store().setUpdateServerUrl("https://example.org/update");
-        store().setUpdateServerUrl(UpdateSourceRules.GITHUB_MANIFEST);
+    @Test public void previouslySelectedLocalRootCannotRedirectUserUpdates() {
+        values.put("local_update_source",true);
+        values.put("update_server_url","http://192.168.1.2:4387/");
         assertEquals(UpdateSourceRules.GITHUB_MANIFEST,store().getUpdateServerUrl());
-        assertEquals("https://example.org/update",store().getLocalUpdateServerUrl());
-        assertEquals(false,values.get("resume_daily"));
     }
-    @Test public void rejectedAddressDoesNotChangeSource() {
-        assertThrows(IllegalArgumentException.class, () -> store().setUpdateServerUrl("http://public.example.org"));
+    @Test public void ignoringLegacyConfigurationDoesNotEraseLearningSettings() {
+        values.put("resume_daily",false);
+        values.put("local_update_source",true);
+        values.put("update_server_url","https://example.org/update");
+        Map<String,Object> original = new HashMap<>(values);
+        assertEquals(UpdateSourceRules.GITHUB_MANIFEST,store().getUpdateServerUrl());
+        assertEquals(original,values);
+    }
+    @Test public void invalidLegacyAddressDoesNotBreakUserUpdates() {
+        values.put("local_update_source",true);
+        values.put("update_server_url","http://public.example.org");
+        assertEquals(UpdateSourceRules.GITHUB_MANIFEST,store().getUpdateServerUrl());
+    }
+    @Test public void restoredLegacyBackupStillUsesGithub() {
+        GeneralSettingsStore existing = store();
+        assertEquals(UpdateSourceRules.GITHUB_MANIFEST,existing.getUpdateServerUrl());
+        // Backup restoration can replace preferences after the store was created.
+        values.put("local_update_source",true);
+        values.put("update_server_url",UpdateSourceRules.LEGACY_SERVER);
+        assertEquals(UpdateSourceRules.GITHUB_MANIFEST,existing.getUpdateServerUrl());
         assertEquals(UpdateSourceRules.GITHUB_MANIFEST,store().getUpdateServerUrl());
     }
 }

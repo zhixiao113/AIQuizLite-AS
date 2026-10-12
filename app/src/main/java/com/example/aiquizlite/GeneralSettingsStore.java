@@ -26,8 +26,6 @@ public final class GeneralSettingsStore {
     private static final String KEY_IMAGE_FULLSCREEN = "image_fullscreen";
     private static final String KEY_HAPTIC_FEEDBACK = "haptic_feedback";
     private static final String KEY_MOCK_KEEP_SCREEN_ON = "mock_keep_screen_on";
-    private static final String KEY_UPDATE_SERVER_URL = "update_server_url";
-    private static final String KEY_LOCAL_UPDATE_SOURCE = "local_update_source";
 
     private final SharedPreferences preferences;
 
@@ -249,24 +247,9 @@ public final class GeneralSettingsStore {
     }
 
     public String getUpdateServerUrl() {
-        if (!preferences.getBoolean(KEY_LOCAL_UPDATE_SOURCE, false)) { return UpdateChecker.DEFAULT_SERVER_URL; }
-        return getLocalUpdateServerUrl();
-    }
-
-    public String getLocalUpdateServerUrl() {
-        String saved = preferences.getString(KEY_UPDATE_SERVER_URL, "");
-        return saved == null || saved.trim().isEmpty()
-                ? UpdateSourceRules.LEGACY_SERVER
-                : saved.trim();
-    }
-
-    public void setUpdateServerUrl(String url) {
-        if (url == null || url.trim().isEmpty() || UpdateSourceRules.isGithub(url)) {
-            preferences.edit().putBoolean(KEY_LOCAL_UPDATE_SOURCE, false).apply();
-        } else {
-            UpdateSourceRules.manifestUrl(url);
-            preferences.edit().putString(KEY_UPDATE_SERVER_URL, UpdateSourceRules.normalize(url))
-                    .putBoolean(KEY_LOCAL_UPDATE_SOURCE, true).apply();
-        }
+        // User updates always follow the published GitHub channel, including after restoring
+        // an older backup with local_update_source=true. Do not mutate learning preferences.
+        // Developer-only local publication/testing remains in the desktop tools/transport API.
+        return UpdateChecker.DEFAULT_SERVER_URL;
     }
 }
