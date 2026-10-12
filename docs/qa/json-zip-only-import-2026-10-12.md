@@ -33,7 +33,11 @@
 
 ## 在线发布与验收边界
 
-源码和正式安装包将在完整质量检查通过后发布，实际 CI/线上 stable/previous 状态在发布成功后补记；不能用本地构建成功代替线上发布成功。
+源码提交 `6bb2321f674549b8fe755aac9e13bfdda89e387a` 已正常推送 main 和既有工作分支；推送触发的 [Quality gates 38222110175](https://github.com/zhixiao113/AIQuizLite-AS/actions/runs/38222110175) 成功。
+
+本机原证书签名并经受控工具发布，报告 `artifacts/github-release/report.json` 本次运行始于 2026-10-12T08:15:31Z，结束于 08:17:40Z，outcome=success；APK 回执/公开下载、健康检查与 stable 切换均验证通过。清单分支提交 `8a3b8ba88a2302330b4d2607137f30a3d8c63efa`，canonical stable=1.1.5/code16/SHA629a6048…，previous=1.1.4/code15；历史 Release 保留，latest 只在 stable 验证后更新。
+
+[1.1.5 正式安装包](https://github.com/zhixiao113/AIQuizLite-AS/releases/download/v1.1.5/app-release.apk) 可通过当前 1.1.4 的检查更新获取。code16 已公开，不得重建后覆盖或复用；后续 App 修改必须使用更高版本号。仍未上传云端签名 Secrets，不把此次本机签名发布描述为云端自动签名完成。
 
 1.1.4 用户已报告验收通过，此结论不自动覆盖 1.1.5。本次只读 ADB 检查无法连接本机 daemon，没有执行任何手机安装或数据操作。
 
