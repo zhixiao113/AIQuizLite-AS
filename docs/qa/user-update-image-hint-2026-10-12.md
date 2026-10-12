@@ -24,12 +24,21 @@
 - 186 项 Release Java 单元测试全部通过，0 失败、0 错误。新增 6 项图片提示持久化规则测试，更新设置 5 项测试覆盖默认、旧本地选择、无效旧地址、偏好不变和恢复旧备份。
 - Release 构建成功；lint 0 错误、115 警告，为已存在的项目告警总数，没有因此宣称警告已全部消除。
 - 凭据路径/模式、Action 固定引用和 Gradle 下载校验门禁通过；diff 空白检查通过。
+- 本地默认入口 `python update_server.py --prepare-only` 实测选中 v15 的代理构建包；本地不可变 APK、清单哈希和仓库 APK 三者一致，没有启动本地服务或隧道。
 - 静态入口核查：QuizActivity 的题目图/解析图，以及 MockResultActivity 的回顾图片均进入 QuestionImageViewerActivity，共用同一持久化标记；没有逐图或逐题库提示状态。
 - ADB 未连接任何设备。本地单元测试不是手机上的旋转/重启/升级实测。
 
 ## GitHub 发布
 
-源码提交推送和公开安装包/清单复核将在实际发布后补记；当前本地构建成功不等同于线上发布成功。保留 code14 和其他历史安装包，不复用公开过的 code15。
+源码提交 `4340b0599566d0376b27c06f364255e3956a77a4`（简化在线更新并仅首次显示图片操作提示）正常推送至 main 和既有工作分支，没有强推或提交无关设计文件/用户附件。
+
+- 推送自动触发的 [Quality gates 38199862052](https://github.com/zhixiao113/AIQuizLite-AS/actions/runs/38199862052) 成功；云端不使用签名私钥，也不分发 CI 无签名包。
+- 本机受控发布器上传原签名正式包，验证回执与公开 APK，再推广清单，健康检查通过。报告 `artifacts/github-release/report.json` 的本次运行始于 2026-10-12T03:31:01Z，成功结束于 03:31:56Z。
+- 清单分支提交 `d6db9bd42e2f60c6a33473f70f66e8b1f8a77bc0`；再次只读访问 canonical stable.json 验证 stable=1.1.4/code15、SHA-256 与本机构建相同，sourceCommit 对应上述源码提交。
+- previous.json 保留 1.1.3/code14，历史 Release 不删除；GitHub latest 只在 stable 验证后更新。
+- 正式包：[1.1.4 APK](https://github.com/zhixiao113/AIQuizLite-AS/releases/download/v1.1.4/app-release.apk)。code15 已公开，不可再复用或重建后覆盖；下一次 App 改动使用更高版本号。
+
+这证明源码 CI、公开下载与更新指针已闭环，不代表目标手机安装或云端私钥签名已经验收。
 
 ## 目标手机待验收
 
