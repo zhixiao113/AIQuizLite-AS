@@ -10,7 +10,7 @@ AIQuizLite primarily serves individual learners and exam candidates. Teachers or
 
 ## Product Purpose
 
-Turn teacher-provided materials, industry learning resources, and selected open-source educational content into portable question banks. Help learners practise, review explanations, identify weak areas, and remember knowledge through repeated local study.
+Import ready-made JSON/ZIP question banks prepared outside the app. Help learners practise, review explanations, identify weak areas, and remember knowledge through repeated local study. Document-to-quiz generation inside the app is discontinued; AI remains optional for question explanations and single-question regeneration, not bank import.
 
 ## Brand Personality
 

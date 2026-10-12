@@ -7,13 +7,15 @@
 - 日常刷题：随机刷完整题库，做错自动加入错题本。
 - 错题本：错题连续答对 3 次后自动移出。
 - 模拟考试：172 题随机顺序，选项顺序打乱，最后统一交卷。
-- 资料转题：导入 TXT、文字版 PDF 或 DOCX，AI 先判断学习资料或现成题库；学习资料按全文知识点规划并生成新题，现成题库逐题识别后转换为 JSON。
+- 题库导入：从本地文件、微信分享或下载库导入已有 JSON/ZIP 题库，不在应用内解析资料或调用 AI 出题。
 - 题库管理：支持 JSON/ZIP 兼容导入、编辑、图片、导出、下载库、备份与恢复。
-- AI 辅助：支持 OpenAI 兼容接口的题目讲解、单题重生成和资料题目结构化。
+- AI 辅助：支持 OpenAI 兼容接口的题目讲解和单题重生成；这两项可选功能仍需配置 API 地址、API Key 和模型，并消耗 Token。
 
-资料识别前必须先配置 API 地址、API Key 和模型，并会产生 Token 消耗。学习资料的自动补齐最多运行 3 轮；只有有效题量、章节题量和题型配额完全一致时才能保存。现成题库使用重叠分块减少边界漏题，AI 转换后仍需经过答案、选项、重复项和 JSON 格式校验。
+1.1.5 起取消应用内资料转题（TXT/PDF/DOCX），「总题库 → ＋ 导入题库」统一导入已有 JSON/ZIP；「下载库导入」选择已保存的 ZIP。题库导入无需配置 AI，不发网络请求或消耗 Token。已导入或以前生成的题库、图片和学习记录保留。若需把学习资料转成题库，请在外部完成，再按格式导入；导入页仍提供外部可用的 JSON 格式提示词与粘贴功能。
 
-含图片的题库可打包为 ZIP，从「总题库 → ＋ ZIP 题库包 → 选择本地文件」导入，也可从微信/文件管理器分享到本应用。选择 ZIP 后会直接导入，JSON 文件仍可编辑后点击「完成」。
+本次实现、兼容测试和手机待验收项见 [JSON/ZIP 导入验收](docs/qa/json-zip-only-import-2026-10-12.md)。
+
+含图片的题库可打包为 ZIP，从「总题库 → ＋ 导入题库 → 选择本地 JSON / ZIP 文件」导入，也可从微信/文件管理器分享到本应用。选择 ZIP 后会直接导入，JSON 文件仍可编辑后点击「完成」。
 
 ```text
 图文题库.zip
@@ -48,7 +50,7 @@ python .\tools\extract_questions.py
 - 双击 `启动更新服务器.bat`。自动选择当前代理构建包或已准备包，核对 APK 真实包名、版本、签名后才替换清单；无需为同一已准备版本重新打开 Android Studio 构建。旧 APK 或其他签名会拒绝发布。
 - 完整操作及故障处理见 [本地更新方法](docs/本地更新方法.md)。本地方式继续保留；[服务器自动更新方案](docs/deployment/服务器自动更新方案.md)目前只是待配置确认的方案，尚未部署。
 
-本次原签名验收包：1.1.4 / versionCode 15；仓库 `app/release/app-release.apk` 同步保留该包。在线正式版本以 [stable 更新清单](https://raw.githubusercontent.com/zhixiao113/AIQuizLite-AS/update-channel/stable.json) 为准；[GitHub Release](https://github.com/zhixiao113/AIQuizLite-AS/releases/latest)保留历史安装包。
+本次原签名验收包：1.1.5 / versionCode 16；仓库 `app/release/app-release.apk` 同步保留该包。在线正式版本以 [stable 更新清单](https://raw.githubusercontent.com/zhixiao113/AIQuizLite-AS/update-channel/stable.json) 为准；[GitHub Release](https://github.com/zhixiao113/AIQuizLite-AS/releases/latest)保留历史安装包。
 
 GitHub 应用内在线更新：
 

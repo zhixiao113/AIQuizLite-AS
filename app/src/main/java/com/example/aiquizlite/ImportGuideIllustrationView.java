@@ -13,7 +13,7 @@ import java.util.List;
 
 public class ImportGuideIllustrationView extends View {
     public static final int MODE_LOCAL_FILE = 0;
-    public static final int MODE_AI_PASTE = 1;
+    public static final int MODE_JSON_PASTE = 1;
     public static final int MODE_WECHAT_SHARE = 2;
 
     private final Paint fillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -36,8 +36,8 @@ public class ImportGuideIllustrationView extends View {
     public void setMode(int mode) {
         this.mode = mode;
         labels.clear();
-        if (mode == MODE_AI_PASTE) {
-            labels.add("AI");
+        if (mode == MODE_JSON_PASTE) {
+            labels.add("JSON");
             labels.add("复制");
             labels.add("导入页");
         } else if (mode == MODE_WECHAT_SHARE) {
@@ -45,7 +45,7 @@ public class ImportGuideIllustrationView extends View {
             labels.add("微信");
             labels.add("AIQuizLite");
         } else {
-            labels.add("JSON");
+            labels.add("JSON/ZIP");
             labels.add("选择文件");
             labels.add("导入页");
         }
@@ -109,9 +109,9 @@ public class ImportGuideIllustrationView extends View {
         textPaint.setColor(0xFF6D7A8C);
         String caption = mode == MODE_WECHAT_SHARE
                 ? "微信文件通过“用其他应用打开”进入导入页"
-                : mode == MODE_AI_PASTE
-                ? "复制 AI 生成的 JSON，一键粘贴到导入框"
-                : "从手机本地文件选择 JSON，再检查导入";
+                : mode == MODE_JSON_PASTE
+                ? "复制已有题库 JSON，粘贴后检查导入"
+                : "选择已有 JSON / ZIP，导入本地题库";
         canvas.drawText(caption, width / 2f, height - dp(12), textPaint);
         textPaint.setFakeBoldText(true);
         textPaint.setTextSize(dp(13));
@@ -130,8 +130,6 @@ public class ImportGuideIllustrationView extends View {
 
         if (mode == MODE_WECHAT_SHARE && index == 1) {
             drawChatBubble(canvas, left + width / 2f, top + dp(21));
-        } else if (mode == MODE_AI_PASTE && index == 0) {
-            drawSpark(canvas, left + width / 2f, top + dp(20));
         } else {
             drawFile(canvas, left + width / 2f, top + dp(20));
         }

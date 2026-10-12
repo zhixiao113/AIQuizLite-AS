@@ -61,19 +61,19 @@ public class ImportGuideActivity extends AppCompatActivity {
         addGuideSection(
                 content,
                 "从微信导入",
-                "电脑制作 JSON 文件，发到微信。手机微信点开文件后选择“用其他应用打开”或“分享”，再选择 AIQuizLite。导入页会自动读取并填入 JSON。",
+                "把已有 JSON 或 ZIP 题库发到微信，点开后选择“用其他应用打开”或“分享”，再选择 AIQuizLite。JSON 可检查后保存，ZIP 会直接导入题库与图片。",
                 ImportGuideIllustrationView.MODE_WECHAT_SHARE
         );
         addGuideSection(
                 content,
-                "粘贴 AI JSON",
-                "复制 AI 生成的题库 JSON，回到导入页点击“粘贴 AI JSON”。应用会自动清理代码块，识别题库名并显示题目数量。",
-                ImportGuideIllustrationView.MODE_AI_PASTE
+                "粘贴题库 JSON",
+                "复制在外部整理好的题库 JSON，点击“粘贴题库 JSON”。应用会清理代码块、识别题库名并显示题目数量；确认后点击“完成”。此过程不调用 AI。",
+                ImportGuideIllustrationView.MODE_JSON_PASTE
         );
         addGuideSection(
                 content,
                 "选择本地文件",
-                "把 .json 文件保存到手机，点击“选择本地 .json 文件”。读取成功后可以先检查内容，再点击右上角“完成”。",
+                "把 .json 或 .zip 题库保存到手机，在总题库点击“＋ 导入题库”，再选择本地 JSON / ZIP 文件。JSON 可检查后保存；ZIP 直接导入。下载库里的 ZIP 也可通过“下载库导入”使用。",
                 ImportGuideIllustrationView.MODE_LOCAL_FILE
         );
         addFormatTip(content);
@@ -81,7 +81,7 @@ public class ImportGuideActivity extends AppCompatActivity {
 
     private void addIntro(LinearLayout content) {
         TextView intro = new TextView(this);
-        intro.setText("AIQuizLite 支持三种导入方式。无论从哪里导入，都会先进入导入框预览，确认无误后再保存成题库。");
+        intro.setText("只导入已有 JSON / ZIP 题库，不支持 TXT、PDF 或 Word 资料转题，也不消耗 AI Token。JSON 可预览后保存，ZIP 直接导入题库和图片。");
         intro.setTextColor(getColor(R.color.brand_text_secondary));
         intro.setTextSize(15);
         intro.setLineSpacing(dp(3), 1f);

@@ -135,9 +135,9 @@ public class ImportQuestionBankActivity extends AppCompatActivity {
         content.addView(pickButton, pickParams);
 
         MaterialButton pasteButton = new MaterialButton(this);
-        pasteButton.setText("粘贴 AI JSON");
+        pasteButton.setText("粘贴题库 JSON");
         importControls.add(pasteButton);
-        pasteButton.setOnClickListener(view -> pasteAiJson());
+        pasteButton.setOnClickListener(view -> pasteQuestionJson());
         LinearLayout.LayoutParams pasteParams = matchWrap();
         pasteParams.topMargin = dp(10);
         content.addView(pasteButton, pasteParams);
@@ -202,7 +202,7 @@ public class ImportQuestionBankActivity extends AppCompatActivity {
         content.addView(promptText, promptParams);
 
         MaterialButton copyButton = new MaterialButton(this);
-        copyButton.setText("复制提示词");
+        copyButton.setText("复制 JSON 格式提示词");
         copyButton.setOnClickListener(view -> copyPrompt());
         LinearLayout.LayoutParams copyParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -213,7 +213,7 @@ public class ImportQuestionBankActivity extends AppCompatActivity {
     }
 
     private void pickJsonFile() {
-        pickJsonLauncher.launch(new String[]{"application/json", "application/zip", "application/x-zip-compressed", "text/json", "text/plain", "*/*"});
+        pickJsonLauncher.launch(new String[]{"application/json", "application/zip", "application/x-zip-compressed", "text/json", "text/plain", "application/octet-stream"});
     }
 
     private void handlePickedJson(Uri uri) {
@@ -292,7 +292,7 @@ public class ImportQuestionBankActivity extends AppCompatActivity {
                 .show();
     }
 
-    private void pasteAiJson() {
+    private void pasteQuestionJson() {
         ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         if (clipboardManager == null || !clipboardManager.hasPrimaryClip()) {
             Toast.makeText(this, "剪贴板里没有可粘贴的内容", Toast.LENGTH_SHORT).show();
@@ -313,7 +313,7 @@ public class ImportQuestionBankActivity extends AppCompatActivity {
         }
 
         try {
-            fillImportedJson(raw, "AI 生成题库");
+            fillImportedJson(raw, "粘贴导入题库");
         } catch (Exception e) {
             new AlertDialog.Builder(this)
                     .setTitle("粘贴失败")
@@ -326,7 +326,8 @@ public class ImportQuestionBankActivity extends AppCompatActivity {
     private void fillImportedJson(String raw, String fallbackName) throws Exception {
         JSONArray questions = QuestionRepository.normalizeImportedJson(raw);
         jsonEdit.setText(questions.toString(2));
-        String name = QuestionRepository.resolveDisplayNameFromRawJson(raw, fallbackName);
+        String name = QuestionRepository.resolveDisplayNameFromRawJson(raw,
+                ExternalImportRules.bankNameFromFile(fallbackName));
         bankNameEdit.setText(name);
         importHintText.setText("已读取 " + questions.length() + " 道题，可在导入框内修改后点击右上角完成。");
     }
@@ -387,12 +388,8 @@ public class ImportQuestionBankActivity extends AppCompatActivity {
         if (name == null || name.trim().isEmpty()) {
             name = fallbackName;
         }
-        if (name.endsWith(".json")) {
-            name = name.substring(0, name.length() - ".json".length());
-        }
-        if (name.endsWith(".txt")) {
-            name = name.substring(0, name.length() - ".txt".length());
-        }
+        // Keep the full filename until format validation; stripping .txt here would
+        // incorrectly make a document look like an extension-less question-bank file.
         return name;
     }
 

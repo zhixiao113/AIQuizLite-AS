@@ -6,8 +6,7 @@ final class ExternalImportRules {
     enum Destination {
         QUESTION_BANK_JSON,
         QUESTION_BANK_ZIP,
-        MATERIAL,
-        LEGACY_WORD_UNSUPPORTED,
+        QUESTION_BANK_AUTO,
         UNSUPPORTED
     }
 
@@ -23,17 +22,24 @@ final class ExternalImportRules {
         String name = normalize(displayName);
         String mime = normalizeMime(mimeType);
 
+        if (!hasUri) {
+            String text = sharedText == null ? "" : sharedText.toString().trim();
+            if (text.startsWith("\uFEFF")) { text = text.substring(1).trim(); }
+            return text.startsWith("[") || text.startsWith("{") || text.startsWith("```")
+                    ? Destination.QUESTION_BANK_JSON : Destination.UNSUPPORTED;
+        }
         if (name.endsWith(".json")) {
             return Destination.QUESTION_BANK_JSON;
         }
         if (name.endsWith(".zip")) {
             return Destination.QUESTION_BANK_ZIP;
         }
-        if (name.endsWith(".txt") || name.endsWith(".pdf") || name.endsWith(".docx")) {
-            return Destination.MATERIAL;
-        }
-        if (name.endsWith(".doc")) {
-            return Destination.LEGACY_WORD_UNSUPPORTED;
+        // A named non-bank file must not become a ZIP/JSON merely because a provider
+        // reports an inaccurate MIME type (DOCX, for example, is itself a ZIP container).
+        int separator = Math.max(name.lastIndexOf('/'), name.lastIndexOf('\\'));
+        int extension = name.lastIndexOf('.');
+        if (extension > separator && extension < name.length() - 1) {
+            return Destination.UNSUPPORTED;
         }
 
         if ("application/json".equals(mime) || "text/json".equals(mime)) {
@@ -42,18 +48,10 @@ final class ExternalImportRules {
         if ("application/zip".equals(mime) || "application/x-zip-compressed".equals(mime)) {
             return Destination.QUESTION_BANK_ZIP;
         }
-        if ("application/pdf".equals(mime)
-                || "application/x-pdf".equals(mime)
-                || "application/vnd.openxmlformats-officedocument.wordprocessingml.document".equals(mime)) {
-            return Destination.MATERIAL;
-        }
-
-        // 微信分享一段 JSON 文本时通常没有文件 URI，只会附带 EXTRA_TEXT。
-        if (!hasUri && sharedText != null && sharedText.length() > 0) {
-            return Destination.QUESTION_BANK_JSON;
-        }
-        if (hasUri && "text/plain".equals(mime)) {
-            return Destination.MATERIAL;
+        // Some WeChat/file providers omit an extension and report only a generic type.
+        // The local importer must sniff and validate bounded JSON/ZIP contents, never use AI.
+        if ("application/octet-stream".equals(mime) || "text/plain".equals(mime) || mime.isEmpty()) {
+            return Destination.QUESTION_BANK_AUTO;
         }
 
         return Destination.UNSUPPORTED;
@@ -61,6 +59,22 @@ final class ExternalImportRules {
 
     private static String normalize(String value) {
         return value == null ? "" : value.trim().toLowerCase(Locale.ROOT);
+    }
+
+    static boolean shouldReadZip(Destination format, int first, int second) {
+        if (format == null || format == Destination.UNSUPPORTED) {
+            throw new IllegalArgumentException("仅支持 JSON / ZIP 题库");
+        }
+        return format == Destination.QUESTION_BANK_ZIP
+                || (format == Destination.QUESTION_BANK_AUTO && first == 'P' && second == 'K');
+    }
+
+    static String bankNameFromFile(String displayName) {
+        String name = displayName == null ? "" : displayName.trim();
+        String lower = name.toLowerCase(Locale.ROOT);
+        if (lower.endsWith(".json")) { name = name.substring(0, name.length() - 5); }
+        else if (lower.endsWith(".zip")) { name = name.substring(0, name.length() - 4); }
+        return name.isEmpty() ? "自定义题库" : name;
     }
 
     private static String normalizeMime(String value) {

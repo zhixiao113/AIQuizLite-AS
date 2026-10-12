@@ -31,22 +31,13 @@ public class ExternalImportActivity extends Activity {
                 sharedText
         );
 
-        if (destination == ExternalImportRules.Destination.LEGACY_WORD_UNSUPPORTED) {
-            Toast.makeText(this, "旧版 .doc 暂不支持，请另存为 .docx 后再导入", Toast.LENGTH_LONG).show();
-            finish();
-            return;
-        }
         if (destination == ExternalImportRules.Destination.UNSUPPORTED) {
-            Toast.makeText(this, "无法识别该文件，仅支持 JSON、ZIP 题库包、TXT、文字版 PDF 和 DOCX", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "仅支持已有 JSON / ZIP 题库，不支持 TXT、PDF 或 Word 资料转题", Toast.LENGTH_LONG).show();
             finish();
             return;
         }
 
-        Class<?> targetClass = destination == ExternalImportRules.Destination.QUESTION_BANK_JSON
-                || destination == ExternalImportRules.Destination.QUESTION_BANK_ZIP
-                ? ImportQuestionBankActivity.class
-                : MaterialToQuizActivity.class;
-        Intent target = copyForTarget(source, targetClass);
+        Intent target = copyForTarget(source, ImportQuestionBankActivity.class);
         try {
             startActivity(target);
         } catch (Exception e) {

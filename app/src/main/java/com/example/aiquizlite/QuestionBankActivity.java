@@ -56,11 +56,6 @@ public class QuestionBankActivity extends AppCompatActivity {
                     new ActivityResultContracts.StartActivityForResult(),
                     this::handleLibraryImportResult
             );
-    private final ActivityResultLauncher<Intent> materialImportLauncher =
-            registerForActivityResult(
-                    new ActivityResultContracts.StartActivityForResult(),
-                    this::handleMaterialImportResult
-            );
     private final ActivityResultLauncher<String> storagePermissionLauncher =
             registerForActivityResult(
                     new ActivityResultContracts.RequestPermission(),
@@ -136,14 +131,14 @@ public class QuestionBankActivity extends AppCompatActivity {
         root.addView(importToolbar, toolbarParams);
 
         MaterialButton jsonImportButton = new MaterialButton(this);
-        jsonImportButton.setText("＋ 资料");
+        jsonImportButton.setText("＋ 导入题库");
         jsonImportButton.setTextSize(14);
         jsonImportButton.setTextColor(getColor(R.color.brand_primary));
         jsonImportButton.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.brand_card)));
         jsonImportButton.setStrokeColor(ColorStateList.valueOf(getColor(R.color.brand_primary)));
         jsonImportButton.setStrokeWidth(dp(1));
-        jsonImportButton.setOnClickListener(view -> materialImportLauncher.launch(
-                new Intent(this, MaterialToQuizActivity.class)
+        jsonImportButton.setOnClickListener(view -> libraryImportLauncher.launch(
+                new Intent(this, ImportQuestionBankActivity.class)
         ));
         LinearLayout.LayoutParams importButtonParams = new LinearLayout.LayoutParams(
                 0,
@@ -154,18 +149,9 @@ public class QuestionBankActivity extends AppCompatActivity {
         importToolbar.addView(jsonImportButton, importButtonParams);
 
         MaterialButton zipImportButton = new MaterialButton(this);
-        zipImportButton.setText("＋ ZIP 题库包");
+        zipImportButton.setText("下载库导入");
         zipImportButton.setTextSize(14);
-        zipImportButton.setOnClickListener(view -> new AlertDialog.Builder(this)
-                .setTitle("导入 ZIP 题库包")
-                .setItems(new String[]{"选择本地文件", "从下载库导入"}, (dialog, which) -> {
-                    if (which == 0) {
-                        libraryImportLauncher.launch(new Intent(this, ImportQuestionBankActivity.class));
-                    } else {
-                        openDownloadLibraryForImport();
-                    }
-                })
-                .show());
+        zipImportButton.setOnClickListener(view -> openDownloadLibraryForImport());
         importToolbar.addView(zipImportButton, new LinearLayout.LayoutParams(
                 0,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -173,7 +159,7 @@ public class QuestionBankActivity extends AppCompatActivity {
         ));
 
         TextView hint = new TextView(this);
-        hint.setText("点击卡片切换题库；左滑可编辑、导出或删除；长按拖动可调整顺序。");
+        hint.setText("导入已有 JSON / ZIP 题库，不调用 AI。点击卡片切换；左滑可编辑、导出或删除；长按拖动排序。");
         hint.setTextColor(getColor(R.color.brand_text_secondary));
         hint.setTextSize(14);
         LinearLayout.LayoutParams hintParams = new LinearLayout.LayoutParams(
@@ -588,22 +574,6 @@ public class QuestionBankActivity extends AppCompatActivity {
         }
         String importedBankId = result.getData().getStringExtra(
                 DownloadLibraryActivity.EXTRA_IMPORTED_BANK_ID
-        );
-        if (importedBankId == null || importedBankId.trim().isEmpty()) {
-            return;
-        }
-        selectedQuestionBankId = importedBankId;
-        persistSelectedQuestionBankId();
-        QuestionRepository.resetCache();
-        renderCards();
-    }
-
-    private void handleMaterialImportResult(ActivityResult result) {
-        if (result.getResultCode() != RESULT_OK || result.getData() == null) {
-            return;
-        }
-        String importedBankId = result.getData().getStringExtra(
-                MaterialToQuizActivity.EXTRA_CREATED_BANK_ID
         );
         if (importedBankId == null || importedBankId.trim().isEmpty()) {
             return;

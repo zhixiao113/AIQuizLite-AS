@@ -10,7 +10,6 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -42,32 +41,35 @@ public class QuestionBankFileImportModel extends AndroidViewModel {
         executor.execute(() -> {
             Result value = new Result();
             value.displayName = displayName;
-            try (InputStream source = getApplication().getContentResolver().openInputStream(uri)) {
-                if (source == null) {
-                    throw new IllegalArgumentException("无法读取文件");
+            try {
+                ExternalImportRules.Destination format = ExternalImportRules.resolve(
+                        mimeType, displayName, true, null);
+                if (format == ExternalImportRules.Destination.UNSUPPORTED) {
+                    throw new IllegalArgumentException("仅支持已有 JSON / ZIP 题库，不支持 TXT、PDF 或 Word 资料转题");
                 }
-                try (BufferedInputStream input = new BufferedInputStream(source)) {
-                    input.mark(4);
-                    int first = input.read();
-                    int second = input.read();
-                    input.reset();
-                    boolean zip = (first == 'P' && second == 'K')
-                            || displayName.toLowerCase(Locale.ROOT).endsWith(".zip")
-                            || "application/zip".equals(mimeType)
-                            || "application/x-zip-compressed".equals(mimeType);
-                    if (zip) {
-                        value.bank = QuestionBankPackageManager.importPackage(getApplication(), input);
-                    } else {
-                        ByteArrayOutputStream output = new ByteArrayOutputStream();
-                        byte[] buffer = new byte[8192];
-                        int count;
-                        while ((count = input.read(buffer)) != -1) {
-                            if (output.size() + count > 4 * 1024 * 1024) {
-                                throw new IllegalArgumentException("题库 JSON 不能超过 4MB");
+                try (InputStream source = getApplication().getContentResolver().openInputStream(uri)) {
+                    if (source == null) {
+                        throw new IllegalArgumentException("无法读取文件");
+                    }
+                    try (BufferedInputStream input = new BufferedInputStream(source)) {
+                        input.mark(4);
+                        int first = input.read();
+                        int second = input.read();
+                        input.reset();
+                        if (ExternalImportRules.shouldReadZip(format, first, second)) {
+                            value.bank = QuestionBankPackageManager.importPackage(getApplication(), input);
+                        } else {
+                            ByteArrayOutputStream output = new ByteArrayOutputStream();
+                            byte[] buffer = new byte[8192];
+                            int count;
+                            while ((count = input.read(buffer)) != -1) {
+                                if (output.size() + count > 4 * 1024 * 1024) {
+                                    throw new IllegalArgumentException("题库 JSON 不能超过 4MB");
+                                }
+                                output.write(buffer, 0, count);
                             }
-                            output.write(buffer, 0, count);
+                            value.rawJson = output.toString(StandardCharsets.UTF_8.name());
                         }
-                        value.rawJson = output.toString(StandardCharsets.UTF_8.name());
                     }
                 }
             } catch (Exception error) {
