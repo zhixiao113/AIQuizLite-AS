@@ -2,6 +2,21 @@
   "highestCode": 14,
   "stable": {
     "packageName": "com.example.aiquizlite",
+    "versionCode": 14,
+    "versionName": "1.1.3",
+    "signerSha256": "6973568484920238d35d94425c70601210ca2eaf7e728326785b66fb7e9576c8",
+    "schemaVersion": 1,
+    "apkSize": 13662052,
+    "apkSha256": "53d4a6d28ec3d74ca7c2658a827cb8ff09fed37aff808e0da55b00902a0c8dd5",
+    "notes": "新增 GitHub 应用内在线更新；保留本地备用，强化 HTTPS 和安装包校验，支持发布失败日志与回滚。",
+    "sourceCommit": "3f7213298e9a6cd9368441be88f2777e8318f64c",
+    "releaseTag": "v1.1.3",
+    "apkUrl": "https://github.com/zhixiao113/AIQuizLite-AS/releases/download/v1.1.3/app-release.apk",
+    "publicationId": "7dde2643d4694c59a234e09ee35d939f",
+    "releasedAt": "2026-10-12T02:56:02+00:00"
+  },
+  "previous": {
+    "packageName": "com.example.aiquizlite",
     "versionCode": 13,
     "versionName": "1.1.2",
     "signerSha256": "6973568484920238d35d94425c70601210ca2eaf7e728326785b66fb7e9576c8",
@@ -15,7 +30,6 @@
     "publicationId": "54e9f9f952cf434bbf7f75ff55d30d71",
     "releasedAt": "2026-10-12T02:49:21+00:00"
   },
-  "previous": null,
   "releases": {
     "13": {
       "manifest": {
@@ -52,7 +66,7 @@
         "publicationId": "7dde2643d4694c59a234e09ee35d939f",
         "releasedAt": "2026-10-12T02:56:02+00:00"
       },
-      "status": "candidate",
+      "status": "stable",
       "previousCode": 13
     }
   }
