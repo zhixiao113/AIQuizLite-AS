@@ -29,6 +29,10 @@ try {
         # Publishing a dirty or untracked source would falsely attribute the APK to HEAD.
         $sourceChanges = @(git status --porcelain -- app/src app/build.gradle)
         if ($sourceChanges.Count -gt 0) { throw 'Commit application source/version before publishing; no release was uploaded.' }
+        $remoteMain = @(git ls-remote origin refs/heads/main)
+        if ($LASTEXITCODE -ne 0 -or $remoteMain.Count -ne 1 -or ($remoteMain[0] -split '\s+')[0] -ne $commit) {
+            throw 'Publish only after this committed source is the current remote main; no release was uploaded.'
+        }
         $apk = Join-Path $projectRoot "artifacts/device-release-v$version/outputs/apk/release/app-release.apk"
         if (!(Test-Path -LiteralPath $apk)) { throw 'Run the original-signer device release helper first.' }
         & python scripts/github_release.py publish --apk $apk --commit $commit --notes $Notes
