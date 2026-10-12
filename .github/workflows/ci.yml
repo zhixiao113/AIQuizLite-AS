@@ -27,6 +27,7 @@ jobs:
         run: |
           python3 scripts/ci_checks.py
           python3 -m unittest discover -s tests -p 'test_*.py' -v
+          python3 scripts/verify_public_baseline.py
       - name: Lint, unit tests and unsigned build (never distributed)
         run: |
           chmod +x gradlew

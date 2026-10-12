@@ -64,6 +64,7 @@ jobs:
           echo "$JAVA_HOME_17_X64/bin" >> "$GITHUB_PATH"
           python3 scripts/ci_checks.py
           python3 -m unittest discover -s tests -p 'test_*.py' -v
+          python3 scripts/verify_public_baseline.py
       - name: Restore original signing key
         if: needs.validate.outputs.operation == 'publish'
         env:

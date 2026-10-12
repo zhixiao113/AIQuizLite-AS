@@ -13,6 +13,7 @@ AIQuizLite 更新服务器（SakuraFrp 内网穿透模式）
 """
 
 import argparse
+import base64
 import hashlib
 import json
 import os
@@ -127,12 +128,20 @@ def inspect_apk(path):
     java_home = os.environ.get("JAVA_HOME")
     java = str(Path(java_home, "bin", "java.exe" if os.name == "nt" else "java")) if java_home else "java"
     certificates = run_tool([java, "-jar", str(build_tools / "lib" / "apksigner.jar"),
-                             "verify", "--print-certs", str(path)])
-    signers = re.findall(r"^Signer #\d+ certificate SHA-256 digest: ([0-9a-fA-F]{64})$", certificates, re.M)
+                             "verify", "--print-certs-pem", str(path)])
+    # SDK 37 labels certificates by scheme ("V2 Signer:") instead of "Signer #1".
+    # Parse verified certificate DER, not presentation labels or a claimed digest.
+    encoded = re.findall(r"-----BEGIN CERTIFICATE-----(.*?)-----END CERTIFICATE-----", certificates, re.S)
+    signers = set()
+    for certificate in encoded:
+        der = base64.b64decode(re.sub(r"\s+", "", certificate), validate=True)
+        if not der:
+            raise ValueError("更新包发布证书为空")
+        signers.add(hashlib.sha256(der).hexdigest())
     if len(signers) != 1:
         raise ValueError("更新包必须使用唯一的固定发布签名")
     return {"packageName": package.group(1), "versionCode": int(package.group(2)),
-            "versionName": package.group(3), "signerSha256": signers[0].lower()}
+            "versionName": package.group(3), "signerSha256": next(iter(signers))}
 
 
 def deploy(version_code, version_name, notes, apk_source=None, serve_dir=None):

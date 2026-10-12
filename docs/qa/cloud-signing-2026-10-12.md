@@ -31,3 +31,11 @@
 - 原证书恢复、44 项 Python 回归、Release 构建/测试/lint 通过，云端 lint 0 错误/112 警告。发布步骤在 09:29:18–09:29:19 UTC 失败，只给出已脱敏的通用检查/API错误；临时私钥清理和报告上传通过。
 - 只读核对没有 v1.1.6 Release/草稿，stable 仍是 1.1.5/code16；不能宣称上线或重签覆盖已公开 code。
 - 增加手动、无 Secrets、无写权限的 SDK 诊断工作流，用固定哈希的已公开原签名 code16 包复现同 Ubuntu/Java17 的真实 APK 检查，不更改生产清单或签名材料。
+
+## SDK 37 检查根因与修复
+
+- 只读复现 [38251570851](https://github.com/zhixiao113/AIQuizLite-AS/actions/runs/38251570851) 确认同一已公开且哈希不变的 code16 包也被误拒；[38251777779](https://github.com/zhixiao113/AIQuizLite-AS/actions/runs/38251777779) 输出真实公共摘要标签 `V2 Signer: certificate SHA-256 digest:`，所含指纹正是固定原证书。排除密码/真实多签名/发布接口假设；不是 App 换了签名。
+- 原 `update_server.inspect_apk` 只解析 `Signer #数字` 文本，而云端选择最新 Build Tools 37。改为先要求 `apksigner verify --print-certs-pem` 密码学验签成功，再从公共证书 DER 计算 SHA-256；不同证书拒绝、同一证书跨 scheme 重复合并，后续固定原证书校验不变，不信任展示文字的摘要。
+- 新增 8 项真实调用边界回归：SDK37/旧标签、跨 scheme 同证书、不同证书、仅摘要无证书、坏 Base64、非证书公共密钥块、密码学验签失败。先复现失败后修复，52 项完整 Python 回归通过；本地实际 code16 APK 原签名复验通过。
+- `verify_public_baseline.py` 固定公开 code16 的版本/大小/哈希，检查本机 SDK 与真实公开包；普通 CI 与云端私钥恢复之前均运行，避免只有无签名构建通过却漏检 SDK 变化。手动 SDK 诊断入口复用同一检查，无临时调试输出或私有材料。
+- 保留失败 v1.1.6 标签且不移动，不复用其来源标识；修复发布目标递增为 1.1.7/code18，App 功能仍与已验收 1.1.5 相同。生产上线/公开复验/本地同步/手机覆盖更新仍需完成，stable 目前仍是 code16。
