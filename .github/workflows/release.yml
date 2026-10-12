@@ -1,5 +1,7 @@
 name: Publish or roll back online update
 on:
+  push:
+    tags: ['v*']
   workflow_dispatch:
     inputs:
       operation:
@@ -20,8 +22,28 @@ concurrency:
   group: aiquiz-stable-publication
   cancel-in-progress: false
 jobs:
+  validate:
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    outputs:
+      operation: ${{ steps.guard.outputs.operation }}
+      source_commit: ${{ steps.guard.outputs.source_commit }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Validate trusted ref and matching application version before signing
+        id: guard
+        env:
+          RELEASE_EVENT: ${{ github.event_name }}
+          RELEASE_REF: ${{ github.ref }}
+          RELEASE_OPERATION: ${{ inputs.operation || 'publish' }}
+        run: python3 scripts/release_guard.py
   release:
-    if: github.ref == 'refs/heads/main'
+    needs: validate
     runs-on: ubuntu-24.04
     timeout-minutes: 40
     environment: production
@@ -34,6 +56,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
+          ref: ${{ needs.validate.outputs.source_commit }}
       - name: Select Java and check regressions
         run: |
           test -d "$JAVA_HOME_17_X64"
@@ -42,14 +65,14 @@ jobs:
           python3 scripts/ci_checks.py
           python3 -m unittest discover -s tests -p 'test_*.py' -v
       - name: Restore original signing key
-        if: inputs.operation == 'publish'
+        if: needs.validate.outputs.operation == 'publish'
         env:
           AIQUIZ_RELEASE_KEYSTORE_BASE64: ${{ secrets.AIQUIZ_RELEASE_KEYSTORE_BASE64 }}
           AIQUIZ_RELEASE_STORE_PASSWORD: ${{ secrets.AIQUIZ_RELEASE_STORE_PASSWORD }}
           AIQUIZ_RELEASE_KEY_PASSWORD: ${{ secrets.AIQUIZ_RELEASE_KEY_PASSWORD }}
         run: python3 scripts/ci_signing.py restore
       - name: Signed release quality gates
-        if: inputs.operation == 'publish'
+        if: needs.validate.outputs.operation == 'publish'
         env:
           AIQUIZ_RELEASE_STORE_PASSWORD: ${{ secrets.AIQUIZ_RELEASE_STORE_PASSWORD }}
           AIQUIZ_RELEASE_KEY_PASSWORD: ${{ secrets.AIQUIZ_RELEASE_KEY_PASSWORD }}
@@ -59,12 +82,13 @@ jobs:
       - name: Verified publication, bootstrap or guarded rollback
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          OPERATION: ${{ inputs.operation }}
-          NOTES: ${{ inputs.notes }}
+          OPERATION: ${{ needs.validate.outputs.operation }}
+          NOTES: ${{ inputs.notes || '应用版本更新，云端已完成构建、测试与原签名校验。' }}
           TARGET_CODE: ${{ inputs.target_code }}
+          SOURCE_COMMIT: ${{ needs.validate.outputs.source_commit }}
         run: |
           case "$OPERATION" in
-            publish) python3 scripts/github_release.py publish --apk "$AIQUIZ_BUILD_DIR/outputs/apk/release/app-release.apk" --commit "$GITHUB_SHA" --notes "$NOTES" ;;
+            publish) python3 scripts/github_release.py publish --apk "$AIQUIZ_BUILD_DIR/outputs/apk/release/app-release.apk" --commit "$SOURCE_COMMIT" --notes "$NOTES" ;;
             bootstrap) python3 scripts/github_release.py bootstrap ;;
             rollback)
               if [ -n "$TARGET_CODE" ]; then
@@ -86,5 +110,7 @@ jobs:
             artifacts/github-release/report.json
             artifacts/cloud-release/reports/
             artifacts/cloud-release/test-results/
+            artifacts/cloud-release/outputs/apk/release/output-metadata.json
+            artifacts/cloud-release/outputs/apk/release/baselineProfiles/
           retention-days: 90
           if-no-files-found: warn

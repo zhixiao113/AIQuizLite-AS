@@ -7,7 +7,7 @@
 - `scripts/github_release.py`：校验 APK、上传草稿、公开下载核验、更新清单、健康检查、失败恢复、手动回滚。报告为本机 `artifacts/github-release/report.json`，云端同名报告作为 Actions 附件；精简审计记录保存在清单分支。
 - `scripts/publish-github-release.ps1`：使用本机已有 GitHub Git 登录，仅把 Token 临时放在进程环境里，结束恢复；不用在命令行输入 Token。
 - `.github/workflows/ci.yml`：main/PR 自动运行无私钥质量检查，产物不签名，不作为安装包分发。
-- `.github/workflows/release.yml`：暂采用 GitHub Actions 页面手动触发，完整步骤自动执行；只有 main 可运行生产任务。等云端签名和真机验收完成再讨论是否启用版本 tag 触发，不把每次普通代码提交都发布为手机更新。
+- `.github/workflows/release.yml`：推送 `v版本号` 标签触发正式发布，也保留 Actions 手动发布/回滚；普通 main/PR 提交只跑无私钥 CI。标签必须与源码 versionName 精确一致，且指向 main 上的提交；先通过无 Secret 的校验任务，再进入需拥有者审批的 production 签名任务。
 
 ## 首次初始化
 
@@ -41,7 +41,20 @@
 
 仅在用户明确授权后，在 `production` Environment 配置原证书的 `AIQUIZ_RELEASE_KEYSTORE_BASE64`、`AIQUIZ_RELEASE_STORE_PASSWORD`、`AIQUIZ_RELEASE_KEY_PASSWORD`。Base64 不是加密，编码内容也不能提交或打印。原 `key0` 和固定证书指纹由脚本验证，缺少凭据直接失败，不回退其他密钥。
 
-建议 production 仅允许 main，初期保留发布确认。工作流需 contents 写权限修改专用清单分支，不为此关闭 main 保护。仅一个维护者时不要配置无法完成的多人审批。若尚未授权/配置云端 Secrets，本机签名发布仍可用，云端 publish 不会成功。
+production 只允许 main 分支及 v* 标签，保留拥有者发布确认。工作流需 contents 写权限修改专用清单分支，不为此关闭 main 保护。普通 CI 和无 Secret 的标签校验任务均不能访问签名材料；审批后在临时 runner 上恢复原 key0，核验证书指纹并在结束时删除私钥文件。标签不是 main 上的提交、版本不匹配或手动任务不是当前 main 时拒绝签名。
+
+2026-10-12 用户明确授权将原证书和密码配置到 production Secrets。已用 GitHub 公钥进行 LibSodium sealed-box 加密，上传并只读核验三项 Secret 名称；值不打印或提交。配置器要求显式 `-Authorized`，且检查拥有者审批和部署限制；已有签名 Secrets 不静默覆盖，轮换需另行授权。GitHub Secret 名称存在不等于签名工作流已经验收。
+
+一次性配置工具：`scripts/configure-production-signing.ps1 -Authorized`，使用本机原 JKS、DPAPI 密码及已有 Git 登录；本机加密上传工具需要 PyNaCl（目前已安装），云端恢复/签名不依赖它。
+
+代理提高两项版本号并完整检查、提交 main 后，再创建并推送同版本标签，例如：
+
+```powershell
+git tag -a v1.1.6 -m '云端原签名发布验收'
+git push origin refs/tags/v1.1.6
+```
+
+不要给已发布的 code/tag 重签、覆盖或强推；实际新版本应先检查最高已用 code。进入 Actions 的本次发布运行，选择 Review deployments → production → Approve and deploy。2026-10-12 用户随后明确授权后续验收发布由代理代为批准，本次也按新授权执行；代理需先核对目标运行、main 提交、版本与 CI/标签守卫结果，再通过 GitHub pending deployments 接口批准本次 production。保留 required reviewers，不关闭或绕过生产审批，不批准不相关运行。
 
 进入仓库 Actions → Publish or roll back online update → Run workflow，选择 main：
 
@@ -51,7 +64,7 @@
 
 每次新验收版本仍由代理修改版本并构建，不能让用户重复手动升级版本号；Actions 不凭运行次数生成与源码不一致的版本。
 
-production 已按初期方案限制 main 并要求仓库拥有者确认。当前还未导入签名 Secrets，因此不要把已通过的无私钥 CI 当成正式云端签名成功；当前安装包通过原证书本机构建与受控发布工具交付。
+生产凭据已按授权配置，当前稳定版本仍为本机原签名发布的 1.1.5/code16，已由用户验收。1.1.6/code17 是首次标签触发的云端签名验收目标，功能不变；只有签名构建、公开 APK 校验及 stable 健康检查成功后才标为正式上线，不能提前宣称成功。本地脚本与旧成功版本继续保留。
 
 ## 手动回滚与日志
 
