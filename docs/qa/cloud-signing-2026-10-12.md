@@ -23,3 +23,11 @@
 审批后验证云端原签名构建、公开下载与 stable 切换，下载真正的云端 APK 复核 SDK 信息后同步本地备用及仓库安装包，不另行重签同 code 的安装包。记录实际工作流 URL、SHA-256、大小与 previous 版本。网络/审批/签名失败不报告上线成功；公开候选 code 不复用。
 
 目前稳定版本为已验收的 code16；不能把配置成功或无签名测试通过写成云端正式发布已经完成。
+
+## 首次云端执行与失败保护
+
+- main 质量检查 [38229589597](https://github.com/zhixiao113/AIQuizLite-AS/actions/runs/38229589597) 通过，标签 v1.1.6 对应源提交 11c5329edc692ce53d29f68a0a10a516c39cbca5。
+- 标签发布 [38229865838](https://github.com/zhixiao113/AIQuizLite-AS/actions/runs/38229865838) 的 validate 通过；代理按用户最新授权，通过原有 reviewer 权限批准 production（deployment 7010728639），未关闭审批保护。
+- 原证书恢复、44 项 Python 回归、Release 构建/测试/lint 通过，云端 lint 0 错误/112 警告。发布步骤在 09:29:18–09:29:19 UTC 失败，只给出已脱敏的通用检查/API错误；临时私钥清理和报告上传通过。
+- 只读核对没有 v1.1.6 Release/草稿，stable 仍是 1.1.5/code16；不能宣称上线或重签覆盖已公开 code。
+- 增加手动、无 Secrets、无写权限的 SDK 诊断工作流，用固定哈希的已公开原签名 code16 包复现同 Ubuntu/Java17 的真实 APK 检查，不更改生产清单或签名材料。
