@@ -50,7 +50,7 @@ python .\tools\extract_questions.py
 - 双击 `启动更新服务器.bat`。自动选择当前代理构建包或已准备包，核对 APK 真实包名、版本、签名后才替换清单；无需为同一已准备版本重新打开 Android Studio 构建。旧 APK 或其他签名会拒绝发布。
 - 完整操作及故障处理见 [本地更新方法](docs/本地更新方法.md)。本地方式继续保留；[服务器自动更新方案](docs/deployment/服务器自动更新方案.md)目前只是待配置确认的方案，尚未部署。
 
-本次云端原签名验收包：1.1.7 / versionCode 18；仓库 `app/release/app-release.apk` 与云端公开 APK 完全一致，SHA-256 为 `294e4391a57f029880e348c8baeb099dbaab16c1eb06b4d64b8f2e790d825675`。App 功能与已验收 1.1.5 相同，本次闭环云端发布；此前 1.1.6 发布检查失败未上线，失败标签保留不覆盖。在线正式版本以 [stable 更新清单](https://raw.githubusercontent.com/zhixiao113/AIQuizLite-AS/update-channel/stable.json) 为准；[GitHub Release](https://github.com/zhixiao113/AIQuizLite-AS/releases/latest)保留历史安装包，previous 为 1.1.5/code16。
+本次云端原签名验收包：1.1.8 / versionCode 19；仓库 `app/release/app-release.apk` 与云端公开 APK 完全一致，SHA-256 为 `c4c575587e3f89f5b6c40805572af92703e5233efaf3da89b00c3ffe02a3d20e`。本次优化现有操作反馈，不新增章节等功能；设置增加试震、系统触感开关说明及系统设置入口，补齐连线编辑和最终交卷反馈，恢复/只读操作保持静默。需要同时开启应用操作反馈与手机系统触感，不能保证系统关闭时仍震动，也不绕过系统设置。详见 [操作反馈验收](docs/qa/operation-feedback-2026-10-12.md)。在线正式版本以 [stable 更新清单](https://raw.githubusercontent.com/zhixiao113/AIQuizLite-AS/update-channel/stable.json) 为准；[GitHub Release](https://github.com/zhixiao113/AIQuizLite-AS/releases/latest)保留历史安装包，previous 为 1.1.7/code18。
 
 GitHub 应用内在线更新：
 

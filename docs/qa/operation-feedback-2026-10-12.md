@@ -20,9 +20,19 @@
 
 先运行新增调用路径检查，确认旧源码缺少共享入口、设置试震和连线操作反馈，再实现并检查变绿。新增 7 项 Java 反馈策略测试、3 项设置持久化/实时读取/不影响其他偏好测试，以及6项 Python 源码接线检查。后者只防止漏接，不替代 Android 运行或实际震感验收。
 
-本机无 ADB 手机、无可用 AVD；无法模拟小米15的真实马达和系统政策。目标 1.1.8/code19，准备前只读核对 stable/最高已用为18，目标 Release 不存在。质量门禁、云端原签名发布、公开下载核验及本地备用同步结果待补记，不将无签名测试包分发。
+本机无 ADB 手机、无可用 AVD；无法模拟小米15的真实马达和系统政策。目标 1.1.8/code19，准备前只读核对 stable/最高已用为18，目标 Release 不存在。不将无签名测试包分发；云端发布及同步结果如下。
 
 本地完整 Release lint/test/assemble 已通过：179 项 Java 测试，0 failure/error，未提供私有题库样本的可选用例跳过1项；58项 Python 回归全部通过，凭据/供应链门禁通过，lint 0错误/104警告。源码接线检查先失败后通过；真实震感、系统跳转和小米设置返回仍需手机验收。
+
+## 云端发布和备用包完成
+
+- 源提交 ec64d8faf212c1cd77b46edc4bf13674e595e5c0 已推 main/checkpoint；[CI38259206834](https://github.com/zhixiao113/AIQuizLite-AS/actions/runs/38259206834) 完整通过，包含无私钥真实公开旧包 SDK 冒烟检查。
+- 标签 v1.1.8 对应该提交；[发布38259643427](https://github.com/zhixiao113/AIQuizLite-AS/actions/runs/38259643427) 守卫通过，代理按用户已授予的权限批准 production（deployment7015867998），原证书构建、测试、公开核验、清单健康检查及私钥清理均成功。审批保护未取消。
+- 云端179项 Java 测试，0失败/错误、可选私有题库样本跳过1项；58项 Python 回归通过；云端 lint 0错误/112警告。发布报告 14:03:06–14:03:20 UTC（香港时间22:03:06–22:03:20）成功。
+- 实际公开 [1.1.8原签名APK](https://github.com/zhixiao113/AIQuizLite-AS/releases/download/v1.1.8/app-release.apk)：code19，com.example.aiquizlite，4,987,021字节，SHA-256 `c4c575587e3f89f5b6c40805572af92703e5233efaf3da89b00c3ffe02a3d20e`，原证书指纹仍为6973568484920238d35d94425c70601210ca2eaf7e728326785b66fb7e9576c8。
+- 从公开地址重新下载并复验实际签名、版本、包名、大小/哈希；stable19/previous18/最高已用19与ledger一致，旧版本保留。
+- 同一云端APK和报告中的公共元数据/profiles同步到 `artifacts/device-release-v19/outputs/apk/release/` 与 `app/release/`。默认 prepare 入口核验通过，备用为 `update-server/AIQuizLite-v19-c4c575587e3f89f5.apk`，三个副本哈希一致。无同code重签、无启动服务/隧道、无手机安装/卸载或学习数据变更。
+- 云端成功并不代表手机马达已验收，下列小米15清单仍由用户确认。
 
 ## 小米15真机验收
 
