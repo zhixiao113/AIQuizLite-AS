@@ -1,0 +1,6 @@
+{
+  "action": "Automatic rollback",
+  "failedCode": 14,
+  "at": "2026-10-12T03:01:47+00:00",
+  "run": "local"
+}
