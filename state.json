@@ -1,5 +1,5 @@
 {
-  "highestCode": 16,
+  "highestCode": 18,
   "stable": {
     "packageName": "com.example.aiquizlite",
     "versionCode": 16,
@@ -106,6 +106,25 @@
       },
       "status": "stable",
       "previousCode": 15
+    },
+    "18": {
+      "manifest": {
+        "packageName": "com.example.aiquizlite",
+        "versionCode": 18,
+        "versionName": "1.1.7",
+        "signerSha256": "6973568484920238d35d94425c70601210ca2eaf7e728326785b66fb7e9576c8",
+        "schemaVersion": 1,
+        "apkSize": 4981397,
+        "apkSha256": "294e4391a57f029880e348c8baeb099dbaab16c1eb06b4d64b8f2e790d825675",
+        "notes": "应用版本更新，云端已完成构建、测试与原签名校验。",
+        "sourceCommit": "f82809ebb7941d74bac5dbee102814940ef0567c",
+        "releaseTag": "v1.1.7",
+        "apkUrl": "https://github.com/zhixiao113/AIQuizLite-AS/releases/download/v1.1.7/app-release.apk",
+        "publicationId": "1df21e96ded447b08ca1769d5315ae4f",
+        "releasedAt": "2026-10-12T13:03:01+00:00"
+      },
+      "status": "candidate",
+      "previousCode": 16
     }
   }
 }
