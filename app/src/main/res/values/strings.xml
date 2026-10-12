@@ -1,4 +1,12 @@
 <resources>
+    <string name="operation_feedback_test">测试轻微震动</string>
+    <string name="operation_feedback_ready">选择、收藏和提交时轻微震动</string>
+    <string name="operation_feedback_disabled">已关闭，选择、收藏和提交时不震动</string>
+    <string name="operation_feedback_system_disabled">应用反馈已开启，请同时开启系统触感反馈</string>
+    <string name="operation_feedback_system_hint">系统触感反馈已关闭，开启后再测试震动</string>
+    <string name="operation_feedback_open_settings">打开系统设置</string>
+    <string name="operation_feedback_test_requested">已发送试震请求，请确认是否能感受到</string>
+    <string name="operation_feedback_unavailable">当前未能触发震动，请检查系统触感与振动设置</string>
     <string name="display_preview_state">%1$s字体 · %2$s布局</string>
     <string name="question_error">答案有误</string>
     <string name="app_name">AI 刷题轻应用</string>

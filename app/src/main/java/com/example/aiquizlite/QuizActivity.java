@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.InputType;
-import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -327,9 +326,7 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     private void performConfiguredHaptic(View source) {
-        if (generalSettings.shouldUseHapticFeedback()) {
-            source.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
-        }
+        OperationFeedback.perform(source, generalSettings);
     }
 
     private void buildSession() {
@@ -853,6 +850,7 @@ public class QuizActivity extends AppCompatActivity {
             fillAnswerEdit.setTextColor(getColor(R.color.brand_ink));
             fillAnswerEdit.setMinLines(1);
             fillAnswerEdit.setMaxLines(3);
+            fillAnswerEdit.setOnClickListener(this::performConfiguredHaptic);
             fillAnswerEdit.setInputType(
                     InputType.TYPE_CLASS_TEXT
                             | InputType.TYPE_TEXT_FLAG_MULTI_LINE
@@ -1142,7 +1140,10 @@ public class QuizActivity extends AppCompatActivity {
                 .setTitle("还有未作答题目")
                 .setMessage("仍有 " + unansweredCount + " 题未作答。你可以取消交卷，并左右滑动返回检查。")
                 .setNegativeButton("继续作答", null)
-                .setPositiveButton("仍然交卷", (dialog, which) -> finishMockExam())
+                .setPositiveButton("仍然交卷", (dialog, which) -> {
+                    performConfiguredHaptic(primaryButton);
+                    finishMockExam();
+                })
                 .show();
     }
 

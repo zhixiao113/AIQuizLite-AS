@@ -35,6 +35,7 @@ public final class MatchingQuestionView extends FrameLayout {
     private final Map<String, View> leftCards = new HashMap<>();
     private final Map<String, View> rightCards = new HashMap<>();
     private final MatchingSelectionState selection;
+    private final GeneralSettingsStore feedbackSettings;
     private final Runnable selectionListener = this::refreshSelection;
     private final LineLayer lines;
     private Runnable onChanged;
@@ -70,6 +71,7 @@ public final class MatchingQuestionView extends FrameLayout {
         super(context);
         this.data = data;
         this.selection = selection;
+        this.feedbackSettings = new GeneralSettingsStore(context);
         setClipChildren(false);
         lines = new LineLayer(context);
         addView(lines, new FrameLayout.LayoutParams(
@@ -127,11 +129,24 @@ public final class MatchingQuestionView extends FrameLayout {
     }
 
     public void undo() {
-        if (editable) selection.undo();
+        if (editable && selection.canUndo()) {
+            selection.undo();
+            OperationFeedback.perform(this, feedbackSettings);
+        }
     }
 
     public void clear() {
-        if (editable) selection.clear();
+        if (editable && selection.size() > 0) {
+            selection.clear();
+            OperationFeedback.perform(this, feedbackSettings);
+        }
+    }
+
+    private void removeConnection(String rightId) {
+        if (editable && selection.sourceFor(rightId) != null) {
+            selection.remove(rightId);
+            OperationFeedback.perform(this, feedbackSettings);
+        }
     }
 
     private LinearLayout column(Context context, List<MatchingData.Item> items,
@@ -159,7 +174,7 @@ public final class MatchingQuestionView extends FrameLayout {
                                     + data.leftText(source))
                             .setNegativeButton(android.R.string.cancel, null)
                             .setPositiveButton("移除连接", (dialog, which) -> {
-                                if (editable) selection.remove(item.getId());
+                                removeConnection(item.getId());
                             }).show();
                 });
             }
@@ -251,8 +266,10 @@ public final class MatchingQuestionView extends FrameLayout {
 
     private void handleTap(String side, String id) {
         if (pendingId == null || side.equals(pendingSide)) {
+            boolean changed = !id.equals(pendingId) || !side.equals(pendingSide);
             pendingSide = side;
             pendingId = id;
+            if (changed) OperationFeedback.perform(this, feedbackSettings);
             Toast.makeText(getContext(), "请点击另一侧项目的连接点", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -263,8 +280,11 @@ public final class MatchingQuestionView extends FrameLayout {
     }
 
     private void connect(String leftId, String rightId) {
+        String previous = selection.sourceFor(rightId);
         if (!selection.connect(leftId, rightId)) {
             Toast.makeText(getContext(), "此项只能使用一次，请先移除原连接", Toast.LENGTH_SHORT).show();
+        } else if (!leftId.equals(previous)) {
+            OperationFeedback.perform(this, feedbackSettings);
         }
     }
 

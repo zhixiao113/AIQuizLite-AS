@@ -9,7 +9,6 @@ import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
@@ -548,9 +547,7 @@ public class MockResultActivity extends AppCompatActivity {
     }
 
     private void performConfiguredHaptic(View source) {
-        if (generalSettings.shouldUseHapticFeedback()) {
-            source.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
-        }
+        OperationFeedback.perform(source, generalSettings);
     }
 
     private void confirmCorrection(Question question, MockExamAttempt.Item item) {

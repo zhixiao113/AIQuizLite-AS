@@ -1,6 +1,7 @@
 package com.example.aiquizlite;
 
 import android.content.Intent;
+import android.content.ActivityNotFoundException;
 import android.database.Cursor;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -10,6 +11,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
+import android.provider.Settings;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +30,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.snackbar.Snackbar;
 
 public class GeneralSettingsActivity extends AppCompatActivity {
     private GeneralSettingsStore settings;
@@ -37,6 +40,8 @@ public class GeneralSettingsActivity extends AppCompatActivity {
     private TextView displayPreviewOptionA;
     private TextView displayPreviewOptionB;
     private AlertDialog updateCheckDialog;
+    private TextView operationFeedbackDescription;
+    private TextView operationFeedbackTest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +54,12 @@ public class GeneralSettingsActivity extends AppCompatActivity {
         getWindow().setStatusBarColor(getColor(R.color.brand_surface));
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         buildLayout();
+    }
+
+    @Override protected void onResume() {
+        super.onResume();
+        // Returning from system settings updates this row without losing scroll position.
+        refreshOperationFeedbackState();
     }
 
     private void buildLayout() {
@@ -330,13 +341,27 @@ public class GeneralSettingsActivity extends AppCompatActivity {
                 settings::setOpenImagesFullscreen
         );
         addCompactDivider(controls);
-        addCompactSwitchBlock(
+        operationFeedbackDescription = addCompactSwitchBlock(
                 controls,
                 "操作反馈",
                 "选择、收藏和提交时轻微震动",
                 settings.shouldUseHapticFeedback(),
-                settings::setUseHapticFeedback
+                enabled -> {
+                    settings.setUseHapticFeedback(enabled);
+                    refreshOperationFeedbackState();
+                    if (enabled) testOperationFeedback();
+                }
         );
+        operationFeedbackTest = text(getString(R.string.operation_feedback_test),
+                14, R.color.brand_primary, true);
+        operationFeedbackTest.setPadding(dp(16), 0, dp(12), 0);
+        operationFeedbackTest.setMinHeight(dp(48));
+        operationFeedbackTest.setGravity(Gravity.CENTER_VERTICAL);
+        operationFeedbackTest.setClickable(true);
+        operationFeedbackTest.setFocusable(true);
+        operationFeedbackTest.setOnClickListener(view -> testOperationFeedback());
+        controls.addView(operationFeedbackTest, matchWrap());
+        refreshOperationFeedbackState();
         addCompactDivider(controls);
         addCompactSwitchBlock(
                 controls,
@@ -454,7 +479,7 @@ public class GeneralSettingsActivity extends AppCompatActivity {
         block.addView(help, matchWrap());
     }
 
-    private void addCompactSwitchBlock(
+    private TextView addCompactSwitchBlock(
             LinearLayout parent,
             String title,
             String description,
@@ -484,6 +509,51 @@ public class GeneralSettingsActivity extends AppCompatActivity {
         SettingsToggleView toggle = new SettingsToggleView(checked, title, onChange);
         row.addView(toggle, new LinearLayout.LayoutParams(dp(54), dp(48)));
         row.setOnClickListener(view -> toggle.toggle());
+        return detail;
+    }
+
+    private void refreshOperationFeedbackState() {
+        if (operationFeedbackDescription == null) return;
+        boolean enabled = settings.shouldUseHapticFeedback();
+        operationFeedbackDescription.setText(enabled
+                ? OperationFeedback.systemFeedbackEnabled(this)
+                ? R.string.operation_feedback_ready : R.string.operation_feedback_system_disabled
+                : R.string.operation_feedback_disabled);
+        if (operationFeedbackTest != null) {
+            operationFeedbackTest.setEnabled(enabled);
+            operationFeedbackTest.setAlpha(enabled ? 1f : 0.5f);
+        }
+    }
+
+    private void testOperationFeedback() {
+        OperationFeedbackRules.Result result = OperationFeedback.perform(
+                operationFeedbackTest, settings);
+        refreshOperationFeedbackState();
+        if (result == OperationFeedbackRules.Result.SYSTEM_DISABLED) {
+            Snackbar.make(operationFeedbackTest, R.string.operation_feedback_system_hint,
+                    Snackbar.LENGTH_LONG)
+                    .setAction(R.string.operation_feedback_open_settings,
+                            view -> openSystemFeedbackSettings()).show();
+        } else if (result == OperationFeedbackRules.Result.REQUESTED) {
+            Toast.makeText(this, R.string.operation_feedback_test_requested, Toast.LENGTH_SHORT).show();
+        } else if (result == OperationFeedbackRules.Result.UNAVAILABLE) {
+            Snackbar.make(operationFeedbackTest, R.string.operation_feedback_unavailable,
+                    Snackbar.LENGTH_LONG)
+                    .setAction(R.string.operation_feedback_open_settings,
+                            view -> openSystemFeedbackSettings()).show();
+        }
+    }
+
+    private void openSystemFeedbackSettings() {
+        try {
+            startActivity(new Intent(Settings.ACTION_SOUND_SETTINGS));
+        } catch (ActivityNotFoundException | SecurityException unavailable) {
+            try {
+                startActivity(new Intent(Settings.ACTION_SETTINGS));
+            } catch (ActivityNotFoundException | SecurityException noSettings) {
+                Toast.makeText(this, R.string.operation_feedback_system_hint, Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     private void addCompactDivider(LinearLayout parent) {
