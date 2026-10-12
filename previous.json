@@ -1,15 +1,15 @@
 {
   "packageName": "com.example.aiquizlite",
-  "versionCode": 15,
-  "versionName": "1.1.4",
+  "versionCode": 16,
+  "versionName": "1.1.5",
   "signerSha256": "6973568484920238d35d94425c70601210ca2eaf7e728326785b66fb7e9576c8",
   "schemaVersion": 1,
-  "apkSize": 13660564,
-  "apkSha256": "33bf11297a9fe5f855f194163cfa3b229d94c9a0da3d1ade63274f1d557051a8",
-  "notes": "简化在线更新：用户无需选择更新源，自动从 GitHub 获取新版本；所有图片操作提示仅首次打开时显示。",
-  "sourceCommit": "4340b0599566d0376b27c06f364255e3956a77a4",
-  "releaseTag": "v1.1.4",
-  "apkUrl": "https://github.com/zhixiao113/AIQuizLite-AS/releases/download/v1.1.4/app-release.apk",
-  "publicationId": "52fc8a494a6949a4875f0e076678c7a1",
-  "releasedAt": "2026-10-12T03:31:02+00:00"
+  "apkSize": 5162262,
+  "apkSha256": "629a6048bf5492e0cb444fe4cee92c07df0584157369ff9d5f9772c6002be618",
+  "notes": "取消应用内资料转题，统一导入已有 JSON / ZIP 题库；保留粘贴 JSON、下载库导入、图片与连线题支持，导入无需配置 AI 或消耗 Token。",
+  "sourceCommit": "6bb2321f674549b8fe755aac9e13bfdda89e387a",
+  "releaseTag": "v1.1.5",
+  "apkUrl": "https://github.com/zhixiao113/AIQuizLite-AS/releases/download/v1.1.5/app-release.apk",
+  "publicationId": "18a143f78214447fab084b66f503daf9",
+  "releasedAt": "2026-10-12T08:15:31+00:00"
 }
