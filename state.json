@@ -2,6 +2,21 @@
   "highestCode": 16,
   "stable": {
     "packageName": "com.example.aiquizlite",
+    "versionCode": 16,
+    "versionName": "1.1.5",
+    "signerSha256": "6973568484920238d35d94425c70601210ca2eaf7e728326785b66fb7e9576c8",
+    "schemaVersion": 1,
+    "apkSize": 5162262,
+    "apkSha256": "629a6048bf5492e0cb444fe4cee92c07df0584157369ff9d5f9772c6002be618",
+    "notes": "取消应用内资料转题，统一导入已有 JSON / ZIP 题库；保留粘贴 JSON、下载库导入、图片与连线题支持，导入无需配置 AI 或消耗 Token。",
+    "sourceCommit": "6bb2321f674549b8fe755aac9e13bfdda89e387a",
+    "releaseTag": "v1.1.5",
+    "apkUrl": "https://github.com/zhixiao113/AIQuizLite-AS/releases/download/v1.1.5/app-release.apk",
+    "publicationId": "18a143f78214447fab084b66f503daf9",
+    "releasedAt": "2026-10-12T08:15:31+00:00"
+  },
+  "previous": {
+    "packageName": "com.example.aiquizlite",
     "versionCode": 15,
     "versionName": "1.1.4",
     "signerSha256": "6973568484920238d35d94425c70601210ca2eaf7e728326785b66fb7e9576c8",
@@ -14,21 +29,6 @@
     "apkUrl": "https://github.com/zhixiao113/AIQuizLite-AS/releases/download/v1.1.4/app-release.apk",
     "publicationId": "52fc8a494a6949a4875f0e076678c7a1",
     "releasedAt": "2026-10-12T03:31:02+00:00"
-  },
-  "previous": {
-    "packageName": "com.example.aiquizlite",
-    "versionCode": 14,
-    "versionName": "1.1.3",
-    "signerSha256": "6973568484920238d35d94425c70601210ca2eaf7e728326785b66fb7e9576c8",
-    "schemaVersion": 1,
-    "apkSize": 13662052,
-    "apkSha256": "53d4a6d28ec3d74ca7c2658a827cb8ff09fed37aff808e0da55b00902a0c8dd5",
-    "notes": "新增 GitHub 应用内在线更新；保留本地备用，强化 HTTPS 和安装包校验，支持发布失败日志与回滚。",
-    "sourceCommit": "3f7213298e9a6cd9368441be88f2777e8318f64c",
-    "releaseTag": "v1.1.3",
-    "apkUrl": "https://github.com/zhixiao113/AIQuizLite-AS/releases/download/v1.1.3/app-release.apk",
-    "publicationId": "7dde2643d4694c59a234e09ee35d939f",
-    "releasedAt": "2026-10-12T02:56:02+00:00"
   },
   "releases": {
     "13": {
@@ -104,7 +104,7 @@
         "publicationId": "18a143f78214447fab084b66f503daf9",
         "releasedAt": "2026-10-12T08:15:31+00:00"
       },
-      "status": "candidate",
+      "status": "stable",
       "previousCode": 15
     }
   }

@@ -1,15 +1,15 @@
 {
   "packageName": "com.example.aiquizlite",
-  "versionCode": 14,
-  "versionName": "1.1.3",
+  "versionCode": 15,
+  "versionName": "1.1.4",
   "signerSha256": "6973568484920238d35d94425c70601210ca2eaf7e728326785b66fb7e9576c8",
   "schemaVersion": 1,
-  "apkSize": 13662052,
-  "apkSha256": "53d4a6d28ec3d74ca7c2658a827cb8ff09fed37aff808e0da55b00902a0c8dd5",
-  "notes": "新增 GitHub 应用内在线更新；保留本地备用，强化 HTTPS 和安装包校验，支持发布失败日志与回滚。",
-  "sourceCommit": "3f7213298e9a6cd9368441be88f2777e8318f64c",
-  "releaseTag": "v1.1.3",
-  "apkUrl": "https://github.com/zhixiao113/AIQuizLite-AS/releases/download/v1.1.3/app-release.apk",
-  "publicationId": "7dde2643d4694c59a234e09ee35d939f",
-  "releasedAt": "2026-10-12T02:56:02+00:00"
+  "apkSize": 13660564,
+  "apkSha256": "33bf11297a9fe5f855f194163cfa3b229d94c9a0da3d1ade63274f1d557051a8",
+  "notes": "简化在线更新：用户无需选择更新源，自动从 GitHub 获取新版本；所有图片操作提示仅首次打开时显示。",
+  "sourceCommit": "4340b0599566d0376b27c06f364255e3956a77a4",
+  "releaseTag": "v1.1.4",
+  "apkUrl": "https://github.com/zhixiao113/AIQuizLite-AS/releases/download/v1.1.4/app-release.apk",
+  "publicationId": "52fc8a494a6949a4875f0e076678c7a1",
+  "releasedAt": "2026-10-12T03:31:02+00:00"
 }
