@@ -1,0 +1,40 @@
+{
+  "highestCode": 13,
+  "stable": {
+    "packageName": "com.example.aiquizlite",
+    "versionCode": 13,
+    "versionName": "1.1.2",
+    "signerSha256": "6973568484920238d35d94425c70601210ca2eaf7e728326785b66fb7e9576c8",
+    "schemaVersion": 1,
+    "apkSize": 13658724,
+    "apkSha256": "acb3ee5710c31e7d4ae1f13988b307c690db55011c4f6420786c22ee660a2314",
+    "notes": "已核验的原签名基础版本。",
+    "sourceCommit": "18054a46a64c748fa527f8201dcf2b24ee75cef6",
+    "releaseTag": "v1.1.2",
+    "apkUrl": "https://github.com/zhixiao113/AIQuizLite-AS/releases/download/v1.1.2/app-release.apk",
+    "publicationId": "54e9f9f952cf434bbf7f75ff55d30d71",
+    "releasedAt": "2026-10-12T02:49:21+00:00"
+  },
+  "previous": null,
+  "releases": {
+    "13": {
+      "manifest": {
+        "packageName": "com.example.aiquizlite",
+        "versionCode": 13,
+        "versionName": "1.1.2",
+        "signerSha256": "6973568484920238d35d94425c70601210ca2eaf7e728326785b66fb7e9576c8",
+        "schemaVersion": 1,
+        "apkSize": 13658724,
+        "apkSha256": "acb3ee5710c31e7d4ae1f13988b307c690db55011c4f6420786c22ee660a2314",
+        "notes": "已核验的原签名基础版本。",
+        "sourceCommit": "18054a46a64c748fa527f8201dcf2b24ee75cef6",
+        "releaseTag": "v1.1.2",
+        "apkUrl": "https://github.com/zhixiao113/AIQuizLite-AS/releases/download/v1.1.2/app-release.apk",
+        "publicationId": "54e9f9f952cf434bbf7f75ff55d30d71",
+        "releasedAt": "2026-10-12T02:49:21+00:00"
+      },
+      "status": "stable",
+      "previousCode": null
+    }
+  }
+}
