@@ -18,12 +18,27 @@ jobs:
           export PATH="$JAVA_HOME/bin:$PATH"
           python3 - <<'PY'
           import json
+          from pathlib import Path
+          import os
+          import tempfile
           from scripts import github_release as release
           print("[SDK-inspection] Tools:", release.local.sdk_build_tools())
           manifest = release.validate_manifest(json.loads(release.download(
               "https://github.com/zhixiao113/AIQuizLite-AS/releases/download/v1.1.5/release-manifest.json")))
           if manifest["versionCode"] != 16 or manifest["apkSha256"] != "629a6048bf5492e0cb444fe4cee92c07df0584157369ff9d5f9772c6002be618":
               raise RuntimeError("Public baseline no longer matches immutable diagnostic fixture")
-          release.verify_public(manifest)
+          with tempfile.TemporaryDirectory(prefix="public-sdk-probe-") as folder:
+              apk = Path(folder, "public.apk")
+              release.download(manifest["apkUrl"], apk, release.MAX_APK)
+              if release.local.sha256_of(apk) != manifest["apkSha256"]:
+                  raise RuntimeError("Public diagnostic APK hash mismatch")
+              certificates = release.local.run_tool([
+                  str(Path(os.environ["JAVA_HOME"], "bin/java")), "-jar",
+                  str(release.local.sdk_build_tools() / "lib/apksigner.jar"),
+                  "verify", "--print-certs", str(apk)])
+              for line in certificates.splitlines():
+                  if "SHA-256 digest" in line:
+                      print("[SDK-inspection] Public certificate format:", repr(line))
+              release.local.inspect_apk(apk)
           print("[SDK-inspection] Known public APK inspection passed.")
           PY
