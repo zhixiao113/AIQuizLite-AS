@@ -27,6 +27,7 @@ public final class GeneralSettingsStore {
     private static final String KEY_HAPTIC_FEEDBACK = "haptic_feedback";
     private static final String KEY_MOCK_KEEP_SCREEN_ON = "mock_keep_screen_on";
     private static final String KEY_UPDATE_SERVER_URL = "update_server_url";
+    private static final String KEY_LOCAL_UPDATE_SOURCE = "local_update_source";
 
     private final SharedPreferences preferences;
 
@@ -34,6 +35,8 @@ public final class GeneralSettingsStore {
         preferences = context.getApplicationContext()
                 .getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
     }
+
+    GeneralSettingsStore(SharedPreferences preferences) { this.preferences = preferences; }
 
     public boolean shouldResumeDailyPractice() {
         return preferences.getBoolean(KEY_RESUME_DAILY, true);
@@ -246,13 +249,24 @@ public final class GeneralSettingsStore {
     }
 
     public String getUpdateServerUrl() {
+        if (!preferences.getBoolean(KEY_LOCAL_UPDATE_SOURCE, false)) { return UpdateChecker.DEFAULT_SERVER_URL; }
+        return getLocalUpdateServerUrl();
+    }
+
+    public String getLocalUpdateServerUrl() {
         String saved = preferences.getString(KEY_UPDATE_SERVER_URL, "");
         return saved == null || saved.trim().isEmpty()
-                ? UpdateChecker.DEFAULT_SERVER_URL
+                ? UpdateSourceRules.LEGACY_SERVER
                 : saved.trim();
     }
 
     public void setUpdateServerUrl(String url) {
-        preferences.edit().putString(KEY_UPDATE_SERVER_URL, url == null ? "" : url.trim()).apply();
+        if (url == null || url.trim().isEmpty() || UpdateSourceRules.isGithub(url)) {
+            preferences.edit().putBoolean(KEY_LOCAL_UPDATE_SOURCE, false).apply();
+        } else {
+            UpdateSourceRules.manifestUrl(url);
+            preferences.edit().putString(KEY_UPDATE_SERVER_URL, UpdateSourceRules.normalize(url))
+                    .putBoolean(KEY_LOCAL_UPDATE_SOURCE, true).apply();
+        }
     }
 }

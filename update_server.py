@@ -159,7 +159,7 @@ def deploy(version_code, version_name, notes, apk_source=None, serve_dir=None):
                 raise ValueError("APK 签名与已分发的正式包不同，已拒绝发布；请使用原 app_sign.jks 签名，不能换用 keystore/aiquizlite.jks")
             digest = sha256_of(snapshot)
             apk_name = "AIQuizLite-v{}-{}.apk".format(actual["versionCode"], digest[:16])
-            info = dict(actual, apkFile=apk_name, apkSha256=digest, notes=notes,
+            info = dict(actual, apkFile=apk_name, apkSha256=digest, apkSize=os.path.getsize(snapshot), notes=notes,
                         releasedAt=time.strftime("%Y-%m-%d %H:%M:%S"))
             manifest = os.path.join(staging, "version.json")
             with open(manifest, "w", encoding="utf-8") as handle:

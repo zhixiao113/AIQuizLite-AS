@@ -48,7 +48,16 @@ python .\tools\extract_questions.py
 - 双击 `启动更新服务器.bat`。自动选择当前代理构建包或已准备包，核对 APK 真实包名、版本、签名后才替换清单；无需为同一已准备版本重新打开 Android Studio 构建。旧 APK 或其他签名会拒绝发布。
 - 完整操作及故障处理见 [本地更新方法](docs/本地更新方法.md)。本地方式继续保留；[服务器自动更新方案](docs/deployment/服务器自动更新方案.md)目前只是待配置确认的方案，尚未部署。
 
-当前正式安装包：1.1.2 / versionCode 13，见 [GitHub 最新 Release](https://github.com/zhixiao113/AIQuizLite-AS/releases/latest)。仓库 `app/release/app-release.apk` 同步保留该已验证包；历史 Release 不删除。
+本次原签名验收包：1.1.3 / versionCode 14；仓库 `app/release/app-release.apk` 同步保留该包。在线正式版本以 [stable 更新清单](https://raw.githubusercontent.com/zhixiao113/AIQuizLite-AS/update-channel/stable.json) 为准；[GitHub Release](https://github.com/zhixiao113/AIQuizLite-AS/releases/latest)保留历史安装包。
+
+GitHub 应用内在线更新：
+
+- 新版「设置 → 更新源」默认 GitHub，不需要学校服务器、公网 IP、域名或穿透。手机网络必须能够访问 GitHub 清单和 APK 下载源。
+- 保留“检查 → 提示 → 下载/取消 → 校验 → 系统确认安装”。HTTPS 不再忽略证书，云端安装包需核对哈希、大小、真实包名/版本和原签名；失败不会误报最新版。
+- Actions CI 自动测试但不分发无签名产物；正式发布工作流起步使用 main 的手动触发，完整构建/签名/上传/推广步骤自动执行，签名 Secrets 需用户明确授权。每个新验收版本由代理主动递增版本并构建。
+- 安装包先上传并通过公开下载核验，再切换独立 stable 清单；保留 previous、最高已用版本和审计记录，提供健康检查失败恢复及手动回滚。回滚不是 Android 降级。
+- 旧版仍指向穿透地址，需要通过原本地更新或一次性覆盖安装过渡包；不卸载。新版可手动选择本地备用地址，但旧 FRP 入口若证书无效不会绕过验证。
+- 具体命令见 [GitHub 在线更新操作](docs/deployment/GitHub在线更新操作.md)，测试边界见 [实施与验收记录](docs/qa/github-update-2026-10-12.md)。
 
 仅准备文件、不启动服务器，可执行：
 

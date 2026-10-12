@@ -1,0 +1,90 @@
+name: Publish or roll back online update
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        type: choice
+        options: [publish, bootstrap, rollback]
+        default: publish
+        description: Publish current main, bootstrap code13 once, or restore prior stable
+      notes:
+        type: string
+        default: 在线更新与发布流程升级。
+        description: Release notes (not credentials)
+      target_code:
+        type: string
+        description: Rollback target code; blank means previous stable
+permissions:
+  contents: read
+concurrency:
+  group: aiquiz-stable-publication
+  cancel-in-progress: false
+jobs:
+  release:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    environment: production
+    permissions:
+      contents: write
+    env:
+      AIQUIZ_BUILD_DIR: ${{ github.workspace }}/artifacts/cloud-release
+      PYTHONUTF8: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Select Java and check regressions
+        run: |
+          test -d "$JAVA_HOME_17_X64"
+          echo "JAVA_HOME=$JAVA_HOME_17_X64" >> "$GITHUB_ENV"
+          echo "$JAVA_HOME_17_X64/bin" >> "$GITHUB_PATH"
+          python3 scripts/ci_checks.py
+          python3 -m unittest discover -s tests -p 'test_*.py' -v
+      - name: Restore original signing key
+        if: inputs.operation == 'publish'
+        env:
+          AIQUIZ_RELEASE_KEYSTORE_BASE64: ${{ secrets.AIQUIZ_RELEASE_KEYSTORE_BASE64 }}
+          AIQUIZ_RELEASE_STORE_PASSWORD: ${{ secrets.AIQUIZ_RELEASE_STORE_PASSWORD }}
+          AIQUIZ_RELEASE_KEY_PASSWORD: ${{ secrets.AIQUIZ_RELEASE_KEY_PASSWORD }}
+        run: python3 scripts/ci_signing.py restore
+      - name: Signed release quality gates
+        if: inputs.operation == 'publish'
+        env:
+          AIQUIZ_RELEASE_STORE_PASSWORD: ${{ secrets.AIQUIZ_RELEASE_STORE_PASSWORD }}
+          AIQUIZ_RELEASE_KEY_PASSWORD: ${{ secrets.AIQUIZ_RELEASE_KEY_PASSWORD }}
+        run: |
+          chmod +x gradlew
+          ./gradlew :app:lintRelease :app:testReleaseUnitTest :app:assembleRelease --console=plain
+      - name: Verified publication, bootstrap or guarded rollback
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          OPERATION: ${{ inputs.operation }}
+          NOTES: ${{ inputs.notes }}
+          TARGET_CODE: ${{ inputs.target_code }}
+        run: |
+          case "$OPERATION" in
+            publish) python3 scripts/github_release.py publish --apk "$AIQUIZ_BUILD_DIR/outputs/apk/release/app-release.apk" --commit "$GITHUB_SHA" --notes "$NOTES" ;;
+            bootstrap) python3 scripts/github_release.py bootstrap ;;
+            rollback)
+              if [ -n "$TARGET_CODE" ]; then
+                python3 scripts/github_release.py rollback --target-code "$TARGET_CODE"
+              else
+                python3 scripts/github_release.py rollback
+              fi ;;
+            *) exit 1 ;;
+          esac
+      - name: Remove temporary key
+        if: always()
+        run: python3 scripts/ci_signing.py cleanup
+      - name: Release result and failure reports (no private key or APK)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: release-reports-${{ github.run_id }}
+          path: |
+            artifacts/github-release/report.json
+            artifacts/cloud-release/reports/
+            artifacts/cloud-release/test-results/
+          retention-days: 90
+          if-no-files-found: warn

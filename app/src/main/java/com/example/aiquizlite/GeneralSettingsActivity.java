@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Checkable;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -36,6 +37,7 @@ public class GeneralSettingsActivity extends AppCompatActivity {
     private TextView displayPreviewQuestion;
     private TextView displayPreviewOptionA;
     private TextView displayPreviewOptionB;
+    private AlertDialog updateCheckDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -193,20 +195,61 @@ public class GeneralSettingsActivity extends AppCompatActivity {
                 BuildConfig.VERSION_NAME, null);
         addDivider(about);
         addChoiceRow(about, R.drawable.ic_general_update,
-                "检查更新", "连接内置更新服务器，检测是否有新版本可安装",
+                "更新源", "GitHub 在线更新；本地备用需手动选择，证书验证不会被跳过",
+                UpdateSourceRules.isGithub(settings.getUpdateServerUrl()) ? "GitHub" : "本地备用",
+                view -> showUpdateSources());
+        addDivider(about);
+        addChoiceRow(about, R.drawable.ic_general_update,
+                "检查更新", "连接所选更新源，校验新版本后由系统确认安装",
                 "检查", view -> checkForUpdates());
     }
 
+    private void showUpdateSources() {
+        new AlertDialog.Builder(this).setTitle("选择更新源")
+                .setItems(new String[]{"GitHub（推荐）", "本地备用服务器"}, (dialog, which) -> {
+                    if (which == 0) {
+                        settings.setUpdateServerUrl(UpdateChecker.DEFAULT_SERVER_URL);
+                        buildLayout();
+                    } else {
+                        EditText input = new EditText(this);
+                        input.setSingleLine(true);
+                        input.setInputType(android.text.InputType.TYPE_CLASS_TEXT
+                                | android.text.InputType.TYPE_TEXT_VARIATION_URI);
+                        input.setText(settings.getLocalUpdateServerUrl());
+                        AlertDialog editor = new AlertDialog.Builder(this)
+                                .setTitle("本地备用更新地址")
+                                .setMessage("填写服务器根地址（不含 version.json）。HTTPS 必须有可信证书；HTTP 仅允许明确的内网 IP。旧穿透证书无效时请先修复，不会自动忽略验证。")
+                                .setView(input).setNegativeButton(android.R.string.cancel, null)
+                                .setPositiveButton("保存", null).create();
+                        editor.setOnShowListener(ignored -> editor.getButton(AlertDialog.BUTTON_POSITIVE)
+                                .setOnClickListener(view -> {
+                                    try {
+                                        String address = input.getText().toString().trim();
+                                        if (address.isEmpty()) { throw new IllegalArgumentException("请输入地址"); }
+                                        settings.setUpdateServerUrl(address);
+                                        editor.dismiss();
+                                        buildLayout();
+                                    } catch (IllegalArgumentException error) { input.setError(error.getMessage()); }
+                                }));
+                        editor.show();
+                    }
+                }).show();
+    }
+
     private void checkForUpdates() {
+        if (updateCheckDialog != null) { return; }
+        final String selectedSource = settings.getUpdateServerUrl();
         AlertDialog checking = new AlertDialog.Builder(this)
                 .setTitle("正在检查更新")
                 .setMessage("正在连接更新服务器…")
                 .setCancelable(false)
                 .show();
-        UpdateChecker.checkUpdate(this, settings.getUpdateServerUrl(), new UpdateChecker.Callback<UpdateChecker.UpdateInfo>() {
+        updateCheckDialog = checking;
+        UpdateChecker.checkUpdate(this, selectedSource, new UpdateChecker.Callback<UpdateChecker.UpdateInfo>() {
             @Override
             public void onResult(UpdateChecker.UpdateInfo info) {
-                if (isFinishing()) {
+                updateCheckDialog = null;
+                if (isFinishing() || isDestroyed()) {
                     return;
                 }
                 if (checking.isShowing()) {
@@ -214,7 +257,7 @@ public class GeneralSettingsActivity extends AppCompatActivity {
                 }
                 if (UpdateChecker.hasNewVersion(GeneralSettingsActivity.this, info)) {
                     UpdateDialog.startUpdateFlow(GeneralSettingsActivity.this,
-                            settings.getUpdateServerUrl(), info);
+                            selectedSource, info);
                 } else {
                     Toast.makeText(GeneralSettingsActivity.this,
                             "当前已是最新版本 v" + BuildConfig.VERSION_NAME, Toast.LENGTH_SHORT).show();
@@ -223,7 +266,8 @@ public class GeneralSettingsActivity extends AppCompatActivity {
 
             @Override
             public void onError(String message) {
-                if (isFinishing()) {
+                updateCheckDialog = null;
+                if (isFinishing() || isDestroyed()) {
                     return;
                 }
                 if (checking.isShowing()) {
@@ -233,6 +277,12 @@ public class GeneralSettingsActivity extends AppCompatActivity {
                         "检查更新失败：" + message, Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (updateCheckDialog != null) { updateCheckDialog.dismiss(); updateCheckDialog = null; }
+        super.onDestroy();
     }
 
     private void addDisplayInteractionSection(LinearLayout content) {

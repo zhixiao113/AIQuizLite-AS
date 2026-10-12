@@ -39,7 +39,7 @@ function Convert-DpapiToPlainText([string]$encrypted) {
 
 # Never print credentials or pass them on command lines. Clear this process's environment afterwards.
 $environmentNames = @('AIQUIZ_RELEASE_STORE_FILE', 'AIQUIZ_RELEASE_KEY_ALIAS',
-    'AIQUIZ_RELEASE_STORE_PASSWORD', 'AIQUIZ_RELEASE_KEY_PASSWORD', 'AIQUIZ_BUILD_DIR', 'PYTHONIOENCODING')
+    'AIQUIZ_RELEASE_STORE_PASSWORD', 'AIQUIZ_RELEASE_KEY_PASSWORD', 'AIQUIZ_BUILD_DIR', 'PYTHONIOENCODING', 'AIQUIZ_CI_UNSIGNED')
 $previousEnvironment = @{}
 foreach ($name in $environmentNames) { $previousEnvironment[$name] = [Environment]::GetEnvironmentVariable($name) }
 Push-Location $projectRoot
@@ -51,6 +51,7 @@ try {
     $env:AIQUIZ_RELEASE_KEY_PASSWORD = Convert-DpapiToPlainText $credentials.keyPasswordDpapi
     $env:AIQUIZ_BUILD_DIR = Join-Path $projectRoot "artifacts/device-release-v$versionCode"
     $env:PYTHONIOENCODING = 'utf-8'
+    $env:AIQUIZ_CI_UNSIGNED = 'false'
 
     $publicCertificate = & keytool -exportcert -rfc -keystore $keystoreFile -alias key0 `
         -storepass:env AIQUIZ_RELEASE_STORE_PASSWORD 2>&1
@@ -66,7 +67,7 @@ try {
     if ($digest -ne $expectedSigner) { throw 'Original signing certificate differs from distributed app. Refusing build.' }
     Write-Output "Preparing signed device release $versionName (code $versionCode), certificate verified."
 
-    & python -m unittest discover -s tests -p test_update_server.py
+    & python -m unittest discover -s tests -p 'test_*.py'
     if ($LASTEXITCODE -ne 0) { throw 'Update publication regression tests failed.' }
     & .\gradlew.bat :app:lintRelease :app:testReleaseUnitTest :app:assembleRelease --console=plain
     if ($LASTEXITCODE -ne 0) { throw 'Android release quality gates failed. Existing update manifest remains unchanged.' }

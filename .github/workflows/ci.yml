@@ -1,0 +1,43 @@
+name: Quality gates
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  quality:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      AIQUIZ_CI_UNSIGNED: 'true'
+      AIQUIZ_BUILD_DIR: ${{ github.workspace }}/artifacts/ci-unsigned
+      PYTHONUTF8: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Select installed Java 17
+        run: |
+          test -d "$JAVA_HOME_17_X64"
+          echo "JAVA_HOME=$JAVA_HOME_17_X64" >> "$GITHUB_ENV"
+          echo "$JAVA_HOME_17_X64/bin" >> "$GITHUB_PATH"
+      - name: Publication regressions and supply-chain gates
+        run: |
+          python3 scripts/ci_checks.py
+          python3 -m unittest discover -s tests -p 'test_*.py' -v
+      - name: Lint, unit tests and unsigned build (never distributed)
+        run: |
+          chmod +x gradlew
+          ./gradlew :app:lintRelease :app:testReleaseUnitTest :app:assembleRelease --console=plain
+      - name: Test and lint reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: quality-reports
+          path: |
+            artifacts/ci-unsigned/reports/
+            artifacts/ci-unsigned/test-results/
+          retention-days: 90
+          if-no-files-found: warn

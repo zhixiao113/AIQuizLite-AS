@@ -13,35 +13,18 @@ import android.provider.Settings;
 
 import androidx.core.content.FileProvider;
 
-import org.json.JSONObject;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.security.cert.X509Certificate;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
 public final class UpdateChecker {
-    private static final int CONNECT_TIMEOUT_MS = 8000;
-    private static final int READ_TIMEOUT_MS = 15000;
-
-    /**
-     * 内置更新服务器地址（SakuraFrp 内网穿透 + 自动 HTTPS）。
-     * 隧道 mcMC：公网 https://frp-dad.com:41717 → 本地 127.0.0.1:4387。
-     * 若 SakuraFrp 域名变更，替换为隧道卡片上显示的地址，末尾不要带斜杠。
-     */
-    public static final String DEFAULT_SERVER_URL = "https://frp-dad.com:41717";
+    /** Public metadata channel; APKs use fixed-tag URLs supplied by a validated manifest. */
+    public static final String DEFAULT_SERVER_URL = UpdateSourceRules.GITHUB_MANIFEST;
 
     public interface Callback<T> {
         void onResult(T result);
@@ -64,13 +47,19 @@ public final class UpdateChecker {
         public final String apkFile;
         public final String apkSha256;
         public final String notes;
+        public final String source;
+        public final String apkUrl;
+        public final long apkSize;
 
-        UpdateInfo(int versionCode, String versionName, String apkFile, String apkSha256, String notes) {
-            this.versionCode = versionCode;
-            this.versionName = versionName == null ? "" : versionName;
-            this.apkFile = apkFile == null ? "" : apkFile;
-            this.apkSha256 = apkSha256 == null ? "" : apkSha256;
-            this.notes = notes == null ? "" : notes;
+        UpdateInfo(UpdateManifest manifest) {
+            versionCode = manifest.versionCode;
+            versionName = manifest.versionName;
+            apkFile = manifest.apkFile;
+            apkSha256 = manifest.apkSha256;
+            notes = manifest.notes;
+            source = manifest.source;
+            apkUrl = manifest.apkUrl;
+            apkSize = manifest.apkSize;
         }
     }
 
@@ -82,39 +71,22 @@ public final class UpdateChecker {
     }
 
     public static String normalizeBaseUrl(String serverUrl) {
-        String base = serverUrl == null ? "" : serverUrl.trim();
-        while (base.endsWith("/")) {
-            base = base.substring(0, base.length() - 1);
-        }
-        return base;
+        return UpdateSourceRules.normalize(serverUrl);
     }
 
     public static void checkUpdate(Context context, String serverUrl, Callback<UpdateInfo> callback) {
         final String base = normalizeBaseUrl(serverUrl);
         Thread thread = new Thread(() -> {
+            HttpURLConnection connection = null;
             try {
-                HttpURLConnection connection = openConnection(base + "/version.json");
-                int code = connection.getResponseCode();
-                if (code != 200) {
-                    postError(context, callback, "服务器返回状态码 " + code);
-                    return;
-                }
+                connection = UpdateTransport.open(base, UpdateSourceRules.manifestUrl(base), null);
                 String body = readBody(connection);
-                JSONObject json = new JSONObject(body);
-                UpdateInfo info = new UpdateInfo(
-                        json.optInt("versionCode", 0),
-                        json.optString("versionName", ""),
-                        json.optString("apkFile", ""),
-                        json.optString("apkSha256", ""),
-                        json.optString("notes", "")
-                );
-                if (info.versionCode <= 0 || info.apkFile.isEmpty()) {
-                    postError(context, callback, "服务器版本信息不完整");
-                    return;
-                }
+                UpdateInfo info = new UpdateInfo(UpdateManifest.parse(base, body));
                 postResult(context, callback, info);
             } catch (Exception error) {
                 postError(context, callback, friendlyError(error));
+            } finally {
+                if (connection != null) { connection.disconnect(); }
             }
         });
         thread.start();
@@ -135,7 +107,6 @@ public final class UpdateChecker {
             promptEnableUnknownSources(activity);
             return;
         }
-        final String base = normalizeBaseUrl(serverUrl);
         Thread thread = new Thread(() -> {
             File apkFile = null;
             HttpURLConnection connection = null;
@@ -147,18 +118,15 @@ public final class UpdateChecker {
                     return;
                 }
                 apkFile = File.createTempFile("app-update-" + info.versionCode + "-", ".apk", dir);
-                connection = openConnection(base + "/" + info.apkFile);
-                int code = connection.getResponseCode();
-                if (code != 200) {
-                    postError(activity, progress, "下载失败，服务器返回状态码 " + code);
-                    return;
-                }
+                connection = UpdateTransport.open(info.source, info.apkUrl, cancelFlag);
                 boolean cancelled = false;
                 long total = connection.getContentLengthLong();
+                if (total > UpdateSourceRules.MAX_APK_BYTES || (info.apkSize > 0 && total > 0
+                        && total != info.apkSize)) { throw new IllegalArgumentException("更新包大小不符"); }
+                long downloaded = 0;
                 try (InputStream input = connection.getInputStream();
                      FileOutputStream output = new FileOutputStream(apkFile)) {
                     byte[] buffer = new byte[8192];
-                    long downloaded = 0;
                     int read;
                     while ((read = input.read(buffer)) != -1) {
                         if (cancelFlag != null && cancelFlag.get()) {
@@ -167,8 +135,12 @@ public final class UpdateChecker {
                         }
                         output.write(buffer, 0, read);
                         downloaded += read;
-                        if (total > 0 && progress != null) {
-                            final int percent = (int) (downloaded * 100 / total);
+                        if (downloaded > UpdateSourceRules.MAX_APK_BYTES
+                                || (info.apkSize > 0 && downloaded > info.apkSize)) {
+                            throw new IllegalArgumentException("更新包超过允许大小");
+                        }
+                        if (progress != null) {
+                            final int percent = total > 0 ? (int) Math.min(100, downloaded * 100 / total) : 0;
                             final long done = downloaded;
                             final long all = total;
                             activity.runOnUiThread(() -> progress.onProgress(percent, done, all));
@@ -186,7 +158,9 @@ public final class UpdateChecker {
                     });
                     return;
                 }
-                if (info.apkSha256 != null && !info.apkSha256.isEmpty()) {
+                if (downloaded <= 0 || (info.apkSize > 0 && downloaded != info.apkSize)
+                        || (total > 0 && downloaded != total)) { throw new IllegalArgumentException("更新包下载不完整"); }
+                {
                     String actual = sha256Of(apkFile);
                     if (!actual.equalsIgnoreCase(info.apkSha256)) {
                         if (!apkFile.delete()) {
@@ -213,7 +187,11 @@ public final class UpdateChecker {
                 });
                 handedToInstaller = true;
             } catch (Exception error) {
-                postError(activity, progress, friendlyError(error));
+                if (cancelFlag == null || !cancelFlag.get()) {
+                    postError(activity, progress, friendlyError(error));
+                } else { activity.runOnUiThread(() -> {
+                    if (progress != null) { progress.onProgress(-1, 0, 0); }
+                }); }
             } finally {
                 if (connection != null) {
                     connection.disconnect();
@@ -245,6 +223,9 @@ public final class UpdateChecker {
                 info.versionName, signerDigests(installed), signerDigests(candidate));
         if (error != null) {
             throw new IllegalArgumentException(error);
+        }
+        if (!signerDigests(candidate).equals(java.util.Collections.singleton(UpdateSourceRules.SIGNER))) {
+            throw new IllegalArgumentException("更新包不是原证书正式签名，已停止安装。");
         }
     }
 
@@ -323,54 +304,6 @@ public final class UpdateChecker {
         }
     }
 
-    private static HttpURLConnection openConnection(String urlString) throws Exception {
-        HttpURLConnection connection = (HttpURLConnection) new URL(urlString).openConnection();
-        connection.setConnectTimeout(CONNECT_TIMEOUT_MS);
-        connection.setReadTimeout(READ_TIMEOUT_MS);
-        connection.setRequestMethod("GET");
-        connection.setUseCaches(false);
-        if (connection instanceof HttpsURLConnection) {
-            HttpsURLConnection https = (HttpsURLConnection) connection;
-            SSLSocketFactory factory = sakuraSocketFactory();
-            if (factory != null) {
-                https.setSSLSocketFactory(factory);
-            }
-            https.setHostnameVerifier((hostname, session) -> true);
-        }
-        return connection;
-    }
-
-    /**
-     * SakuraFrp 自动 HTTPS 使用自签/内部证书，Android 默认不信任。
-     * 这里信任 SakuraFrp 节点证书（仅用于本 App 的更新下载），
-     * 同时配合 version.json 中的 APK SHA-256 校验防止文件被篡改。
-     */
-    private static SSLSocketFactory sakuraSocketFactory() {
-        try {
-            TrustManager[] trustAll = new TrustManager[]{
-                    new X509TrustManager() {
-                        @Override
-                        public void checkClientTrusted(X509Certificate[] chain, String authType) {
-                        }
-
-                        @Override
-                        public void checkServerTrusted(X509Certificate[] chain, String authType) {
-                        }
-
-                        @Override
-                        public X509Certificate[] getAcceptedIssuers() {
-                            return new X509Certificate[0];
-                        }
-                    }
-            };
-            SSLContext context = SSLContext.getInstance("TLS");
-            context.init(null, trustAll, new java.security.SecureRandom());
-            return context.getSocketFactory();
-        } catch (Exception error) {
-            return null;
-        }
-    }
-
     private static String sha256Of(File file) throws Exception {
         java.security.MessageDigest digest = java.security.MessageDigest.getInstance("SHA-256");
         try (InputStream input = new java.io.FileInputStream(file)) {
@@ -388,18 +321,24 @@ public final class UpdateChecker {
     }
 
     private static String readBody(HttpURLConnection connection) throws Exception {
-        InputStream input = connection.getInputStream();
-        java.io.ByteArrayOutputStream buffer = new java.io.ByteArrayOutputStream();
-        byte[] chunk = new byte[4096];
-        int read;
-        while ((read = input.read(chunk)) != -1) {
-            buffer.write(chunk, 0, read);
+        try (InputStream input = connection.getInputStream();
+             java.io.ByteArrayOutputStream buffer = new java.io.ByteArrayOutputStream()) {
+            byte[] chunk = new byte[4096];
+            int read;
+            while ((read = input.read(chunk)) != -1) {
+                if (buffer.size() + read > UpdateSourceRules.MAX_MANIFEST_BYTES) {
+                    throw new IllegalArgumentException("更新清单过大，已停止检查。");
+                }
+                buffer.write(chunk, 0, read);
+            }
+            return new String(buffer.toByteArray(), StandardCharsets.UTF_8);
         }
-        input.close();
-        return new String(buffer.toByteArray(), StandardCharsets.UTF_8);
     }
 
     private static String friendlyError(Exception error) {
+        if (error instanceof javax.net.ssl.SSLException) { return "HTTPS 证书验证失败，未绕过安全检查。"; }
+        if (error instanceof java.net.SocketTimeoutException) { return "连接超时，请检查网络后重试。"; }
+        if (error instanceof java.net.UnknownHostException) { return "无法连接更新源，请检查网络或手动选择备用源。"; }
         String message = error.getMessage();
         if (message == null || message.trim().isEmpty()) {
             return "连接失败";
