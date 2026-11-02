@@ -1,9 +1,6 @@
 package com.example.aiquizlite;
 
 import android.app.Activity;
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -11,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 
@@ -82,27 +78,15 @@ public final class AiExplanationDialogLauncher {
         TextView errorText = content.findViewById(R.id.aiErrorText);
         MaterialButton retry = content.findViewById(R.id.aiRetryButton);
         MaterialButton settings = content.findViewById(R.id.aiCheckSettingsButton);
-        MaterialButton copy = content.findViewById(R.id.aiCopyButton);
+        MaterialButton close = content.findViewById(R.id.aiDismissButton);
         MaterialButton regenerate = content.findViewById(R.id.aiRegenerateButton);
-        AiExplanation[] displayed = new AiExplanation[]{cached};
 
         content.findViewById(R.id.aiDialogCloseButton).setOnClickListener(view -> dialog.dismiss());
         settings.setOnClickListener(view -> {
             dialog.dismiss();
             activity.startActivity(new Intent(activity, SettingsActivity.class));
         });
-        copy.setOnClickListener(view -> {
-            if (displayed[0] == null) {
-                return;
-            }
-            ClipboardManager clipboard =
-                    (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
-            clipboard.setPrimaryClip(ClipData.newPlainText(
-                    activity.getString(R.string.ai_explanation),
-                    displayed[0].toDisplayText()
-            ));
-            Toast.makeText(activity, R.string.ai_explanation_copied, Toast.LENGTH_SHORT).show();
-        });
+        close.setOnClickListener(view -> dialog.dismiss());
 
         Runnable request = () -> request(
                 activity,
@@ -122,7 +106,6 @@ public final class AiExplanationDialogLauncher {
                 config,
                 cacheKey,
                 cache,
-                displayed,
                 executor
         );
         retry.setOnClickListener(view -> request.run());
@@ -167,7 +150,6 @@ public final class AiExplanationDialogLauncher {
             ApiConfig config,
             String cacheKey,
             AiExplanationCache cache,
-            AiExplanation[] displayed,
             ExecutorService executor
     ) {
         subtitle.setText(R.string.ai_dialog_generating);
@@ -196,7 +178,6 @@ public final class AiExplanationDialogLauncher {
                     if (!dialog.isShowing() || activity.isFinishing() || activity.isDestroyed()) {
                         return;
                     }
-                    displayed[0] = explanation;
                     subtitle.setText(R.string.ai_explanation);
                     render(content, question, explanation);
                     loading.setVisibility(View.GONE);

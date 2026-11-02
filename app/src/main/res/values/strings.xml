@@ -114,6 +114,7 @@
     <string name="original_explanation">题库原解析</string>
     <string name="copy">复制</string>
     <string name="regenerate">重新生成</string>
+    <string name="close">关闭</string>
     <string name="ai_dialog_cached">AI讲解 · 已从本机缓存读取</string>
     <string name="ai_dialog_generating">AI讲解 · 正在生成</string>
     <string name="ai_dialog_failed">AI讲解 · 请求失败</string>

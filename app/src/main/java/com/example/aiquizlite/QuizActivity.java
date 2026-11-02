@@ -1,7 +1,5 @@
 package com.example.aiquizlite;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -1560,27 +1558,15 @@ public class QuizActivity extends AppCompatActivity {
         TextView errorText = content.findViewById(R.id.aiErrorText);
         MaterialButton retryButton = content.findViewById(R.id.aiRetryButton);
         MaterialButton checkSettingsButton = content.findViewById(R.id.aiCheckSettingsButton);
-        MaterialButton copyButton = content.findViewById(R.id.aiCopyButton);
+        MaterialButton closeButton = content.findViewById(R.id.aiDismissButton);
         MaterialButton regenerateButton = content.findViewById(R.id.aiRegenerateButton);
-        AiExplanation[] displayed = new AiExplanation[]{cached};
 
         content.findViewById(R.id.aiDialogCloseButton).setOnClickListener(view -> dialog.dismiss());
         checkSettingsButton.setOnClickListener(view -> {
             dialog.dismiss();
             startActivity(new Intent(this, SettingsActivity.class));
         });
-        copyButton.setOnClickListener(view -> {
-            if (displayed[0] == null) {
-                return;
-            }
-            ClipboardManager clipboard =
-                    (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-            clipboard.setPrimaryClip(ClipData.newPlainText(
-                    getString(R.string.ai_explanation),
-                    displayed[0].toDisplayText()
-            ));
-            Toast.makeText(this, R.string.ai_explanation_copied, Toast.LENGTH_SHORT).show();
-        });
+        closeButton.setOnClickListener(view -> dialog.dismiss());
 
         Runnable request = () -> requestAiExplanation(
                 dialog,
@@ -1593,8 +1579,7 @@ public class QuizActivity extends AppCompatActivity {
                 question,
                 answerState,
                 config,
-                cacheKey,
-                displayed
+                cacheKey
         );
         retryButton.setOnClickListener(view -> request.run());
         regenerateButton.setOnClickListener(view -> request.run());
@@ -1630,8 +1615,7 @@ public class QuizActivity extends AppCompatActivity {
             Question question,
             ProgressStore.AnswerState answerState,
             ApiConfig config,
-            String cacheKey,
-            AiExplanation[] displayed
+            String cacheKey
     ) {
         subtitle.setText(R.string.ai_dialog_generating);
         loadingContainer.setVisibility(View.VISIBLE);
@@ -1670,7 +1654,6 @@ public class QuizActivity extends AppCompatActivity {
                     if (!dialog.isShowing() || isFinishing() || isDestroyed()) {
                         return;
                     }
-                    displayed[0] = explanation;
                     subtitle.setText(R.string.ai_explanation);
                     renderAiExplanation(content, question, explanation);
                     loadingContainer.setVisibility(View.GONE);

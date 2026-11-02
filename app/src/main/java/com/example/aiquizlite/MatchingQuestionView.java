@@ -36,6 +36,7 @@ public final class MatchingQuestionView extends FrameLayout {
     private final Map<String, View> rightCards = new HashMap<>();
     private final MatchingSelectionState selection;
     private final GeneralSettingsStore feedbackSettings;
+    private final MatchingHintStore hintStore;
     private final Runnable selectionListener = this::refreshSelection;
     private final LineLayer lines;
     private Runnable onChanged;
@@ -72,6 +73,7 @@ public final class MatchingQuestionView extends FrameLayout {
         this.data = data;
         this.selection = selection;
         this.feedbackSettings = new GeneralSettingsStore(context);
+        this.hintStore = new MatchingHintStore(context);
         setClipChildren(false);
         lines = new LineLayer(context);
         addView(lines, new FrameLayout.LayoutParams(
@@ -270,7 +272,9 @@ public final class MatchingQuestionView extends FrameLayout {
             pendingSide = side;
             pendingId = id;
             if (changed) OperationFeedback.perform(this, feedbackSettings);
-            Toast.makeText(getContext(), "请点击另一侧项目的连接点", Toast.LENGTH_SHORT).show();
+            if (hintStore.claimConnectionHint()) {
+                Toast.makeText(getContext(), "请点击另一侧项目的连接点", Toast.LENGTH_SHORT).show();
+            }
             return;
         }
         if ("left".equals(side)) connect(id, pendingId);
