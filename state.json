@@ -1,5 +1,5 @@
 {
-  "highestCode": 19,
+  "highestCode": 20,
   "stable": {
     "packageName": "com.example.aiquizlite",
     "versionCode": 19,
@@ -144,6 +144,25 @@
       },
       "status": "stable",
       "previousCode": 18
+    },
+    "20": {
+      "manifest": {
+        "packageName": "com.example.aiquizlite",
+        "versionCode": 20,
+        "versionName": "1.1.9",
+        "signerSha256": "6973568484920238d35d94425c70601210ca2eaf7e728326785b66fb7e9576c8",
+        "schemaVersion": 1,
+        "apkSize": 4987769,
+        "apkSha256": "f81216a3787a39fb80b47bb0cf728fa958a2cd62b5799f27ebd1eb5d38507034",
+        "notes": "AI讲解调整为左侧重新生成、右侧关闭；连线操作提示仅首次显示，切题、展开和重开APP不再重复提醒。",
+        "sourceCommit": "3e9488345101afe11aa06b1856b2ae1869e3e1a3",
+        "releaseTag": "v1.1.9",
+        "apkUrl": "https://github.com/zhixiao113/AIQuizLite-AS/releases/download/v1.1.9/app-release.apk",
+        "publicationId": "b1a9cb5b3c8742028024cbad6b2a42c1",
+        "releasedAt": "2026-11-02T09:24:09+00:00"
+      },
+      "status": "candidate",
+      "previousCode": 19
     }
   }
 }
