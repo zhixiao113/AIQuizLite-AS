@@ -1,13 +1,45 @@
 package com.example.aiquizlite;
 
 import java.net.URI;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
-/** Pure policy: no credentials, global TLS overrides or implicit source fallback. */
+/** Pure policy: no credentials, no TLS overrides and no user-supplied mirrors; only fixed endpoints. */
 final class UpdateSourceRules {
     static final String REPOSITORY = "zhixiao113/AIQuizLite-AS";
+    static final String CHANNEL_BRANCH = "update-channel";
+    /** Canonical public channel; its value is also the persisted identity of the GitHub source. */
     static final String GITHUB_MANIFEST = "https://raw.githubusercontent.com/" + REPOSITORY
-            + "/update-channel/stable.json";
+            + "/" + CHANNEL_BRANCH + "/stable.json";
+    /**
+     * Ordered, fixed manifest endpoints for the GitHub channel. Order matters:
+     * <ol>
+     *   <li>canonical branch file: authoritative and correct after a rollback;</li>
+     *   <li>newest verified release asset: same content, served from github.com, which stays
+     *       reachable on networks that reset raw.githubusercontent.com (mainland China);</li>
+     *   <li>jsDelivr mirrors: last resort when all of github.com is blocked, may lag a release.</li>
+     * </ol>
+     * Every endpoint is HTTPS with default certificate verification, and the manifest body is
+     * still bound to the original signer, package name and APK digest before anything is offered.
+     */
+    static final List<String> GITHUB_MANIFESTS = Collections.unmodifiableList(Arrays.asList(
+            GITHUB_MANIFEST,
+            "https://github.com/" + REPOSITORY + "/releases/latest/download/release-manifest.json",
+            "https://fastly.jsdelivr.net/gh/" + REPOSITORY + "@" + CHANNEL_BRANCH + "/stable.json",
+            "https://gcore.jsdelivr.net/gh/" + REPOSITORY + "@" + CHANNEL_BRANCH + "/stable.json"));
+    private static final Set<String> GITHUB_HOSTS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
+            "raw.githubusercontent.com",
+            "github.com",
+            "release-assets.githubusercontent.com",
+            "objects.githubusercontent.com",
+            "objects-origin.githubusercontent.com",
+            "github-releases.githubusercontent.com",
+            "fastly.jsdelivr.net",
+            "gcore.jsdelivr.net")));
     static final String LEGACY_SERVER = "https://frp-dad.com:41717";
     static final String SIGNER = "6973568484920238d35d94425c70601210ca2eaf7e728326785b66fb7e9576c8";
     static final long MAX_APK_BYTES = 128L * 1024 * 1024;
@@ -30,6 +62,13 @@ final class UpdateSourceRules {
         if (base.getQuery() != null) { throw invalid(); }
         validateTransport(base);
         return normalized + "/version.json";
+    }
+
+    /** Ordered manifest endpoints to try; a local source keeps its single fixed protocol. */
+    static List<String> manifestCandidates(String source) {
+        String normalized = normalize(source);
+        if (isGithub(normalized)) { return GITHUB_MANIFESTS; }
+        return Collections.singletonList(manifestUrl(normalized));
     }
 
     static String localApkUrl(String source, String file) {
@@ -56,11 +95,7 @@ final class UpdateSourceRules {
         if (isGithub(source)) {
             String host = target.getHost().toLowerCase(Locale.ROOT);
             if (!"https".equals(target.getScheme()) || target.getPort() != -1
-                    || !(host.equals("raw.githubusercontent.com") || host.equals("github.com")
-                    || host.equals("release-assets.githubusercontent.com")
-                    || host.equals("objects.githubusercontent.com")
-                    || host.equals("objects-origin.githubusercontent.com")
-                    || host.equals("github-releases.githubusercontent.com"))) { throw invalid(); }
+                    || !GITHUB_HOSTS.contains(host)) { throw invalid(); }
         } else {
             URI base = uri(normalize(source));
             validateTransport(base);

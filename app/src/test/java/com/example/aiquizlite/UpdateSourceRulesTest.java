@@ -37,4 +37,35 @@ public class UpdateSourceRulesTest {
         assertThrows(IllegalArgumentException.class, () -> UpdateSourceRules.validateRequest("https://example.org",
                 "https://other.org/app.apk"));
     }
+    @Test public void githubCandidatesKeepCanonicalFirstAndAddReachableFallbacks() {
+        java.util.List<String> candidates = UpdateSourceRules.manifestCandidates(UpdateSourceRules.GITHUB_MANIFEST);
+        assertEquals(4, candidates.size());
+        assertEquals(UpdateSourceRules.GITHUB_MANIFEST, candidates.get(0));
+        assertTrue(candidates.contains("https://github.com/zhixiao113/AIQuizLite-AS/releases/latest/download/release-manifest.json"));
+        assertTrue(candidates.contains("https://fastly.jsdelivr.net/gh/zhixiao113/AIQuizLite-AS@update-channel/stable.json"));
+        assertTrue(candidates.contains("https://gcore.jsdelivr.net/gh/zhixiao113/AIQuizLite-AS@update-channel/stable.json"));
+        for (String candidate : candidates) {
+            assertTrue(candidate.startsWith("https://"));
+            UpdateSourceRules.validateRequest(UpdateSourceRules.GITHUB_MANIFEST, candidate);
+        }
+    }
+    @Test public void localSourceKeepsSingleCandidate() {
+        java.util.List<String> candidates = UpdateSourceRules.manifestCandidates(" https://example.org/update/ ");
+        assertEquals(java.util.Collections.singletonList("https://example.org/update/version.json"), candidates);
+        assertThrows(IllegalArgumentException.class, () -> UpdateSourceRules.manifestCandidates("http://8.8.8.8"));
+    }
+    @Test public void mirrorHostsAllowedButLookalikesAndPlainHttpRejected() {
+        UpdateSourceRules.validateRequest(UpdateSourceRules.GITHUB_MANIFEST,
+                "https://fastly.jsdelivr.net/gh/zhixiao113/AIQuizLite-AS@update-channel/stable.json");
+        UpdateSourceRules.validateRequest(UpdateSourceRules.GITHUB_MANIFEST,
+                "https://github.com/zhixiao113/AIQuizLite-AS/releases/latest/download/release-manifest.json");
+        for (String address : new String[]{
+                "https://fastly.jsdelivr.net.evil.org/gh/zhixiao113/AIQuizLite-AS@update-channel/stable.json",
+                "https://cdn.jsdelivr.net/gh/zhixiao113/AIQuizLite-AS@update-channel/stable.json",
+                "http://fastly.jsdelivr.net/gh/zhixiao113/AIQuizLite-AS@update-channel/stable.json",
+                "https://raw.githubusercontent.com:8443/zhixiao113/AIQuizLite-AS/update-channel/stable.json"}) {
+            assertThrows(IllegalArgumentException.class,
+                    () -> UpdateSourceRules.validateRequest(UpdateSourceRules.GITHUB_MANIFEST, address));
+        }
+    }
 }

@@ -77,17 +77,30 @@ public final class UpdateChecker {
     public static void checkUpdate(Context context, String serverUrl, Callback<UpdateInfo> callback) {
         final String base = normalizeBaseUrl(serverUrl);
         Thread thread = new Thread(() -> {
-            HttpURLConnection connection = null;
+            java.util.List<String> candidates;
             try {
-                connection = UpdateTransport.open(base, UpdateSourceRules.manifestUrl(base), null);
-                String body = readBody(connection);
-                UpdateInfo info = new UpdateInfo(UpdateManifest.parse(base, body));
-                postResult(context, callback, info);
+                candidates = UpdateSourceRules.manifestCandidates(base);
             } catch (Exception error) {
                 postError(context, callback, friendlyError(error));
-            } finally {
-                if (connection != null) { connection.disconnect(); }
+                return;
             }
+            Exception failure = null;
+            for (String candidate : candidates) {
+                HttpURLConnection connection = null;
+                try {
+                    connection = UpdateTransport.open(base, candidate, null);
+                    String body = readBody(connection);
+                    UpdateInfo info = new UpdateInfo(UpdateManifest.parse(base, body));
+                    postResult(context, callback, info);
+                    return;
+                } catch (Exception error) {
+                    // Keep the first failure for the report and try the next fixed endpoint.
+                    if (failure == null) { failure = error; }
+                } finally {
+                    if (connection != null) { connection.disconnect(); }
+                }
+            }
+            postError(context, callback, friendlyError(failure));
         });
         thread.start();
     }
@@ -336,9 +349,18 @@ public final class UpdateChecker {
     }
 
     private static String friendlyError(Exception error) {
+        if (error == null) { return "连接失败"; }
         if (error instanceof javax.net.ssl.SSLException) { return "HTTPS 证书验证失败，未绕过安全检查。"; }
         if (error instanceof java.net.SocketTimeoutException) { return "连接超时，请检查网络后重试。"; }
         if (error instanceof java.net.UnknownHostException) { return "无法连接更新服务，请检查网络后重试。"; }
+        if (error instanceof java.net.SocketException) {
+            String detail = error.getMessage() == null ? ""
+                    : error.getMessage().toLowerCase(java.util.Locale.ROOT);
+            if (detail.contains("reset")) {
+                return "到 GitHub 更新服务器的连接被重置，当前网络可能屏蔽了 GitHub，请切换网络后重试。";
+            }
+            return "无法连接更新服务，请检查网络后重试。";
+        }
         String message = error.getMessage();
         if (message == null || message.trim().isEmpty()) {
             return "连接失败";
