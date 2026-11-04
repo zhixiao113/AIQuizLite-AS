@@ -1,15 +1,15 @@
 {
   "packageName": "com.example.aiquizlite",
-  "versionCode": 20,
-  "versionName": "1.1.9",
+  "versionCode": 21,
+  "versionName": "1.1.10",
   "signerSha256": "6973568484920238d35d94425c70601210ca2eaf7e728326785b66fb7e9576c8",
   "schemaVersion": 1,
-  "apkSize": 4987769,
-  "apkSha256": "f81216a3787a39fb80b47bb0cf728fa958a2cd62b5799f27ebd1eb5d38507034",
-  "notes": "AI讲解调整为左侧重新生成、右侧关闭；连线操作提示仅首次显示，切题、展开和重开APP不再重复提醒。",
-  "sourceCommit": "3e9488345101afe11aa06b1856b2ae1869e3e1a3",
-  "releaseTag": "v1.1.9",
-  "apkUrl": "https://github.com/zhixiao113/AIQuizLite-AS/releases/download/v1.1.9/app-release.apk",
-  "publicationId": "b1a9cb5b3c8742028024cbad6b2a42c1",
-  "releasedAt": "2026-11-02T09:24:09+00:00"
+  "apkSize": 4987945,
+  "apkSha256": "0a0376090b6e07512f5698cfc5b2b607308567e7916df7446a6651b544859577",
+  "notes": "应用版本更新，云端已完成构建、测试与原签名校验。",
+  "sourceCommit": "a1bb26c41d85e19dc61beabcacf17239da28a6fa",
+  "releaseTag": "v1.1.10",
+  "apkUrl": "https://github.com/zhixiao113/AIQuizLite-AS/releases/download/v1.1.10/app-release.apk",
+  "publicationId": "963a4bec735c43de9855b9add88817b2",
+  "releasedAt": "2026-11-02T10:28:26+00:00"
 }
