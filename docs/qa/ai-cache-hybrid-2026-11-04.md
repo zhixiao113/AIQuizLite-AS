@@ -34,8 +34,12 @@ Key 使用既有 Android Keystore AES/GCM 加密并保存于排除系统备份�
 - 回归覆盖缓存序列化与重开复用、强制失败保留旧值和重试、同题并发合并、其他题不被阻塞、关闭等待方后继续保存、题图/填空差异、选项/连线排序、实际图片请求 JSON、vision→text 调用顺序、纯文字跳过视觉以及视觉失败停止。
 - 导入测试覆盖完整合法数组、错误类型、空/重复名称、无效地址、分工冲突、停用分工、大小和数量上限。
 - 本机原签名 1.1.11 / code 22：`:app:lintRelease :app:testReleaseUnitTest :app:assembleRelease` 成功。Java 209 项：208 通过、1 私有样本跳过、0 失败/错误；58 项 Python 发布测试通过；lint 0 errors / 113 warnings。独立代码审查完成，最初发现的强制重试与全局请求互阻问题已修复。
-- 本机 APK：`artifacts/device-release-v22/outputs/apk/release/app-release.apk`；发布脚本验证原签名并生成 `update-server/AIQuizLite-v22-82b00dce257d7958.apk`。在线发布结果随后记录。
-- 本机 ADB 未能连接设备，未进行真机点击和实际服务付费 API 联调，不声称已验证图片识别准确率。
+- 初次本机 APK 保留于 `artifacts/device-release-v22/outputs/apk/release/app-release.apk`（5,175,934 bytes，SHA256 `82b00dce257d7958ac69c32faa6f2cba43ef6be080c8fb3e8298f5655c0f20e0`）。
+- 正式发布：[v1.1.11](https://github.com/zhixiao113/AIQuizLite-AS/releases/tag/v1.1.11)，源提交 `e9275375201f68096791c5d6a50e19aea5d6dea1`，版本标签保持指向此提交。[Quality gates 41852662487](https://github.com/zhixiao113/AIQuizLite-AS/actions/runs/41852662487) 和 [production 发布 41852669164](https://github.com/zhixiao113/AIQuizLite-AS/actions/runs/41852669164) 均成功。先确认精确提交 CI 成功，再按既有授权批准本次 production；保留审批保护。
+- 云端同样 209 项 Java 测试（208 通过 / 1 跳过），lint 0 errors / 121 warnings。发布报告归档摘要 SHA256 `03740b00ef87de24c8c98418f72764ae3fcb5db6077bdde96de0bf1f5e78215a` 已核验。
+- 已从公开 Release 重新下载正式 APK，独立核验包名、版本、原签名、大小和哈希，并与 Release 清单及 update-channel 的 stable.json/state.json 比较一致。正式 APK **4,995,445 bytes**，SHA256 **`1eb45f00fc4d382fc6e0dffbaf1a32a9c1e34e6d3774143d0d1be06dd249f6f5`**；签名 `6973568484920238d35d94425c70601210ca2eaf7e728326785b66fb7e9576c8`。
+- 在线 stable 22 / previous 21 / highestCode 22；channel commit `9d51cd1c15487063a77e003ee65aa601b2bd7766`，publicationId `dc95a991df334bf295aeaa1e3e2b8cf3`。正式 APK 同步到 `artifacts/cloud-verified-v22/app-release.apk`、`app/release/app-release.apk` 和 `update-server/AIQuizLite-v22-1eb45f00fc4d382f.apk`；仓库元数据与 baseline profiles 来自同一云端发布报告，不重新签名。
+- ADB 服务可启动，但没有连接设备；未进行真机点击和实际服务付费 API 联调，不声称已验证图片识别准确率。
 
 ## 安装后验收
 
