@@ -44,19 +44,7 @@ public final class AiExplanationDialogLauncher {
             boolean correct,
             ExecutorService executor
     ) {
-        ApiConfigStore configStore = new ApiConfigStore(activity);
-        ApiConfig config = configStore.getConfig();
-        if (!config.isComplete()) {
-            new AlertDialog.Builder(activity)
-                    .setTitle(R.string.ai_configuration_required)
-                    .setMessage(R.string.ai_configuration_required_detail)
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .setPositiveButton(R.string.go_to_settings, (dialog, which) ->
-                            activity.startActivity(new Intent(activity, SettingsActivity.class)))
-                    .show();
-            return;
-        }
-
+        ApiConfig config = new AiProfiles(activity).config("text");
         AiExplanationCache cache = new AiExplanationCache(activity);
         String cacheKey = AiExplanationCache.keyFor(
                 questionBankId,
@@ -68,7 +56,24 @@ public final class AiExplanationDialogLauncher {
                 correct,
                 config
         );
-        AiExplanation cached = cache.get(cacheKey);
+        AiExplanation found = cache.get(cacheKey);
+        if (found == null && AiHybridExplanation.images(question).isEmpty()) {
+            found = cache.get(AiExplanationCache.legacyKeyFor(questionBankId, question, selectedAnswers,
+                    correctAnswers, selectedPairs, correctPairs, correct, config));
+            if (found != null) cache.put(cacheKey, found);
+        }
+        final AiExplanation cached = found;
+        if (cached == null && !config.isComplete()) {
+            new AlertDialog.Builder(activity)
+                    .setTitle(R.string.ai_configuration_required)
+                    .setMessage(R.string.ai_configuration_required_detail)
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .setPositiveButton(R.string.go_to_settings, (dialog, which) ->
+                            activity.startActivity(new Intent(activity, SettingsActivity.class)))
+                    .show();
+            return;
+        }
+
         View content = activity.getLayoutInflater().inflate(R.layout.dialog_ai_explanation, null);
         AlertDialog dialog = new AlertDialog.Builder(activity).setView(content).create();
         TextView subtitle = content.findViewById(R.id.aiDialogSubtitle);
@@ -88,8 +93,12 @@ public final class AiExplanationDialogLauncher {
         });
         close.setOnClickListener(view -> dialog.dismiss());
 
-        Runnable request = () -> request(
+        boolean[] lastForce = {false};
+        java.util.function.Consumer<Boolean> request = force -> {
+            lastForce[0] = force;
+            request(
                 activity,
+                questionBankId,
                 dialog,
                 content,
                 subtitle,
@@ -106,10 +115,12 @@ public final class AiExplanationDialogLauncher {
                 config,
                 cacheKey,
                 cache,
+                force,
                 executor
         );
-        retry.setOnClickListener(view -> request.run());
-        regenerate.setOnClickListener(view -> request.run());
+        };
+        retry.setOnClickListener(view -> request.accept(lastForce[0]));
+        regenerate.setOnClickListener(view -> request.accept(true));
         dialog.setOnShowListener(ignored -> {
             Window window = dialog.getWindow();
             if (window != null) {
@@ -120,7 +131,7 @@ public final class AiExplanationDialogLauncher {
                 );
             }
             if (cached == null) {
-                request.run();
+                request.accept(false);
             } else {
                 subtitle.setText(R.string.ai_dialog_cached);
                 render(content, question, cached);
@@ -134,6 +145,7 @@ public final class AiExplanationDialogLauncher {
 
     private static void request(
             Activity activity,
+            String questionBankId,
             AlertDialog dialog,
             View content,
             TextView subtitle,
@@ -150,8 +162,11 @@ public final class AiExplanationDialogLauncher {
             ApiConfig config,
             String cacheKey,
             AiExplanationCache cache,
+            boolean force,
             ExecutorService executor
     ) {
+        if (Boolean.TRUE.equals(content.getTag())) return;
+        content.setTag(Boolean.TRUE);
         subtitle.setText(R.string.ai_dialog_generating);
         loading.setVisibility(View.VISIBLE);
         error.setVisibility(View.GONE);
@@ -168,16 +183,15 @@ public final class AiExplanationDialogLauncher {
         );
         executor.execute(() -> {
             try {
-                AiExplanation explanation = new OpenAiCompatibleClient().generateExplanation(
-                        config,
-                        systemPrompt,
-                        userPrompt
-                );
-                cache.put(cacheKey, explanation);
+                android.content.Context appContext = activity.getApplicationContext();
+                AiExplanation explanation = AiExplanationRequests.SHARED.get(cacheKey, cache, force,
+                        () -> AiHybridExplanation.generate(appContext, questionBankId, question,
+                                config, systemPrompt, userPrompt));
                 activity.runOnUiThread(() -> {
                     if (!dialog.isShowing() || activity.isFinishing() || activity.isDestroyed()) {
                         return;
                     }
+                    content.setTag(Boolean.FALSE);
                     subtitle.setText(R.string.ai_explanation);
                     render(content, question, explanation);
                     loading.setVisibility(View.GONE);
@@ -189,6 +203,7 @@ public final class AiExplanationDialogLauncher {
                     if (!dialog.isShowing() || activity.isFinishing() || activity.isDestroyed()) {
                         return;
                     }
+                    content.setTag(Boolean.FALSE);
                     subtitle.setText(R.string.ai_dialog_failed);
                     errorText.setText(exception.getMessage());
                     loading.setVisibility(View.GONE);

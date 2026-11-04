@@ -43,7 +43,7 @@ public class AiExplanationPromptBuilderTest {
     }
 
     @Test
-    public void cacheKeyChangesWithModelOrSelectedAnswer() {
+    public void cacheSurvivesModelChangeButDistinguishesAnswers() {
         Question question = question();
         ApiConfig first = new ApiConfig("https://api.example.com/v1", "key", "model-a");
         ApiConfig second = new ApiConfig("https://api.example.com/v1", "key", "model-b");
@@ -56,7 +56,7 @@ public class AiExplanationPromptBuilderTest {
         String keyWrong = AiExplanationCache.keyFor(
                 "bank", question, Collections.singletonList("B"), false, first
         );
-        assertNotEquals(keyA, keyB);
+        org.junit.Assert.assertEquals(keyA, keyB);
         assertNotEquals(keyA, keyWrong);
     }
 }

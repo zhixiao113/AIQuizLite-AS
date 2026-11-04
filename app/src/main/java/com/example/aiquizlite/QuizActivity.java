@@ -101,9 +101,6 @@ public class QuizActivity extends AppCompatActivity {
     private GeneralSettingsStore generalSettings;
     private MockExamStore mockExamStore;
     private MockExamAttempt mockAttempt;
-    private ApiConfigStore apiConfigStore;
-    private AiExplanationCache aiExplanationCache;
-    private final OpenAiCompatibleClient aiClient = new OpenAiCompatibleClient();
     private final ExecutorService aiExecutor = Executors.newSingleThreadExecutor();
     private final Handler autoAdvanceHandler = new Handler(Looper.getMainLooper());
     private Runnable pendingAutoAdvance;
@@ -150,8 +147,6 @@ public class QuizActivity extends AppCompatActivity {
         progressStore = new ProgressStore(this);
         generalSettings = new GeneralSettingsStore(this);
         mockExamStore = new MockExamStore(this);
-        apiConfigStore = new ApiConfigStore(this);
-        aiExplanationCache = new AiExplanationCache(this);
         mode = getIntent().getStringExtra(EXTRA_MODE);
         practiceType = getIntent().getStringExtra(EXTRA_QUESTION_TYPE);
         questionBankId = getIntent().getStringExtra(EXTRA_QUESTION_BANK);
@@ -1515,208 +1510,11 @@ public class QuizActivity extends AppCompatActivity {
         if (state == null || !state.isAnswered()) {
             return;
         }
-        ApiConfig config = apiConfigStore.getConfig();
-        if (!config.isComplete()) {
-            new AlertDialog.Builder(this)
-                    .setTitle(R.string.ai_configuration_required)
-                    .setMessage(R.string.ai_configuration_required_detail)
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .setPositiveButton(R.string.go_to_settings, (dialog, which) ->
-                            startActivity(new Intent(this, SettingsActivity.class)))
-                    .show();
-            return;
-        }
-
-        List<String> selectedAnswers = state.getSelectedAnswers();
-        boolean correct = state.isCorrect() || state.isCorrected();
-        String cacheKey = AiExplanationCache.keyFor(
-                questionBankId, question, selectedAnswers, question.getAnswers(),
+        AiExplanationDialogLauncher.show(this, questionBankId, question,
+                state.getSelectedAnswers(), state.isCorrected() ? state.getSelectedAnswers() : question.getAnswers(),
                 state.getSelectedPairs(), question.isMatching()
-                        ? (state.isCorrected() ? state.getSelectedPairs()
-                                : question.getMatching().getCorrectPairs()) : Collections.emptyList(),
-                correct, config);
-        AiExplanation cached = aiExplanationCache.get(cacheKey);
-        showAiExplanationDialog(question, state, config, cacheKey, cached);
-    }
-
-    private void showAiExplanationDialog(
-            Question question,
-            ProgressStore.AnswerState answerState,
-            ApiConfig config,
-            String cacheKey,
-            AiExplanation cached
-    ) {
-        View content = getLayoutInflater().inflate(R.layout.dialog_ai_explanation, null);
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setView(content)
-                .create();
-
-        TextView subtitle = content.findViewById(R.id.aiDialogSubtitle);
-        View loadingContainer = content.findViewById(R.id.aiLoadingContainer);
-        View errorContainer = content.findViewById(R.id.aiErrorContainer);
-        View explanationContainer = content.findViewById(R.id.aiContentContainer);
-        TextView errorText = content.findViewById(R.id.aiErrorText);
-        MaterialButton retryButton = content.findViewById(R.id.aiRetryButton);
-        MaterialButton checkSettingsButton = content.findViewById(R.id.aiCheckSettingsButton);
-        MaterialButton closeButton = content.findViewById(R.id.aiDismissButton);
-        MaterialButton regenerateButton = content.findViewById(R.id.aiRegenerateButton);
-
-        content.findViewById(R.id.aiDialogCloseButton).setOnClickListener(view -> dialog.dismiss());
-        checkSettingsButton.setOnClickListener(view -> {
-            dialog.dismiss();
-            startActivity(new Intent(this, SettingsActivity.class));
-        });
-        closeButton.setOnClickListener(view -> dialog.dismiss());
-
-        Runnable request = () -> requestAiExplanation(
-                dialog,
-                content,
-                subtitle,
-                loadingContainer,
-                errorContainer,
-                explanationContainer,
-                errorText,
-                question,
-                answerState,
-                config,
-                cacheKey
-        );
-        retryButton.setOnClickListener(view -> request.run());
-        regenerateButton.setOnClickListener(view -> request.run());
-
-        dialog.setOnShowListener(ignored -> {
-            Window window = dialog.getWindow();
-            if (window != null) {
-                window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                int width = (int) (getResources().getDisplayMetrics().widthPixels * 0.92f);
-                window.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT);
-            }
-            if (cached == null) {
-                request.run();
-            } else {
-                subtitle.setText(R.string.ai_dialog_cached);
-                renderAiExplanation(content, question, cached);
-                loadingContainer.setVisibility(View.GONE);
-                errorContainer.setVisibility(View.GONE);
-                explanationContainer.setVisibility(View.VISIBLE);
-            }
-        });
-        dialog.show();
-    }
-
-    private void requestAiExplanation(
-            AlertDialog dialog,
-            View content,
-            TextView subtitle,
-            View loadingContainer,
-            View errorContainer,
-            View explanationContainer,
-            TextView errorText,
-            Question question,
-            ProgressStore.AnswerState answerState,
-            ApiConfig config,
-            String cacheKey
-    ) {
-        subtitle.setText(R.string.ai_dialog_generating);
-        loadingContainer.setVisibility(View.VISIBLE);
-        errorContainer.setVisibility(View.GONE);
-        explanationContainer.setVisibility(View.GONE);
-
-        List<String> selectedAnswers = answerState.getSelectedAnswers();
-        boolean correct = answerState.isCorrect() || answerState.isCorrected();
-        String formattedUserAnswer = formatAnswers(question, selectedAnswers);
-        List<String> effectiveCorrectAnswers = answerState.isCorrected()
-                ? selectedAnswers
-                : question.getAnswers();
-        String formattedCorrectAnswer = formatAnswers(question, effectiveCorrectAnswers);
-        String systemPrompt = AiExplanationPromptBuilder.systemPrompt();
-        String userPrompt = AiExplanationPromptBuilder.userPrompt(
-                question,
-                selectedAnswers,
-                correct,
-                formattedUserAnswer,
-                formattedCorrectAnswer,
-                answerState.getSelectedPairs(),
-                question.isMatching() ? (answerState.isCorrected()
-                        ? answerState.getSelectedPairs() : question.getMatching().getCorrectPairs())
-                        : Collections.emptyList()
-        );
-
-        aiExecutor.execute(() -> {
-            try {
-                AiExplanation explanation = aiClient.generateExplanation(
-                        config,
-                        systemPrompt,
-                        userPrompt
-                );
-                aiExplanationCache.put(cacheKey, explanation);
-                runOnUiThread(() -> {
-                    if (!dialog.isShowing() || isFinishing() || isDestroyed()) {
-                        return;
-                    }
-                    subtitle.setText(R.string.ai_explanation);
-                    renderAiExplanation(content, question, explanation);
-                    loadingContainer.setVisibility(View.GONE);
-                    errorContainer.setVisibility(View.GONE);
-                    explanationContainer.setVisibility(View.VISIBLE);
-                });
-            } catch (OpenAiCompatibleClient.AiClientException e) {
-                runOnUiThread(() -> {
-                    if (!dialog.isShowing() || isFinishing() || isDestroyed()) {
-                        return;
-                    }
-                    subtitle.setText(R.string.ai_dialog_failed);
-                    errorText.setText(e.getMessage());
-                    loadingContainer.setVisibility(View.GONE);
-                    explanationContainer.setVisibility(View.GONE);
-                    errorContainer.setVisibility(View.VISIBLE);
-                });
-            }
-        });
-    }
-
-    private void renderAiExplanation(
-            View content,
-            Question question,
-            AiExplanation explanation
-    ) {
-        bindAiSection(
-                content.findViewById(R.id.aiConclusionSection),
-                content.findViewById(R.id.aiConclusionText),
-                explanation.getConclusion()
-        );
-        bindAiSection(
-                content.findViewById(R.id.aiReasoningSection),
-                content.findViewById(R.id.aiReasoningText),
-                explanation.getReasoning()
-        );
-        bindAiSection(
-                content.findViewById(R.id.aiMistakeSection),
-                content.findViewById(R.id.aiMistakeText),
-                explanation.getCommonMistake()
-        );
-        bindAiSection(
-                content.findViewById(R.id.aiMemorySection),
-                content.findViewById(R.id.aiMemoryText),
-                explanation.getMemoryTip()
-        );
-        View originalCard = content.findViewById(R.id.originalExplanationCard);
-        TextView originalText = content.findViewById(R.id.originalExplanationText);
-        if (question.getExplanation() == null) {
-            originalCard.setVisibility(View.GONE);
-        } else {
-            originalText.setText(question.getExplanation());
-            originalCard.setVisibility(View.VISIBLE);
-        }
-    }
-
-    private void bindAiSection(View section, TextView textView, String text) {
-        if (text == null || text.trim().isEmpty()) {
-            section.setVisibility(View.GONE);
-        } else {
-            textView.setText(text.trim());
-            section.setVisibility(View.VISIBLE);
-        }
+                        ? (state.isCorrected() ? state.getSelectedPairs() : question.getMatching().getCorrectPairs())
+                        : Collections.emptyList(), state.isCorrect() || state.isCorrected(), aiExecutor);
     }
 
     private void toggleCurrentFavorite() {

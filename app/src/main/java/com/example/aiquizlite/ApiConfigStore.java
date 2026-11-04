@@ -27,22 +27,29 @@ public final class ApiConfigStore {
     private static final String CIPHER = "AES/GCM/NoPadding";
 
     private final SharedPreferences preferences;
+    private final String prefix;
+    private String key(String name) { return prefix + name; }
 
     public ApiConfigStore(Context context) {
+        this(context, "default");
+    }
+
+    public ApiConfigStore(Context context, String profileId) {
+        prefix = "default".equals(profileId) ? "" : profileId + ":";
         preferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
     }
 
     public ApiConfig getConfig() {
         return new ApiConfig(
-                preferences.getString(KEY_BASE_URL, ""),
+                preferences.getString(key(KEY_BASE_URL), ""),
                 decryptStoredApiKey(),
-                preferences.getString(KEY_MODEL, "")
+                preferences.getString(key(KEY_MODEL), "")
         );
     }
 
     public boolean hasStoredApiKey() {
-        return preferences.contains(KEY_ENCRYPTED_API_KEY)
-                && preferences.contains(KEY_API_KEY_IV)
+        return preferences.contains(key(KEY_ENCRYPTED_API_KEY))
+                && preferences.contains(key(KEY_API_KEY_IV))
                 && !decryptStoredApiKey().isEmpty();
     }
 
@@ -50,42 +57,45 @@ public final class ApiConfigStore {
         String normalizedBaseUrl = AiEndpoint.normalizeBaseUrl(baseUrl);
         String normalizedModel = model == null ? "" : model.trim();
         String normalizedNewKey = newApiKey == null ? "" : newApiKey.trim();
-        String oldBaseUrl = preferences.getString(KEY_BASE_URL, "");
-        String oldModel = preferences.getString(KEY_MODEL, "");
+        String oldBaseUrl = preferences.getString(key(KEY_BASE_URL), "");
+        String oldModel = preferences.getString(key(KEY_MODEL), "");
+        if (!oldBaseUrl.isEmpty() && !normalizedBaseUrl.equals(oldBaseUrl) && normalizedNewKey.isEmpty()) {
+            throw new IllegalArgumentException("更换 API 地址后请重新输入此服务的 API Key");
+        }
         boolean changed = !normalizedBaseUrl.equals(oldBaseUrl)
                 || !normalizedModel.equals(oldModel)
                 || !normalizedNewKey.isEmpty();
 
         SharedPreferences.Editor editor = preferences.edit()
-                .putString(KEY_BASE_URL, normalizedBaseUrl)
-                .putString(KEY_MODEL, normalizedModel);
+                .putString(key(KEY_BASE_URL), normalizedBaseUrl)
+                .putString(key(KEY_MODEL), normalizedModel);
         if (!normalizedNewKey.isEmpty()) {
             EncryptedValue encryptedValue = encrypt(normalizedNewKey);
-            editor.putString(KEY_ENCRYPTED_API_KEY, encryptedValue.value);
-            editor.putString(KEY_API_KEY_IV, encryptedValue.iv);
+            editor.putString(key(KEY_ENCRYPTED_API_KEY), encryptedValue.value);
+            editor.putString(key(KEY_API_KEY_IV), encryptedValue.iv);
         }
         if (changed) {
-            editor.remove(KEY_LAST_TEST_FINGERPRINT);
+            editor.remove(key(KEY_LAST_TEST_FINGERPRINT));
         }
         editor.apply();
     }
 
     public void clearApiKey() {
         preferences.edit()
-                .remove(KEY_ENCRYPTED_API_KEY)
-                .remove(KEY_API_KEY_IV)
-                .remove(KEY_LAST_TEST_FINGERPRINT)
+                .remove(key(KEY_ENCRYPTED_API_KEY))
+                .remove(key(KEY_API_KEY_IV))
+                .remove(key(KEY_LAST_TEST_FINGERPRINT))
                 .apply();
     }
 
     public void markConnectionSuccessful(ApiConfig config) {
         preferences.edit()
-                .putString(KEY_LAST_TEST_FINGERPRINT, fingerprint(config))
+                .putString(key(KEY_LAST_TEST_FINGERPRINT), fingerprint(config))
                 .apply();
     }
 
     public boolean wasConnectionSuccessful(ApiConfig config) {
-        String saved = preferences.getString(KEY_LAST_TEST_FINGERPRINT, "");
+        String saved = preferences.getString(key(KEY_LAST_TEST_FINGERPRINT), "");
         return config != null && config.isComplete() && saved.equals(fingerprint(config));
     }
 
@@ -101,8 +111,8 @@ public final class ApiConfigStore {
     }
 
     private String decryptStoredApiKey() {
-        String encrypted = preferences.getString(KEY_ENCRYPTED_API_KEY, "");
-        String iv = preferences.getString(KEY_API_KEY_IV, "");
+        String encrypted = preferences.getString(key(KEY_ENCRYPTED_API_KEY), "");
+        String iv = preferences.getString(key(KEY_API_KEY_IV), "");
         if (encrypted.isEmpty() || iv.isEmpty()) {
             return "";
         }

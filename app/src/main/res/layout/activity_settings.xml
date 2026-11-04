@@ -45,6 +45,40 @@
         </LinearLayout>
 
         <com.google.android.material.card.MaterialCardView
+            style="@style/CardStyle.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:padding="18dp">
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="AI 服务与分工" android:textSize="18sp" android:textStyle="bold"
+                    android:textColor="@color/brand_ink" />
+                <TextView android:id="@+id/profileSummary" android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:layout_marginTop="10dp"
+                    android:textColor="@color/brand_text_secondary" android:textSize="13sp" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/selectAiProfileButton"
+                    style="@style/ButtonStyle.Secondary" android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="选择 AI 配置" />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <com.google.android.material.button.MaterialButton android:id="@+id/addAiProfileButton"
+                        style="@style/Widget.MaterialComponents.Button.TextButton" android:layout_width="0dp"
+                        android:layout_height="wrap_content" android:layout_weight="1" android:text="添加 AI" />
+                    <com.google.android.material.button.MaterialButton android:id="@+id/importAiProfilesButton"
+                        style="@style/Widget.MaterialComponents.Button.TextButton" android:layout_width="0dp"
+                        android:layout_height="wrap_content" android:layout_weight="1" android:text="批量导入" />
+                </LinearLayout>
+                <com.google.android.material.button.MaterialButton android:id="@+id/manageAiProfileButton"
+                    style="@style/Widget.MaterialComponents.Button.TextButton" android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:text="设置分工 / 管理当前 AI" />
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="每个 AI 独立保存地址、模型和 Key，仅支持兼容 OpenAI 的接口。图片题先由图片模型读图，再交给文字模型讲解。题图会发送至指定图片服务；连接测试仅验证文字请求。"
+                    android:textColor="@color/brand_text_secondary" android:textSize="12sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/configSummaryCard"
             style="@style/CardStyle.Primary"
             android:layout_width="match_parent"
@@ -260,6 +294,8 @@
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/apiKeyInput"
+                            android:saveEnabled="false"
+                            android:importantForAutofill="no"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="textPassword"
