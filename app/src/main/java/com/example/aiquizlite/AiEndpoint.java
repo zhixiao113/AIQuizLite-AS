@@ -38,9 +38,13 @@ public final class AiEndpoint {
             if (uri.getRawQuery() != null || uri.getRawFragment() != null) {
                 throw new IllegalArgumentException("API地址不能包含查询参数或页面片段");
             }
+            if (uri.getRawUserInfo() != null) {
+                throw new IllegalArgumentException("API地址不能包含用户名或密码");
+            }
         } catch (IllegalArgumentException e) {
             if ("API地址必须是完整的HTTPS地址".equals(e.getMessage())
-                    || "API地址不能包含查询参数或页面片段".equals(e.getMessage())) {
+                    || "API地址不能包含查询参数或页面片段".equals(e.getMessage())
+                    || "API地址不能包含用户名或密码".equals(e.getMessage())) {
                 throw e;
             }
             throw new IllegalArgumentException("API地址格式不正确");

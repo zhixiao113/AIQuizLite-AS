@@ -1,469 +1,515 @@
 package com.example.aiquizlite;
 
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsControllerCompat;
 
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.progressindicator.CircularProgressIndicator;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class SettingsActivity extends AppCompatActivity {
-    private TextInputLayout baseUrlInputLayout;
-    private TextInputLayout apiKeyInputLayout;
-    private TextInputLayout modelInputLayout;
-    private TextInputEditText baseUrlInput;
-    private TextInputEditText apiKeyInput;
-    private TextInputEditText modelInput;
-    private View configSummaryCard;
-    private View configGuideContainer;
-    private TextView configuredModelText;
-    private TextView configuredEndpointText;
-    private TextView connectionStatusText;
-    private TextView apiKeyHelpText;
-    private MaterialButton testConnectionButton;
-    private MaterialButton saveConfigButton;
-    private MaterialButton clearApiKeyButton;
-    private MaterialButton clearAiCacheButton;
-    private CircularProgressIndicator settingsProgress;
+    static final String EXTRA_MODEL_ID = "ai_model_id";
+    private static final String STATE_EDITING = "ai_settings_editing";
+    private static final String STATE_MODEL = "ai_settings_model";
+    private static final long REFRESH_MILLIS = 30_000;
 
-    private String editingProfile = "default";
-    private android.widget.TextView profileSummary;
-    private ApiConfigStore configStore;
-    private AiExplanationCache explanationCache;
+    private final ExecutorService tests = Executors.newFixedThreadPool(2);
+    private final Handler handler = new Handler(Looper.getMainLooper());
+    private final Runnable refresh = this::refreshCooling;
     private final OpenAiCompatibleClient client = new OpenAiCompatibleClient();
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    private String lastSuccessfulDraftFingerprint = "";
-    private boolean requestRunning;
+    private AiProfiles profiles;
+    private AiExplanationCache cache;
+    private FrameLayout content;
+    private TextView title;
+    private MaterialButton add;
+    private AiProfiles.Model original;
+    private boolean editing;
+    private boolean replacingKey;
+    private boolean updatingFields;
+    private String lastUrl;
+    private TextInputLayout urlLayout, modelLayout, keyLayout;
+    private TextInputEditText url, model, key;
+    private View maskedKey;
+    private TextView keyHint, notice, cooling, modelHeading;
+    private ImageView icon;
+    private MaterialButton replaceKey, test, save;
+    private AiModelProbe.Result proof;
+    private Future<?> pendingTest;
+    private boolean testing;
+    private int testGeneration;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    @Override protected void onCreate(Bundle state) {
+        super.onCreate(state);
         WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
         getWindow().setStatusBarColor(getColor(R.color.brand_surface));
+        WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView()).setAppearanceLightStatusBars(true);
         setContentView(R.layout.activity_settings);
-        WindowInsetsControllerCompat controller =
-                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
-        controller.setAppearanceLightStatusBars(true);
-
-        if (savedInstanceState != null) editingProfile = savedInstanceState.getString("editing_profile", "default");
-        if (!new AiProfiles(this).ids().contains(editingProfile)) editingProfile = "default";
-        configStore = new ApiConfigStore(this, editingProfile);
-        explanationCache = new AiExplanationCache(this);
-        bindViews();
-        bindActions();
-        bindProfiles();
-        renderState(savedInstanceState != null && savedInstanceState.getBoolean("guide_open", false));
-        if (savedInstanceState != null && savedInstanceState.getBoolean("guide_open", false)) {
-            baseUrlInput.setText(savedInstanceState.getString("draft_url", ""));
-            modelInput.setText(savedInstanceState.getString("draft_model", ""));
-            Object retained = getLastCustomNonConfigurationInstance();
-            if (retained instanceof String[]) {
-                String[] draft = (String[]) retained;
-                if (draft.length == 2 && editingProfile.equals(draft[0])) apiKeyInput.setText(draft[1]);
-            }
-        }
-    }
-
-    private void bindProfiles() {
-        profileSummary = findViewById(R.id.profileSummary);
-        findViewById(R.id.selectAiProfileButton).setOnClickListener(v -> guardDraft(this::chooseProfile));
-        findViewById(R.id.addAiProfileButton).setOnClickListener(v -> guardDraft(() -> editName(false)));
-        findViewById(R.id.importAiProfilesButton).setOnClickListener(v -> guardDraft(this::importProfiles));
-        findViewById(R.id.manageAiProfileButton).setOnClickListener(v -> guardDraft(this::manageProfile));
-        getOnBackPressedDispatcher().addCallback(this, new androidx.activity.OnBackPressedCallback(true) {
-            @Override public void handleOnBackPressed() { requestExit(); }
+        profiles = new AiProfiles(this);
+        cache = new AiExplanationCache(this);
+        content = findViewById(R.id.aiSettingsContent);
+        title = findViewById(R.id.aiSettingsTitle);
+        add = findViewById(R.id.aiSettingsAdd);
+        add.setOnClickListener(view -> openModel(null));
+        findViewById(R.id.aiSettingsBack).setOnClickListener(view -> back());
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override public void handleOnBackPressed() { back(); }
         });
-        updateProfiles();
-    }
-
-    private void chooseProfile() {
-        AiProfiles profiles = new AiProfiles(this);
-        java.util.List<String> ids = profiles.ids();
-        String[] names = new String[ids.size()];
-        for (int n = 0; n < ids.size(); n++) names[n] = profileLabel(profiles, ids.get(n));
-        new AlertDialog.Builder(this).setTitle("选择 AI 配置")
-                .setSingleChoiceItems(names, ids.indexOf(editingProfile), (dialog, which) -> {
-                    dialog.dismiss(); selectProfile(ids.get(which));
-                }).setNegativeButton(android.R.string.cancel, null).show();
-    }
-
-    private String profileLabel(AiProfiles profiles, String id) {
-        String roles = (id.equals(profiles.role("text")) ? " · 文字" : "")
-                + (id.equals(profiles.role("vision")) ? " · 图片" : "");
-        boolean configured = new ApiConfigStore(this, id).getConfig().isComplete();
-        return profiles.name(id) + "（" + (profiles.enabled(id) ? "启用" : "停用")
-                + (configured ? "" : " · 未配置") + roles + "）";
-    }
-
-    private void editName(boolean rename) {
-        AiProfiles profiles = new AiProfiles(this);
-        android.widget.EditText name = new android.widget.EditText(this);
-        name.setHint("配置名称，例如：图片模型");
-        name.setSingleLine(true);
-        name.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(60)});
-        if (rename) name.setText(profiles.name(editingProfile));
-        AlertDialog dialog = new AlertDialog.Builder(this).setTitle(rename ? "重命名 AI" : "添加 AI")
-                .setView(name).setNegativeButton(android.R.string.cancel, null).setPositiveButton("保存", null).create();
-        dialog.setOnShowListener(ignored -> dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
-            String value = name.getText().toString().trim();
-            if (value.isEmpty()) { name.setError("请填写名称"); return; }
-            if (rename) { profiles.rename(editingProfile, value); updateProfiles(); }
-            else {
-                if (profiles.ids().size() >= 50) { name.setError("最多保留 50 个配置"); return; }
-                selectProfile(profiles.add(value));
-            }
-            dialog.dismiss();
-        }));
-        dialog.show();
-    }
-
-    private void manageProfile() {
-        AiProfiles profiles = new AiProfiles(this);
-        String[] actions = {profiles.enabled(editingProfile) ? "停用此 AI" : "启用此 AI",
-                "用于纯文字讲解", "用于图片理解", "重命名", "删除此配置"};
-        new AlertDialog.Builder(this).setTitle(profiles.name(editingProfile)).setItems(actions, (dialog, which) -> {
-            if (which == 0) { profiles.enable(editingProfile, !profiles.enabled(editingProfile)); updateProfiles(); }
-            else if (which == 1 || which == 2) {
-                try { profiles.assign(which == 1 ? "text" : "vision", editingProfile); updateProfiles(); }
-                catch (IllegalArgumentException e) { Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show(); }
-            } else if (which == 3) editName(true);
-            else if ("default".equals(editingProfile)) {
-                Toast.makeText(this, "原有 AI 请使用停用或清除 Key", Toast.LENGTH_SHORT).show();
-            } else {
-                new AlertDialog.Builder(this).setTitle("删除 AI 配置？")
-                    .setMessage("此配置的 Key 和分工会一并移除，已有讲解缓存会保留。")
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .setPositiveButton("删除", (d, w) -> { profiles.delete(editingProfile); selectProfile("default"); }).show();
-            }
-        }).show();
-    }
-
-    private void importProfiles() {
-        android.widget.LinearLayout content = new android.widget.LinearLayout(this);
-        content.setOrientation(android.widget.LinearLayout.VERTICAL);
-        int pad = (int) (20 * getResources().getDisplayMetrics().density);
-        content.setPadding(pad, 0, pad, 0);
-        TextView help = new TextView(this);
-        help.setText("粘贴 JSON 数组，每次 1–20 个配置。name、baseUrl、apiKey、model 必填；enabled 默认 true；text、vision 指定分工，每种分工最多一个。导入后会新增配置；只有指定的分工会替换现有选择。\n示例：[{\"name\":\"文字 AI\",\"baseUrl\":\"https://api.example.com/v1\",\"apiKey\":\"填写 Key\",\"model\":\"填写模型名\",\"text\":true}]");
-        content.addView(help);
-        android.widget.EditText input = new android.widget.EditText(this);
-        input.setHint("粘贴配置 JSON（含 Key，请勿分享）");
-        input.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE
-                | android.text.InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
-        input.setMinLines(5); input.setMaxLines(9); input.setSaveEnabled(false);
-        if (android.os.Build.VERSION.SDK_INT >= 26) input.setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO);
-        input.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(AiProfileImport.MAX_CHARACTERS + 1)});
-        content.addView(input);
-        android.widget.ScrollView scroll = new android.widget.ScrollView(this);
-        scroll.addView(content);
-        AlertDialog dialog = new AlertDialog.Builder(this).setTitle("批量导入 AI")
-                .setView(scroll).setNegativeButton(android.R.string.cancel, null).setPositiveButton("导入", null).create();
-        dialog.setOnShowListener(ignored -> dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
-            try {
-                java.util.List<AiProfileImport.Entry> entries = AiProfileImport.parse(input.getText().toString());
-                String first = new AiProfiles(this).importEntries(entries);
-                input.setText(""); dialog.dismiss(); selectProfile(first);
-                Toast.makeText(this, "已导入 " + entries.size() + " 个 AI 配置", Toast.LENGTH_SHORT).show();
-            } catch (IllegalArgumentException | IllegalStateException e) { input.setError(e.getMessage()); }
-        }));
-        dialog.setOnDismissListener(ignored -> input.setText(""));
-        dialog.show();
-    }
-
-    private void requestExit() {
-        if (requestRunning) { finish(); return; }
-        guardDraft(() -> finish());
-    }
-
-    private void guardDraft(Runnable action) {
-        if (requestRunning) return;
-        if (!hasUnsavedDraft()) { action.run(); return; }
-        new AlertDialog.Builder(this).setTitle("当前配置尚未保存")
-                .setMessage("先保存当前 AI，或放弃本次修改。")
-                .setPositiveButton("保存后继续", (d, w) -> { if (saveConfiguration()) action.run(); })
-                .setNeutralButton("放弃修改", (d, w) -> { renderState(false); action.run(); })
-                .setNegativeButton("继续编辑", null).show();
-    }
-
-    private boolean hasUnsavedDraft() {
-        if (configGuideContainer.getVisibility() != View.VISIBLE) return false;
-        ApiConfig saved = configStore.getConfig();
-        return !AiEndpoint.normalizeBaseUrl(textOf(baseUrlInput)).equals(AiEndpoint.normalizeBaseUrl(saved.getBaseUrl()))
-                || !textOf(modelInput).equals(saved.getModel()) || !textOf(apiKeyInput).isEmpty();
-    }
-
-    private void selectProfile(String id) {
-        editingProfile = id;
-        configStore = new ApiConfigStore(this, id);
-        lastSuccessfulDraftFingerprint = "";
-        clearErrors(); renderState(true); updateProfiles();
-    }
-
-    private void updateProfiles() {
-        AiProfiles profiles = new AiProfiles(this);
-        profileSummary.setText("当前编辑：" + profileLabel(profiles, editingProfile)
-                + "\n文字讲解：" + roleLabel(profiles, "text") + "\n图片理解：" + roleLabel(profiles, "vision"));
-    }
-
-    private String roleLabel(AiProfiles profiles, String role) {
-        String id = profiles.role(role);
-        return id.isEmpty() ? "未指定" : profileLabel(profiles, id);
-    }
-
-    private void bindViews() {
-        baseUrlInputLayout = findViewById(R.id.baseUrlInputLayout);
-        apiKeyInputLayout = findViewById(R.id.apiKeyInputLayout);
-        modelInputLayout = findViewById(R.id.modelInputLayout);
-        baseUrlInput = findViewById(R.id.baseUrlInput);
-        apiKeyInput = findViewById(R.id.apiKeyInput);
-        modelInput = findViewById(R.id.modelInput);
-        configSummaryCard = findViewById(R.id.configSummaryCard);
-        configGuideContainer = findViewById(R.id.configGuideContainer);
-        configuredModelText = findViewById(R.id.configuredModelText);
-        configuredEndpointText = findViewById(R.id.configuredEndpointText);
-        connectionStatusText = findViewById(R.id.connectionStatusText);
-        apiKeyHelpText = findViewById(R.id.apiKeyHelpText);
-        testConnectionButton = findViewById(R.id.testConnectionButton);
-        saveConfigButton = findViewById(R.id.saveConfigButton);
-        clearApiKeyButton = findViewById(R.id.clearApiKeyButton);
-        clearAiCacheButton = findViewById(R.id.clearAiCacheButton);
-        settingsProgress = findViewById(R.id.settingsProgress);
-    }
-
-    private void bindActions() {
-        findViewById(R.id.settingsBackButton).setOnClickListener(view -> requestExit());
-        findViewById(R.id.modifyConfigButton).setOnClickListener(view -> showGuide());
-        testConnectionButton.setOnClickListener(view -> testConnection());
-        saveConfigButton.setOnClickListener(view -> saveConfiguration());
-        clearApiKeyButton.setOnClickListener(view -> confirmClearApiKey());
-        clearAiCacheButton.setOnClickListener(view -> confirmClearCache());
-    }
-
-    private void renderState(boolean keepGuideOpen) {
-        ApiConfig config = configStore.getConfig();
-        boolean configured = config.isComplete();
-        configSummaryCard.setVisibility(configured && !keepGuideOpen ? View.VISIBLE : View.GONE);
-        configGuideContainer.setVisibility(!configured || keepGuideOpen ? View.VISIBLE : View.GONE);
-
-        if (configured) {
-            configuredModelText.setText(config.getModel());
-            configuredEndpointText.setText(AiEndpoint.normalizeBaseUrl(config.getBaseUrl()));
-            connectionStatusText.setText(configStore.wasConnectionSuccessful(config)
-                    ? R.string.connection_ok
-                    : R.string.connection_configured);
+        if (state != null && state.getBoolean(STATE_EDITING)) {
+            openModel(state.getString(STATE_MODEL));
+        } else if (state == null && getIntent().hasExtra(EXTRA_MODEL_ID)) {
+            openModel(getIntent().getStringExtra(EXTRA_MODEL_ID));
+        } else {
+            showList();
         }
-        if (configGuideContainer.getVisibility() == View.VISIBLE) {
-            baseUrlInput.setText(config.getBaseUrl());
-            modelInput.setText(config.getModel());
-            apiKeyInput.setText("");
-            apiKeyHelpText.setText(configStore.hasStoredApiKey()
-                    ? R.string.api_key_saved_help
-                    : R.string.api_key_secure_help);
-        }
-        clearApiKeyButton.setEnabled(configStore.hasStoredApiKey());
-        clearAiCacheButton.setText(getString(
-                R.string.clear_ai_cache_count,
-                explanationCache.count()
-        ));
     }
 
-    private void showGuide() {
-        renderState(true);
+    @Override protected void onStart() {
+        super.onStart();
+        refreshCooling();
+    }
+
+    @Override protected void onStop() {
+        handler.removeCallbacks(refresh);
+        super.onStop();
+    }
+
+    private void refreshCooling() {
+        long now = System.currentTimeMillis();
+        long next = REFRESH_MILLIS;
+        if (editing) {
+            AiProfiles.Model saved = original == null ? null : profiles.model(original.id);
+            updateDetailHeader(saved, now);
+            if (saved != null && saved.isCooling(now)) next = Math.min(next, saved.cooldownUntil - now);
+        } else {
+            List<AiProfiles.Model> entries = profiles.models();
+            renderList(entries, now);
+            for (AiProfiles.Model entry : entries) {
+                if (entry.isCooling(now)) next = Math.min(next, entry.cooldownUntil - now);
+            }
+        }
+        handler.removeCallbacks(refresh);
+        handler.postDelayed(refresh, Math.max(next, 100L));
+    }
+
+    private void showList() {
+        cancelTest();
+        editing = false;
+        original = null;
+        proof = null;
+        hideKeyboard();
+        renderList(profiles.models(), System.currentTimeMillis());
+    }
+
+    private void renderList(List<AiProfiles.Model> entries, long now) {
+        title.setText(R.string.ai_models_title);
+        add.setVisibility(View.VISIBLE);
+        ScrollView previous = content.findViewById(R.id.aiModelsScroll);
+        int scrollY = previous == null ? 0 : previous.getScrollY();
+        content.removeAllViews();
+        ScrollView list = (ScrollView) getLayoutInflater().inflate(R.layout.ai_model_settings_list, content, false);
+        content.addView(list);
+        LinearLayout rows = list.findViewById(R.id.aiModelsRows);
+        int available = 0;
+        for (AiProfiles.Model entry : entries) {
+            if (entry.enabled && entry.config.isComplete() && !entry.isCooling(now)) available++;
+            if (rows.getChildCount() != 0) {
+                View divider = new View(this);
+                divider.setBackgroundColor(getColor(R.color.brand_divider));
+                rows.addView(divider, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(1)));
+            }
+            bindModelRow(rows, entry, now);
+        }
+        list.findViewById(R.id.aiModelsListCard).setVisibility(entries.isEmpty() ? View.GONE : View.VISIBLE);
+        list.findViewById(R.id.aiModelsEmpty).setVisibility(entries.isEmpty() ? View.VISIBLE : View.GONE);
+        list.findViewById(R.id.aiModelsListHint).setVisibility(entries.isEmpty() ? View.GONE : View.VISIBLE);
+        TextView count = list.findViewById(R.id.aiModelsAvailableCount);
+        count.setText(getString(R.string.ai_models_available, available));
+        count.setBackground(background(R.color.brand_primary_soft, 8));
+        MaterialButton clear = list.findViewById(R.id.aiModelsClearCache);
+        clear.setText(getString(R.string.clear_ai_cache_count, cache.count()));
+        clear.setOnClickListener(view -> confirmClearCache());
+        if (scrollY > 0) list.post(() -> list.scrollTo(0, scrollY));
+    }
+
+    private void bindModelRow(LinearLayout rows, AiProfiles.Model entry, long now) {
+        View row = getLayoutInflater().inflate(R.layout.ai_model_settings_row, rows, false);
+        boolean cooled = entry.isCooling(now);
+        String name = displayName(entry);
+        if (cooled) row.setBackgroundColor(getColor(R.color.brand_border_light));
+        View edit = row.findViewById(R.id.aiModelEditRow);
+        edit.setAlpha(entry.enabled && !cooled ? 1f : .76f);
+        edit.setOnClickListener(view -> openModel(entry.id));
+        edit.setOnLongClickListener(view -> { confirmDelete(entry); return true; });
+        ViewCompat.addAccessibilityAction(edit, getString(R.string.ai_models_row_delete, name),
+                (view, arguments) -> { confirmDelete(entry); return true; });
+        TextView rowName = row.findViewById(R.id.aiModelRowName);
+        rowName.setText(name);
+        TextView state = row.findViewById(R.id.aiModelRowState);
+        if (cooled) state.setText(coolingLabel(entry.cooldownUntil - now));
+        else if (!entry.config.isComplete()) state.setText(R.string.ai_models_incomplete);
+        state.setVisibility(cooled || !entry.config.isComplete() ? View.VISIBLE : View.GONE);
+        edit.setContentDescription(getString(R.string.ai_models_row_edit, name)
+                + (state.getVisibility() == View.VISIBLE ? "，" + state.getText() : ""));
+        ImageView rowIcon = row.findViewById(R.id.aiModelRowIcon);
+        styleIcon(rowIcon, entry.config.getModel(), cooled || !entry.enabled);
+        SwitchMaterial toggle = row.findViewById(R.id.aiModelRowToggle);
+        toggle.setContentDescription(getString(R.string.ai_models_row_toggle, name));
+        toggle.setChecked(entry.enabled && !cooled);
+        toggle.setEnabled(!cooled);
+        toggle.setOnCheckedChangeListener((button, checked) -> {
+            profiles.enable(entry.id, checked);
+            refreshCooling();
+        });
+        rows.addView(row);
+    }
+
+    private void openModel(String id) {
+        cancelTest();
+        original = id == null ? null : profiles.model(id);
+        if (id != null && original == null) { showList(); return; }
+        editing = true;
+        replacingKey = false;
+        proof = null;
+        title.setText(original == null ? R.string.ai_models_add_title : R.string.ai_models_edit_title);
+        add.setVisibility(View.GONE);
+        content.removeAllViews();
+        getLayoutInflater().inflate(R.layout.ai_model_settings_detail, content, true);
+        urlLayout = content.findViewById(R.id.aiDetailUrlLayout);
+        modelLayout = content.findViewById(R.id.aiDetailIdLayout);
+        keyLayout = content.findViewById(R.id.aiDetailKeyLayout);
+        url = content.findViewById(R.id.aiDetailUrl);
+        model = content.findViewById(R.id.aiDetailId);
+        key = content.findViewById(R.id.aiDetailKey);
+        maskedKey = content.findViewById(R.id.aiDetailMaskedKey);
+        keyHint = content.findViewById(R.id.aiDetailKeyHint);
+        notice = content.findViewById(R.id.aiDetailNotice);
+        cooling = content.findViewById(R.id.aiDetailCooling);
+        modelHeading = content.findViewById(R.id.aiDetailModel);
+        icon = content.findViewById(R.id.aiDetailIcon);
+        replaceKey = content.findViewById(R.id.aiDetailReplaceKey);
+        test = content.findViewById(R.id.aiDetailTest);
+        save = content.findViewById(R.id.aiDetailSave);
+        test.setOnClickListener(view -> testConnection());
+        save.setOnClickListener(view -> save());
+        replaceKey.setOnClickListener(view -> {
+            replacingKey = true;
+            updateKeyState();
+            key.requestFocus();
+            key.post(() -> ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
+                    .showSoftInput(key, InputMethodManager.SHOW_IMPLICIT));
+        });
+        Draft retained = getLastCustomNonConfigurationInstance() instanceof Draft
+                ? (Draft) getLastCustomNonConfigurationInstance() : null;
+        if (retained != null && !retained.used && java.util.Objects.equals(id, retained.id)) {
+            retained.used = true;
+            url.setText(retained.url);
+            model.setText(retained.model);
+            key.setText(retained.key);
+            replacingKey = retained.replacing;
+            proof = retained.proof;
+        } else if (original != null) {
+            url.setText(original.config.getBaseUrl());
+            model.setText(original.config.getModel());
+        }
+        lastUrl = AiEndpoint.normalizeBaseUrl(text(url));
+        TextWatcher watcher = new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) { }
+            @Override public void afterTextChanged(Editable value) { onDraftChanged(); }
+        };
+        url.addTextChangedListener(watcher);
+        model.addTextChangedListener(watcher);
+        key.addTextChangedListener(watcher);
+        updateKeyState();
+        updateDetailHeader(original, System.currentTimeMillis());
+        updateButtons();
+        setNotice(getString(proof == null ? R.string.ai_models_test_first : R.string.ai_models_test_passed), false);
+    }
+
+    private void updateDetailHeader(AiProfiles.Model saved, long now) {
+        boolean cooled = saved != null && saved.isCooling(now);
+        modelHeading.setText(saved == null ? getString(R.string.ai_models_new) : displayName(saved));
+        styleIcon(icon, saved == null ? "" : saved.config.getModel(), saved != null && (cooled || !saved.enabled));
+        cooling.setVisibility(cooled ? View.VISIBLE : View.GONE);
+        if (cooled) {
+            cooling.setBackground(background(R.color.ai_model_cooldown_surface, 11));
+            cooling.setText(getString(R.string.ai_models_cooling_hint, coolingLabel(saved.cooldownUntil - now)));
+        }
+    }
+
+    private String displayName(AiProfiles.Model entry) {
+        String name = entry.config.getModel();
+        return name.isEmpty() ? getString(R.string.ai_models_incomplete) : name;
+    }
+
+    private void onDraftChanged() {
+        if (updatingFields) return;
+        String normalized = AiEndpoint.normalizeBaseUrl(text(url));
+        if (!lastUrl.equals(normalized) && key.length() != 0) {
+            updatingFields = true;
+            key.setText("");
+            updatingFields = false;
+        }
+        lastUrl = normalized;
+        proof = null;
+        urlLayout.setError(null);
+        modelLayout.setError(null);
+        keyLayout.setError(null);
+        updateKeyState();
+        setNotice(getString(R.string.ai_models_test_first), false);
+        updateButtons();
+    }
+
+    private boolean sameAddress() {
+        return original != null && AiEndpoint.normalizeBaseUrl(text(url))
+                .equals(AiEndpoint.normalizeBaseUrl(original.config.getBaseUrl()));
+    }
+
+    private void updateKeyState() {
+        boolean retained = sameAddress() && !original.config.getApiKey().isEmpty();
+        maskedKey.setVisibility(retained && !replacingKey ? View.VISIBLE : View.GONE);
+        keyLayout.setVisibility(retained && !replacingKey ? View.GONE : View.VISIBLE);
+        keyHint.setText(retained ? R.string.ai_models_retain_key : original != null && !sameAddress()
+                ? R.string.ai_models_changed_key : R.string.ai_models_enter_key);
+    }
+
+    private ApiConfig draft() {
+        String entered = text(key);
+        String effectiveKey = entered.isEmpty() && sameAddress() ? original.config.getApiKey() : entered;
+        return new ApiConfig(AiEndpoint.normalizeBaseUrl(text(url)), effectiveKey, text(model));
+    }
+
+    private ApiConfig validatedDraft() {
+        ApiConfig config = draft();
+        try {
+            AiEndpoint.validateHttpsBaseUrl(config.getBaseUrl());
+        } catch (IllegalArgumentException error) {
+            urlLayout.setError(error.getMessage());
+            url.requestFocus();
+            return null;
+        }
+        if (config.getModel().isEmpty()) {
+            modelLayout.setError(getString(R.string.ai_models_enter_id));
+            model.requestFocus();
+            return null;
+        }
+        if (config.getApiKey().isEmpty()) {
+            keyLayout.setError(getString(original != null && !sameAddress()
+                    ? R.string.ai_models_changed_key : R.string.ai_models_enter_key));
+            key.requestFocus();
+            return null;
+        }
+        return config;
     }
 
     private void testConnection() {
-        if (requestRunning) {
-            return;
-        }
-        ApiConfig draft = readDraftConfig();
-        if (draft == null) {
-            return;
-        }
-        setRequestRunning(true);
-        executor.execute(() -> {
+        if (testing) return;
+        ApiConfig config = validatedDraft();
+        if (config == null) return;
+        proof = null;
+        testing = true;
+        int generation = ++testGeneration;
+        hideKeyboard();
+        setNotice(getString(R.string.testing_connection), false);
+        updateButtons();
+        pendingTest = tests.submit(() -> {
             try {
-                client.testConnection(draft);
-                lastSuccessfulDraftFingerprint = ApiConfigStore.fingerprint(draft);
-                ApiConfig saved = configStore.getConfig();
-                if (saved.isComplete()
-                        && ApiConfigStore.fingerprint(saved).equals(lastSuccessfulDraftFingerprint)) {
-                    configStore.markConnectionSuccessful(saved);
-                }
-                runOnUiThread(() -> {
-                    if (isFinishing() || isDestroyed()) {
-                        return;
-                    }
-                    setRequestRunning(false);
-                    Toast.makeText(this, R.string.connection_test_success, Toast.LENGTH_SHORT).show();
-                    if (configSummaryCard.getVisibility() == View.VISIBLE) {
-                        renderState(false);
-                    }
-                });
-            } catch (OpenAiCompatibleClient.AiClientException e) {
-                runOnUiThread(() -> {
-                    if (isFinishing() || isDestroyed()) {
-                        return;
-                    }
-                    setRequestRunning(false);
-                    new AlertDialog.Builder(this)
-                            .setTitle(R.string.connection_failed)
-                            .setMessage(e.getMessage())
-                            .setPositiveButton(android.R.string.ok, null)
-                            .show();
-                });
+                AiModelProbe.Result result = AiModelProbe.test(config, client);
+                runOnUiThread(() -> onTestComplete(generation, result, null));
+            } catch (OpenAiCompatibleClient.AiClientException error) {
+                runOnUiThread(() -> onTestComplete(generation, null, error.getMessage()));
             }
         });
     }
 
-    private boolean saveConfiguration() {
-        ApiConfig draft = readDraftConfig();
-        if (draft == null) {
-            return false;
+    private void onTestComplete(int generation, AiModelProbe.Result result, String error) {
+        if (generation != testGeneration || !editing || isFinishing() || isDestroyed()) return;
+        pendingTest = null;
+        testing = false;
+        proof = result;
+        if (result == null) {
+            setNotice(error, true);
+        } else {
+            boolean recovered = original != null && profiles.recoverAfterTest(original.id, result);
+            AiProfiles.Model saved = original == null ? null : profiles.model(original.id);
+            updateDetailHeader(saved, System.currentTimeMillis());
+            setNotice(getString(recovered ? R.string.ai_models_test_recovered
+                    : saved != null && saved.isCooling(System.currentTimeMillis())
+                    ? R.string.ai_models_test_edit_recovery : R.string.ai_models_test_passed), false);
         }
-        String enteredKey = textOf(apiKeyInput);
+        updateButtons();
+    }
+
+    private void updateButtons() {
+        url.setEnabled(!testing);
+        model.setEnabled(!testing);
+        key.setEnabled(!testing);
+        replaceKey.setEnabled(!testing);
+        test.setEnabled(!testing);
+        test.setText(testing ? R.string.testing_connection : R.string.test_connection);
+        save.setEnabled(!testing && proof != null && proof.matches(draft()));
+    }
+
+    private void save() {
+        ApiConfig config = validatedDraft();
+        if (config == null || proof == null || !proof.matches(config)) return;
         try {
-            configStore.save(
-                    draft.getBaseUrl(),
-                    enteredKey.isEmpty() ? null : enteredKey,
-                    draft.getModel()
-            );
-            ApiConfig saved = configStore.getConfig();
-            if (!saved.isComplete()) {
-                apiKeyInputLayout.setError(getString(R.string.enter_valid_api_key));
-                return false;
-            }
-            if (ApiConfigStore.fingerprint(saved).equals(lastSuccessfulDraftFingerprint)) {
-                configStore.markConnectionSuccessful(saved);
-            }
-            Toast.makeText(this, R.string.configuration_saved, Toast.LENGTH_SHORT).show();
-            renderState(false);
-            updateProfiles();
-            return true;
-        } catch (Exception e) {
-            new AlertDialog.Builder(this)
-                    .setTitle(R.string.save_failed)
-                    .setMessage(e.getMessage() == null
-                            ? getString(R.string.unable_to_save_configuration)
-                            : e.getMessage())
-                    .setPositiveButton(android.R.string.ok, null)
-                    .show();
-            return false;
+            boolean adding = original == null;
+            profiles.save(adding ? null : original.id, config, proof);
+            key.setText("");
+            showList();
+            Toast.makeText(this, adding ? R.string.ai_models_added : R.string.ai_models_saved, Toast.LENGTH_SHORT).show();
+        } catch (IllegalArgumentException | IllegalStateException error) {
+            setNotice(error.getMessage(), true);
         }
     }
 
-    private ApiConfig readDraftConfig() {
-        clearErrors();
-        String baseUrl = textOf(baseUrlInput);
-        String model = textOf(modelInput);
-        String enteredKey = textOf(apiKeyInput);
-        ApiConfig saved = configStore.getConfig();
-        boolean sameEndpoint = AiEndpoint.normalizeBaseUrl(baseUrl).equals(AiEndpoint.normalizeBaseUrl(saved.getBaseUrl()));
-        String apiKey = enteredKey.isEmpty() && sameEndpoint ? saved.getApiKey() : enteredKey;
-        boolean valid = true;
-        try {
-            AiEndpoint.validateHttpsBaseUrl(baseUrl);
-            if (java.net.URI.create(baseUrl).getRawUserInfo() != null)
-                throw new IllegalArgumentException("API 地址不能包含用户名或密码");
-        } catch (IllegalArgumentException e) {
-            baseUrlInputLayout.setError(e.getMessage());
-            valid = false;
-        }
-        if (apiKey.isEmpty()) {
-            apiKeyInputLayout.setError(!sameEndpoint && configStore.hasStoredApiKey()
-                    ? "更换 API 地址时请重新填写 Key，避免发送到其他服务" : getString(R.string.enter_api_key));
-            valid = false;
-        }
-        if (model.isEmpty()) {
-            modelInputLayout.setError(getString(R.string.enter_model_name));
-            valid = false;
-        }
-        return valid ? new ApiConfig(baseUrl, apiKey, model) : null;
+    private void setNotice(String message, boolean error) {
+        notice.setBackground(background(error ? R.color.brand_error_soft : R.color.brand_primary_soft, 9));
+        notice.setTextColor(getColor(error ? R.color.brand_error_dark : R.color.brand_text_secondary));
+        notice.setText(message);
     }
 
-    private void clearErrors() {
-        baseUrlInputLayout.setError(null);
-        apiKeyInputLayout.setError(null);
-        modelInputLayout.setError(null);
-    }
-
-    private void setRequestRunning(boolean running) {
-        requestRunning = running;
-        settingsProgress.setVisibility(running ? View.VISIBLE : View.GONE);
-        testConnectionButton.setEnabled(!running);
-        saveConfigButton.setEnabled(!running);
-        baseUrlInput.setEnabled(!running); apiKeyInput.setEnabled(!running); modelInput.setEnabled(!running);
-        clearApiKeyButton.setEnabled(!running && configStore.hasStoredApiKey());
-        for (int id : new int[]{R.id.selectAiProfileButton, R.id.addAiProfileButton, R.id.importAiProfilesButton, R.id.manageAiProfileButton})
-            findViewById(id).setEnabled(!running);
-        testConnectionButton.setText(running
-                ? R.string.testing_connection
-                : R.string.test_connection);
-    }
-
-    private void confirmClearApiKey() {
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.clear_api_key)
-                .setMessage(R.string.clear_api_key_confirmation)
+    private void confirmDelete(AiProfiles.Model entry) {
+        new AlertDialog.Builder(this).setTitle(R.string.ai_models_delete_title)
+                .setIcon(AiModelIcons.match(entry.config.getModel()).drawable)
+                .setMessage(getString(R.string.ai_models_delete_body, displayName(entry)))
                 .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton(R.string.clear, (dialog, which) -> {
-                    configStore.clearApiKey();
-                    lastSuccessfulDraftFingerprint = "";
-                    Toast.makeText(this, R.string.api_key_cleared, Toast.LENGTH_SHORT).show();
-                    renderState(true);
-                    updateProfiles();
-                })
-                .show();
+                .setPositiveButton(R.string.ai_models_delete, (dialog, which) -> {
+                    profiles.delete(entry.id);
+                    refreshCooling();
+                    Toast.makeText(this, R.string.ai_models_deleted, Toast.LENGTH_SHORT).show();
+                }).show();
     }
 
     private void confirmClearCache() {
-        if (explanationCache.count() == 0) {
+        if (cache.count() == 0) {
             Toast.makeText(this, R.string.no_ai_cache, Toast.LENGTH_SHORT).show();
             return;
         }
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.clear_ai_cache)
+        new AlertDialog.Builder(this).setTitle(R.string.clear_ai_cache)
                 .setMessage(R.string.clear_ai_cache_confirmation)
                 .setNegativeButton(android.R.string.cancel, null)
                 .setPositiveButton(R.string.clear, (dialog, which) -> {
-                    explanationCache.clear();
-                    clearAiCacheButton.setText(getString(R.string.clear_ai_cache_count, 0));
+                    cache.clear();
+                    refreshCooling();
                     Toast.makeText(this, R.string.ai_cache_cleared, Toast.LENGTH_SHORT).show();
-                })
-                .show();
+                }).show();
     }
 
-    private static String textOf(TextInputEditText editText) {
-        return editText.getText() == null ? "" : editText.getText().toString().trim();
+    private void back() {
+        if (!editing) { finish(); return; }
+        if (dirty()) {
+            new AlertDialog.Builder(this).setTitle(R.string.ai_models_discard_title)
+                    .setMessage(R.string.ai_models_discard_body)
+                    .setNegativeButton(R.string.ai_models_continue_editing, null)
+                    .setPositiveButton(R.string.ai_models_discard, (dialog, which) -> showList()).show();
+        } else showList();
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle state) {
-        state.putString("editing_profile", editingProfile);
-        state.putBoolean("guide_open", configGuideContainer.getVisibility() == View.VISIBLE);
-        state.putString("draft_url", textOf(baseUrlInput));
-        state.putString("draft_model", textOf(modelInput));
+    private boolean dirty() {
+        if (original == null) return !text(url).isEmpty() || !text(model).isEmpty() || !text(key).isEmpty();
+        return !sameAddress() || !text(model).equals(original.config.getModel()) || !text(key).isEmpty();
+    }
+
+    private void cancelTest() {
+        testGeneration++;
+        if (pendingTest != null) pendingTest.cancel(true);
+        pendingTest = null;
+        testing = false;
+    }
+
+    private String coolingLabel(long millis) {
+        long minutes = Math.max(1L, (millis + 59_999L) / 60_000L);
+        long hours = minutes / 60;
+        String duration = hours >= 24 ? getString(R.string.ai_models_time_days, hours / 24, hours % 24)
+                : hours > 0 ? getString(R.string.ai_models_time_hours, hours, minutes % 60)
+                : getString(R.string.ai_models_time_minutes, minutes);
+        return getString(R.string.ai_models_cooling, duration);
+    }
+
+    private void styleIcon(ImageView image, String modelId, boolean muted) {
+        GradientDrawable circle = background(muted ? R.color.brand_border_light : R.color.brand_primary_soft, 50);
+        image.setBackground(circle);
+        image.setPadding(dp(7), dp(7), dp(7), dp(7));
+        AiModelIcons.bind(image, modelId, muted);
+    }
+
+    private GradientDrawable background(int color, int radius) {
+        GradientDrawable shape = new GradientDrawable();
+        shape.setCornerRadius(dp(radius));
+        shape.setColor(ColorStateList.valueOf(getColor(color)));
+        return shape;
+    }
+
+    private void hideKeyboard() {
+        View focused = getCurrentFocus();
+        if (focused != null) {
+            ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
+                    .hideSoftInputFromWindow(focused.getWindowToken(), 0);
+        }
+    }
+
+    private int dp(int value) { return Math.round(value * getResources().getDisplayMetrics().density); }
+    private static String text(TextInputEditText field) { return field.getText() == null ? "" : field.getText().toString().trim(); }
+
+    @Override protected void onSaveInstanceState(Bundle state) {
+        state.putBoolean(STATE_EDITING, editing);
+        if (editing && original != null) state.putString(STATE_MODEL, original.id);
         super.onSaveInstanceState(state);
     }
 
     @Override public Object onRetainCustomNonConfigurationInstance() {
-        // Keep an unsaved Key only in memory across rotation, never in an instance-state Bundle.
-        return new String[]{editingProfile, textOf(apiKeyInput)};
+        return editing ? new Draft(original == null ? null : original.id, text(url), text(model), text(key), replacingKey, proof) : null;
     }
 
-    @Override
-    protected void onDestroy() {
-        executor.shutdownNow();
+    @Override protected void onDestroy() {
+        cancelTest();
+        handler.removeCallbacks(refresh);
+        tests.shutdownNow();
         super.onDestroy();
+    }
+
+    private static final class Draft {
+        final String id, url, model, key;
+        final boolean replacing;
+        final AiModelProbe.Result proof;
+        boolean used;
+
+        Draft(String id, String url, String model, String key, boolean replacing, AiModelProbe.Result proof) {
+            this.id = id;
+            this.url = url;
+            this.model = model;
+            this.key = key;
+            this.replacing = replacing;
+            this.proof = proof;
+        }
     }
 }

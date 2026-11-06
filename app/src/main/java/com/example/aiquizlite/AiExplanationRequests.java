@@ -14,26 +14,26 @@ final class AiExplanationRequests {
         void put(String key, AiExplanation explanation);
     }
     interface Generator {
-        AiExplanation generate() throws OpenAiCompatibleClient.AiClientException;
+        AiExplanationRouter.Result generate() throws OpenAiCompatibleClient.AiClientException;
     }
     private final Executor executor;
-    private final ConcurrentHashMap<String, FutureTask<AiExplanation>> running = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, FutureTask<AiExplanationRouter.Result>> running = new ConcurrentHashMap<>();
 
     AiExplanationRequests(Executor executor) { this.executor = executor; }
 
-    AiExplanation get(String key, Cache cache, boolean force, Generator generator)
+    AiExplanationRouter.Result get(String key, Cache cache, boolean force, Generator generator)
             throws OpenAiCompatibleClient.AiClientException {
-        FutureTask<AiExplanation> task = new FutureTask<>(() -> {
+        FutureTask<AiExplanationRouter.Result> task = new FutureTask<>(() -> {
             AiExplanation existing = force ? null : cache.get(key);
-            if (existing != null) return existing;
-            AiExplanation generated = generator.generate();
-            cache.put(key, generated);
+            if (existing != null) return AiExplanationRouter.Result.cached(existing);
+            AiExplanationRouter.Result generated = generator.generate();
+            if (generated.explanation != null) cache.put(key, generated.explanation);
             return generated;
         });
-        FutureTask<AiExplanation> previous = running.putIfAbsent(key, task);
+        FutureTask<AiExplanationRouter.Result> previous = running.putIfAbsent(key, task);
         if (previous != null) task = previous;
         else {
-            final FutureTask<AiExplanation> owned = task;
+            final FutureTask<AiExplanationRouter.Result> owned = task;
             executor.execute(() -> {
                 try { owned.run(); }
                 finally { running.remove(key, owned); }

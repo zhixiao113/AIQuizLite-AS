@@ -7,6 +7,9 @@ import static org.junit.Assert.*;
 
 public class AiExplanationRequestsTest {
     private final AiExplanation result = new AiExplanation("yes", "reason", "", "");
+    private AiExplanationRouter.Result generated() {
+        return new AiExplanationRouter.Result(result, null, java.util.Collections.emptyList(), false);
+    }
     private static final class Cache implements AiExplanationRequests.Cache {
         final ConcurrentHashMap<String, String> disk = new ConcurrentHashMap<>();
         public AiExplanation get(String key) { return AiExplanation.fromCachedJson(disk.get(key)); }
@@ -16,15 +19,18 @@ public class AiExplanationRequestsTest {
     @Test public void persistedResultSurvivesNewCoordinatorAndForcedFailure() throws Exception {
         Cache cache = new Cache();
         AtomicInteger calls = new AtomicInteger();
-        AiExplanationRequests.Generator generate = () -> { calls.incrementAndGet(); return result; };
+        AiExplanationRequests.Generator generate = () -> { calls.incrementAndGet(); return generated(); };
         new AiExplanationRequests(Runnable::run).get("q", cache, false, generate);
         AiExplanationRequests reopened = new AiExplanationRequests(Runnable::run);
-        assertEquals("yes", reopened.get("q", cache, false, generate).getConclusion());
+        assertEquals("yes", reopened.get("q", cache, false, generate).explanation.getConclusion());
         assertEquals(1, calls.get());
         try {
             reopened.get("q", cache, true, () -> { throw new OpenAiCompatibleClient.AiClientException("offline"); });
             fail();
         } catch (OpenAiCompatibleClient.AiClientException expected) { assertEquals("offline", expected.getMessage()); }
+        AiExplanationRouter.Result unsuccessful = new AiExplanationRouter.Result(
+                null, "no eligible model", java.util.Collections.emptyList(), false);
+        assertSame(unsuccessful, reopened.get("q", cache, true, () -> unsuccessful));
         assertEquals("yes", cache.get("q").getConclusion());
         reopened.get("q", cache, true, generate);
         assertEquals(2, calls.get());
@@ -41,16 +47,16 @@ public class AiExplanationRequestsTest {
             calls.incrementAndGet(); started.countDown();
             try { if (!finish.await(5, TimeUnit.SECONDS)) throw new AssertionError("release timeout"); }
             catch (InterruptedException e) { throw new AssertionError(e); }
-            return result;
+            return generated();
         };
         try {
-            Future<AiExplanation> first = callers.submit(() -> requests.get("q", cache, false, slow));
+            Future<AiExplanationRouter.Result> first = callers.submit(() -> requests.get("q", cache, false, slow));
             assertTrue(started.await(2, TimeUnit.SECONDS));
-            Future<AiExplanation> second = callers.submit(() -> requests.get("q", cache, false, slow));
-            Future<AiExplanation> other = callers.submit(() -> requests.get("other", cache, false, () -> result));
-            assertEquals("yes", other.get(2, TimeUnit.SECONDS).getConclusion());
+            Future<AiExplanationRouter.Result> second = callers.submit(() -> requests.get("q", cache, false, slow));
+            Future<AiExplanationRouter.Result> other = callers.submit(() -> requests.get("other", cache, false, this::generated));
+            assertEquals("yes", other.get(2, TimeUnit.SECONDS).explanation.getConclusion());
             finish.countDown();
-            assertEquals(first.get(2, TimeUnit.SECONDS).toJson(), second.get(2, TimeUnit.SECONDS).toJson());
+            assertEquals(first.get(2, TimeUnit.SECONDS).explanation.toJson(), second.get(2, TimeUnit.SECONDS).explanation.toJson());
             assertEquals(1, calls.get());
         } finally { finish.countDown(); callers.shutdownNow(); network.shutdownNow(); }
     }
@@ -71,7 +77,7 @@ public class AiExplanationRequestsTest {
                         started.countDown();
                         try { finish.await(3, TimeUnit.SECONDS); }
                         catch (InterruptedException e) { throw new AssertionError("generation cancelled", e); }
-                        return result;
+                        return generated();
                     });
                 } catch (OpenAiCompatibleClient.AiClientException ignored) { }
             });

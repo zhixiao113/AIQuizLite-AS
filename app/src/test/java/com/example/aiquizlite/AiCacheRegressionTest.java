@@ -39,8 +39,8 @@ public class AiCacheRegressionTest {
         assertEquals("data:image/png;base64,AAAA", content.getJSONObject(1).getJSONObject("image_url").getString("url"));
     }
     @Test public void questionImageTriggersVision() {
-        assertTrue(AiHybridExplanation.images(question("multi", null, false)).isEmpty());
-        assertEquals(Collections.singletonList("one.png"), AiHybridExplanation.images(question("multi", "one.png", false)));
+        assertTrue(AiModelExplanation.images(question("multi", null, false)).isEmpty());
+        assertEquals(Collections.singletonList("one.png"), AiModelExplanation.images(question("multi", "one.png", false)));
     }
 
     @Test public void matchingItemAndPairOrderingDoesNotInvalidateCache() {

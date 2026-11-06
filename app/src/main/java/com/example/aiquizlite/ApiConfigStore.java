@@ -35,8 +35,12 @@ public final class ApiConfigStore {
     }
 
     public ApiConfigStore(Context context, String profileId) {
+        this(context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE), profileId);
+    }
+
+    ApiConfigStore(SharedPreferences preferences, String profileId) {
         prefix = "default".equals(profileId) ? "" : profileId + ":";
-        preferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        this.preferences = preferences;
     }
 
     public ApiConfig getConfig() {
@@ -47,67 +51,41 @@ public final class ApiConfigStore {
         );
     }
 
-    public boolean hasStoredApiKey() {
-        return preferences.contains(key(KEY_ENCRYPTED_API_KEY))
-                && preferences.contains(key(KEY_API_KEY_IV))
-                && !decryptStoredApiKey().isEmpty();
+    boolean hasSavedRecord() {
+        return !preferences.getString(key(KEY_BASE_URL), "").isEmpty()
+                || !preferences.getString(key(KEY_MODEL), "").isEmpty()
+                || preferences.contains(key(KEY_ENCRYPTED_API_KEY));
     }
 
-    public void save(String baseUrl, String newApiKey, String model) {
-        String normalizedBaseUrl = AiEndpoint.normalizeBaseUrl(baseUrl);
-        String normalizedModel = model == null ? "" : model.trim();
-        String normalizedNewKey = newApiKey == null ? "" : newApiKey.trim();
-        String oldBaseUrl = preferences.getString(key(KEY_BASE_URL), "");
-        String oldModel = preferences.getString(key(KEY_MODEL), "");
-        if (!oldBaseUrl.isEmpty() && !normalizedBaseUrl.equals(oldBaseUrl) && normalizedNewKey.isEmpty()) {
-            throw new IllegalArgumentException("更换 API 地址后请重新输入此服务的 API Key");
-        }
-        boolean changed = !normalizedBaseUrl.equals(oldBaseUrl)
-                || !normalizedModel.equals(oldModel)
-                || !normalizedNewKey.isEmpty();
-
-        SharedPreferences.Editor editor = preferences.edit()
-                .putString(key(KEY_BASE_URL), normalizedBaseUrl)
-                .putString(key(KEY_MODEL), normalizedModel);
-        if (!normalizedNewKey.isEmpty()) {
-            EncryptedValue encryptedValue = encrypt(normalizedNewKey);
+    void writeTo(SharedPreferences.Editor editor, ApiConfig config) {
+        editor.putString(key(KEY_BASE_URL), AiEndpoint.normalizeBaseUrl(config.getBaseUrl()))
+                .putString(key(KEY_MODEL), config.getModel());
+        if (!config.getApiKey().equals(decryptStoredApiKey())) {
+            EncryptedValue encryptedValue = encrypt(config.getApiKey());
             editor.putString(key(KEY_ENCRYPTED_API_KEY), encryptedValue.value);
             editor.putString(key(KEY_API_KEY_IV), encryptedValue.iv);
         }
-        if (changed) {
-            editor.remove(key(KEY_LAST_TEST_FINGERPRINT));
-        }
-        editor.apply();
+        editor.remove(key(KEY_LAST_TEST_FINGERPRINT));
     }
 
-    public void clearApiKey() {
-        preferences.edit()
+    void removeFrom(SharedPreferences.Editor editor) {
+        editor.remove(key(KEY_BASE_URL))
+                .remove(key(KEY_MODEL))
                 .remove(key(KEY_ENCRYPTED_API_KEY))
                 .remove(key(KEY_API_KEY_IV))
-                .remove(key(KEY_LAST_TEST_FINGERPRINT))
-                .apply();
-    }
-
-    public void markConnectionSuccessful(ApiConfig config) {
-        preferences.edit()
-                .putString(key(KEY_LAST_TEST_FINGERPRINT), fingerprint(config))
-                .apply();
-    }
-
-    public boolean wasConnectionSuccessful(ApiConfig config) {
-        String saved = preferences.getString(key(KEY_LAST_TEST_FINGERPRINT), "");
-        return config != null && config.isComplete() && saved.equals(fingerprint(config));
+                .remove(key(KEY_LAST_TEST_FINGERPRINT));
     }
 
     public static String fingerprint(ApiConfig config) {
         if (config == null) {
             return "";
         }
-        return sha256(
-                AiEndpoint.normalizeBaseUrl(config.getBaseUrl())
-                        + "\n" + config.getModel().trim()
-                        + "\n" + config.getApiKey()
-        );
+        return sha256(fingerprintPart(AiEndpoint.normalizeBaseUrl(config.getBaseUrl()))
+                + fingerprintPart(config.getModel()) + fingerprintPart(config.getApiKey()));
+    }
+
+    private static String fingerprintPart(String value) {
+        return value.length() + ":" + value;
     }
 
     private String decryptStoredApiKey() {
@@ -120,7 +98,7 @@ public final class ApiConfigStore {
             Cipher cipher = Cipher.getInstance(CIPHER);
             cipher.init(
                     Cipher.DECRYPT_MODE,
-                    getOrCreateSecretKey(),
+                    getSecretKey(false),
                     new GCMParameterSpec(128, Base64.decode(iv, Base64.NO_WRAP))
             );
             byte[] plaintext = cipher.doFinal(Base64.decode(encrypted, Base64.NO_WRAP));
@@ -133,7 +111,7 @@ public final class ApiConfigStore {
     private EncryptedValue encrypt(String apiKey) {
         try {
             Cipher cipher = Cipher.getInstance(CIPHER);
-            cipher.init(Cipher.ENCRYPT_MODE, getOrCreateSecretKey());
+            cipher.init(Cipher.ENCRYPT_MODE, getSecretKey(true));
             byte[] encrypted = cipher.doFinal(apiKey.getBytes(StandardCharsets.UTF_8));
             return new EncryptedValue(
                     Base64.encodeToString(encrypted, Base64.NO_WRAP),
@@ -144,12 +122,13 @@ public final class ApiConfigStore {
         }
     }
 
-    private SecretKey getOrCreateSecretKey() throws Exception {
+    private SecretKey getSecretKey(boolean create) throws Exception {
         KeyStore keyStore = KeyStore.getInstance(KEYSTORE);
         keyStore.load(null);
         if (keyStore.containsAlias(KEY_ALIAS)) {
             return ((KeyStore.SecretKeyEntry) keyStore.getEntry(KEY_ALIAS, null)).getSecretKey();
         }
+        if (!create) throw new java.security.KeyStoreException("Missing API key encryption key");
         KeyGenerator generator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, KEYSTORE);
         generator.init(new KeyGenParameterSpec.Builder(
                 KEY_ALIAS,
@@ -170,7 +149,7 @@ public final class ApiConfigStore {
             }
             return builder.toString();
         } catch (Exception e) {
-            return Integer.toHexString(value.hashCode());
+            throw new IllegalStateException("无法校验 AI 配置", e);
         }
     }
 

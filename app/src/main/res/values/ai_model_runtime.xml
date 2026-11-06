@@ -1,0 +1,4 @@
+<resources>
+    <string name="ai_model_call_failed_title">模型调用失败</string>
+    <string name="ai_model_failed_cooldown">%1$s。已进入 3 天冷却，可在设置中测试连接。</string>
+</resources>
