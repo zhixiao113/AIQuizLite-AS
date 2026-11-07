@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.text.Layout;
 import android.text.SpannableString;
@@ -155,15 +154,22 @@ final class AiTermPopup {
     }
 
     private void buildPopup(String term) {
+        int surfaceColor = Color.rgb(243, 246, 253);
         popupContent = new LinearLayout(activity);
         popupContent.setOrientation(LinearLayout.VERTICAL);
-        popupContent.setBackground(rounded(Color.WHITE, 14));
+        GradientDrawable surface = rounded(surfaceColor, 14);
+        surface.setStroke(dp(1), activity.getColor(R.color.brand_primary));
+        popupContent.setBackground(surface);
+        popupContent.setPadding(dp(1), dp(1), dp(1), dp(1));
         popupContent.setClipToOutline(true);
 
         LinearLayout header = new LinearLayout(activity);
         header.setGravity(Gravity.CENTER_VERTICAL);
         header.setPadding(dp(14), dp(2), dp(3), dp(2));
-        header.setBackgroundColor(activity.getColor(R.color.brand_primary_soft));
+        GradientDrawable headerBackground = rounded(Color.rgb(219, 231, 255), 0);
+        float headerRadius = dp(13);
+        headerBackground.setCornerRadii(new float[]{headerRadius, headerRadius, headerRadius, headerRadius, 0, 0, 0, 0});
+        header.setBackground(headerBackground);
         TextView title = text(term, 15, R.color.brand_primary_dark, true);
         title.setMaxLines(2);
         header.addView(title, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
@@ -199,10 +205,11 @@ final class AiTermPopup {
         popupContent.addView(scroll, new LinearLayout.LayoutParams(-1, -2));
 
         popup = new PopupWindow(popupContent, dp(280), ViewGroup.LayoutParams.WRAP_CONTENT, false);
-        popup.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        // An opaque background supplies the rounded outline used by the window's elevation shadow.
+        popup.setBackgroundDrawable(rounded(surfaceColor, 14));
         // The dialog card closes the popup on an outside tap, preserving outside drag gestures.
         popup.setOutsideTouchable(false);
-        popup.setElevation(dp(8));
+        popup.setElevation(dp(14));
         popup.setAnimationStyle(android.R.style.Animation_Dialog);
         PopupWindow created = popup;
         popup.setOnDismissListener(() -> {
