@@ -7,6 +7,8 @@ public final class AiExplanation {
     private final String reasoning;
     private final String commonMistake;
     private final String memoryTip;
+    private final String profileId;
+    private final String modelId;
 
     public AiExplanation(
             String conclusion,
@@ -14,10 +16,17 @@ public final class AiExplanation {
             String commonMistake,
             String memoryTip
     ) {
+        this(conclusion, reasoning, commonMistake, memoryTip, "", "");
+    }
+
+    private AiExplanation(String conclusion, String reasoning, String commonMistake, String memoryTip,
+            String profileId, String modelId) {
         this.conclusion = clean(conclusion);
         this.reasoning = clean(reasoning);
         this.commonMistake = clean(commonMistake);
         this.memoryTip = clean(memoryTip);
+        this.profileId = clean(profileId);
+        this.modelId = clean(modelId);
     }
 
     public String getConclusion() {
@@ -36,6 +45,14 @@ public final class AiExplanation {
         return memoryTip;
     }
 
+    public String getProfileId() { return profileId; }
+
+    public String getModelId() { return modelId; }
+
+    AiExplanation withSource(String profileId, String modelId) {
+        return new AiExplanation(conclusion, reasoning, commonMistake, memoryTip, profileId, modelId);
+    }
+
     public String toDisplayText() {
         StringBuilder builder = new StringBuilder();
         appendSection(builder, "结论", conclusion);
@@ -52,6 +69,8 @@ public final class AiExplanation {
             object.put("reasoning", reasoning);
             object.put("common_mistake", commonMistake);
             object.put("memory_tip", memoryTip);
+            if (!profileId.isEmpty()) object.put("source_profile", profileId);
+            if (!modelId.isEmpty()) object.put("source_model", modelId);
         } catch (Exception ignored) {
             return "{}";
         }
@@ -61,7 +80,8 @@ public final class AiExplanation {
     public static AiExplanation fromCachedJson(String raw) {
         try {
             JSONObject object = new JSONObject(raw);
-            return fromJsonObject(object);
+            return fromJsonObject(object).withSource(object.optString("source_profile", ""),
+                    object.optString("source_model", ""));
         } catch (Exception e) {
             return null;
         }

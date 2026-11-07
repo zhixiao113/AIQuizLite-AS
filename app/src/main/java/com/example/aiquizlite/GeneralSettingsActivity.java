@@ -156,6 +156,11 @@ public class GeneralSettingsActivity extends AppCompatActivity {
         addSwitchRow(practice, R.drawable.ic_general_info,
                 "提交后显示题库解析", "隐藏时仍显示作答结果、正确答案和 AI 讲解入口",
                 settings.shouldShowSourceExplanation(), settings::setShowSourceExplanation);
+        addDivider(practice);
+        addSwitchRow(practice, R.drawable.ic_general_info,
+                getString(R.string.ai_term_switch_regenerate_title),
+                getString(R.string.ai_term_switch_regenerate_detail),
+                settings.isAiModelSwitchRegenerateEnabled(), settings::setAiModelSwitchRegenerateEnabled);
 
         addSectionTitle(content, "显示与交互");
         addDisplayInteractionSection(content);

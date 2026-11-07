@@ -21,6 +21,8 @@ public class OpenAiCompatibleClient {
     private static final int CONNECT_TIMEOUT_MS = 15_000;
     private static final int READ_TIMEOUT_MS = 60_000;
     private static final int LONG_READ_TIMEOUT_MS = 180_000;
+    private volatile HttpURLConnection activeConnection;
+    private volatile boolean cancelled;
 
     public enum FailureKind {
         CONFIG,
@@ -29,7 +31,20 @@ public class OpenAiCompatibleClient {
         RATE_LIMIT,
         SERVICE,
         RESPONSE,
+        CANCELLED,
         UNKNOWN
+    }
+
+    public void cancel() {
+        cancelled = true;
+        HttpURLConnection connection = activeConnection;
+        if (connection != null) connection.disconnect();
+    }
+
+    private void checkCancelled() throws AiClientException {
+        if (cancelled || Thread.currentThread().isInterrupted()) {
+            throw new AiClientException(FailureKind.CANCELLED, "AI 请求已取消");
+        }
     }
 
     public String testConnection(ApiConfig config) throws AiClientException {
@@ -52,8 +67,11 @@ public class OpenAiCompatibleClient {
             List<String> images) throws AiClientException {
         String content = createChatCompletion(config, systemPrompt, userPrompt, READ_TIMEOUT_MS, false, images, CONNECT_TIMEOUT_MS);
         try {
-            return AiExplanation.fromModelText(content);
+            AiExplanation explanation = AiExplanation.fromModelText(content);
+            checkCancelled();
+            return explanation;
         } catch (IllegalArgumentException e) {
+            checkCancelled();
             throw new AiClientException(FailureKind.RESPONSE, e.getMessage(), e);
         }
     }
@@ -147,6 +165,7 @@ public class OpenAiCompatibleClient {
             int readTimeoutMillis,
             boolean extraction, List<String> images, int connectTimeoutMillis
     ) throws AiClientException {
+        checkCancelled();
         if (config == null || !config.isComplete()) {
             throw new AiClientException(
                     FailureKind.CONFIG,
@@ -157,6 +176,8 @@ public class OpenAiCompatibleClient {
         try {
             URL url = new URL(AiEndpoint.chatCompletionsUrl(config.getBaseUrl()));
             connection = (HttpURLConnection) url.openConnection();
+            activeConnection = connection;
+            checkCancelled();
             connection.setRequestMethod("POST");
             connection.setInstanceFollowRedirects(false);
             connection.setConnectTimeout(connectTimeoutMillis);
@@ -179,36 +200,45 @@ public class OpenAiCompatibleClient {
             if (status < 200 || status >= 300) {
                 throw httpError(status);
             }
-            return parseContent(readBody(connection.getInputStream()));
+            String response = parseContent(readBody(connection.getInputStream()));
+            checkCancelled();
+            return response;
         } catch (AiClientException e) {
+            checkCancelled();
             throw e;
         } catch (IllegalArgumentException e) {
+            checkCancelled();
             throw new AiClientException(FailureKind.CONFIG, "API 地址或请求参数无效，请检查配置", e);
         } catch (SocketTimeoutException e) {
+            checkCancelled();
             throw new AiClientException(
                     FailureKind.NETWORK,
                     "等待 AI 返回超时，请检查网络后重试",
                     e
             );
         } catch (SSLException e) {
+            checkCancelled();
             throw new AiClientException(
                     FailureKind.NETWORK,
                     "HTTPS连接失败，请检查API地址或证书",
                     e
             );
         } catch (IOException e) {
+            checkCancelled();
             throw new AiClientException(
                     FailureKind.NETWORK,
                     "无法连接 AI 服务，请检查网络和 API 地址",
                     e
             );
         } catch (Exception e) {
+            checkCancelled();
             throw new AiClientException(
                     FailureKind.UNKNOWN,
                     "AI 请求未完成，请稍后重试",
                     e
             );
         } finally {
+            activeConnection = null;
             if (connection != null) {
                 connection.disconnect();
             }
@@ -350,5 +380,7 @@ public class OpenAiCompatibleClient {
         public FailureKind getKind() {
             return kind;
         }
+
+        public boolean isCancelled() { return kind == FailureKind.CANCELLED; }
     }
 }

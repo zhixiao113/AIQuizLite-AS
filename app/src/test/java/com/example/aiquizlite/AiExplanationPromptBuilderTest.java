@@ -59,4 +59,12 @@ public class AiExplanationPromptBuilderTest {
         org.junit.Assert.assertEquals(keyA, keyB);
         assertNotEquals(keyA, keyWrong);
     }
+
+    @Test
+    public void bothPromptsMarkTermsAndRegenerationAddsPlainLanguageInstruction() {
+        assertTrue(AiExplanationPromptBuilder.systemPrompt(false).contains("[[安全区域]]"));
+        assertTrue(AiExplanationPromptBuilder.systemPrompt(true).contains("[[安全区域]]"));
+        assertTrue(AiExplanationPromptBuilder.systemPrompt(true).contains("用更加通俗易懂的语言讲解，多举生活化类比，减少专业术语"));
+        org.junit.Assert.assertFalse(AiExplanationPromptBuilder.systemPrompt(false).contains("本次是再次生成"));
+    }
 }

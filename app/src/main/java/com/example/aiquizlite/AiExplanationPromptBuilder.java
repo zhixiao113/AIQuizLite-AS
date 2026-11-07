@@ -7,10 +7,17 @@ public final class AiExplanationPromptBuilder {
     }
 
     public static String systemPrompt() {
+        return systemPrompt(false);
+    }
+
+    public static String systemPrompt(boolean refined) {
         return "你是中文考试辅导老师。只能根据题目、用户答案、正确答案和题库原解析进行讲解，"
                 + "不得修改或质疑给定正确答案。讲解要准确、清晰、便于记忆。"
                 + "只返回一个JSON对象，不要Markdown代码块，不要额外文字。"
-                + "JSON必须包含字符串字段 conclusion、reasoning、common_mistake、memory_tip。";
+                + "JSON必须包含字符串字段 conclusion、reasoning、common_mistake、memory_tip。"
+                + "在这四个字段的文字中，用双中括号包裹需要解释的学科专业名词，如[[安全区域]]。"
+                + "仅标记真实专业名词，不嵌套标记、不把整句话标为术语，没有专业名词时不添加标记。"
+                + (refined ? "本次是再次生成。用更加通俗易懂的语言讲解，多举生活化类比，减少专业术语。" : "");
     }
 
     public static String userPrompt(

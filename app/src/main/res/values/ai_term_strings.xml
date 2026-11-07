@@ -1,0 +1,10 @@
+<resources>
+    <string name="ai_term_switch_regenerate_title">切换模型立即重新生成</string>
+    <string name="ai_term_switch_regenerate_detail">开启后切换模型将自动重新生成讲解，关闭则需手动点击重新生成。</string>
+    <string name="ai_term_loading">正在生成通俗解释…</string>
+    <string name="ai_term_failed">解释获取失败，请稍后重试</string>
+    <string name="ai_term_definition">通俗解释</string>
+    <string name="ai_term_analogy">生活类比</string>
+    <string name="ai_term_close">关闭术语释义</string>
+    <string name="ai_term_explain_action">查看“%1$s”的通俗解释</string>
+</resources>

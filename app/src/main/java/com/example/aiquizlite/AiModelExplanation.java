@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 final class AiModelExplanation {
     private static final int MAX_IMAGE_BYTES = 12 * 1024 * 1024;
@@ -21,15 +22,24 @@ final class AiModelExplanation {
     }
     static AiExplanationRouter.Result generate(Context context, String bank, Question question,
             String system, String prompt) throws OpenAiCompatibleClient.AiClientException {
-        OpenAiCompatibleClient client = new OpenAiCompatibleClient();
+        return generate(context, bank, question, system, prompt, null, false,
+                new OpenAiCompatibleClient(), null);
+    }
+
+    static AiExplanationRouter.Result generate(Context context, String bank, Question question,
+            String system, String prompt, String preferredProfileId, boolean pinned,
+            OpenAiCompatibleClient client, Consumer<AiProfiles.Model> onAttempt)
+            throws OpenAiCompatibleClient.AiClientException {
         List<String> refs = images(question);
         return AiExplanationRouter.generate(new AiProfiles(context), !refs.isEmpty(),
                 System::currentTimeMillis, () -> {
                     List<String> images = refs.isEmpty() ? Collections.emptyList() : readImages(context, bank, refs);
                     String fullPrompt = refs.isEmpty() ? prompt : prompt +
                             "\n请结合本次附带的题目和解析图片讲解。对看不清的内容明确说明，不要猜测。";
-                    return config -> client.generateExplanation(config, system, fullPrompt, images);
-                });
+                    return config -> AiExplanationProviderRequests.get(
+                            AiExplanationProviderRequests.key(config, system, fullPrompt, images),
+                            () -> client.generateExplanation(config, system, fullPrompt, images));
+                }, preferredProfileId, pinned, onAttempt);
     }
 
     private static List<String> readImages(Context context, String bank, List<String> refs)

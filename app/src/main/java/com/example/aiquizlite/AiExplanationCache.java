@@ -32,6 +32,11 @@ public final class AiExplanationCache implements AiExplanationRequests.Cache {
         preferences.edit().clear().apply();
     }
 
+    static String modelKeyFor(String questionKey, String profileId) {
+        // Keep the old question key readable for migration, and version the new term-aware format.
+        return sha256("explanation-terms-v1\n" + questionKey + "\n" + profileId);
+    }
+
     public static String keyFor(
             String questionBankId,
             Question question,

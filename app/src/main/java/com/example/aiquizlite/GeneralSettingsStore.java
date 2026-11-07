@@ -14,6 +14,7 @@ public final class GeneralSettingsStore {
     private static final String KEY_WRONG_AUTO_ADVANCE = "wrong_auto_advance";
     private static final String KEY_AUTO_ADVANCE_DELAY = "auto_advance_delay";
     private static final String KEY_SHOW_SOURCE_EXPLANATION = "show_source_explanation";
+    private static final String KEY_AI_SWITCH_REGENERATE = "ai_model_switch_regenerate";
     private static final String KEY_MOCK_QUESTION_LIMIT = "mock_question_limit";
     private static final String KEY_MOCK_SHUFFLE_QUESTIONS = "mock_shuffle_questions";
     private static final String KEY_MOCK_SHUFFLE_OPTIONS = "mock_shuffle_options";
@@ -121,6 +122,14 @@ public final class GeneralSettingsStore {
 
     public void setShowSourceExplanation(boolean enabled) {
         preferences.edit().putBoolean(KEY_SHOW_SOURCE_EXPLANATION, enabled).apply();
+    }
+
+    public boolean isAiModelSwitchRegenerateEnabled() {
+        return preferences.getBoolean(KEY_AI_SWITCH_REGENERATE, true);
+    }
+
+    public void setAiModelSwitchRegenerateEnabled(boolean enabled) {
+        preferences.edit().putBoolean(KEY_AI_SWITCH_REGENERATE, enabled).apply();
     }
 
     public int getMockQuestionLimit() {

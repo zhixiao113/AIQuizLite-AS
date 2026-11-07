@@ -1,0 +1,18 @@
+<resources>
+    <string name="ai_dialog_choose_model">选择讲解模型</string>
+    <string name="ai_dialog_model_accessibility">当前选中 %1$s，点击选择讲解模型</string>
+    <string name="ai_dialog_from_model">由 %1$s 生成</string>
+    <string name="ai_dialog_from_cache">已缓存 · 由 %1$s 生成</string>
+    <string name="ai_dialog_legacy_cache">历史缓存 · 模型来源未记录</string>
+    <string name="ai_dialog_waiting_model">已选 %1$s · 点击重新生成后使用</string>
+    <string name="ai_dialog_generating_model">正在使用 %1$s 生成讲解…</string>
+    <string name="ai_dialog_menu_order">按添加顺序排列 · 当前 %1$d 个可用</string>
+    <string name="ai_dialog_menu_current">使用中 ✓</string>
+    <string name="ai_dialog_menu_selected">已选中 ✓</string>
+    <string name="ai_dialog_menu_text">仅文本</string>
+    <string name="ai_dialog_menu_vision">支持识图</string>
+    <string name="ai_dialog_more_models_unavailable">暂无更多 AI 模型可选择</string>
+    <string name="ai_dialog_more_vision_unavailable">暂无更多识图模型可选择</string>
+    <string name="ai_dialog_models_unavailable">暂无可用 AI 模型，请前往 AI 设置配置后使用</string>
+    <string name="ai_dialog_vision_unavailable">请配置识图模型后使用图片题目讲解功能</string>
+</resources>

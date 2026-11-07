@@ -41,7 +41,10 @@ public class AiExplanationRouterTest {
             if ("created-first".equals(config.getModel())) throw new OpenAiCompatibleClient.AiClientException("服务失败");
             return ANSWER;
         });
-        assertSame(ANSWER, result.explanation);
+        assertEquals(ANSWER.getReasoning(), result.explanation.getReasoning());
+        assertEquals("created-next", result.profileId);
+        assertEquals("created-next", result.modelId);
+        assertSame(pool.model("created-next"), result.model);
         assertEquals(Arrays.asList("created-first", "created-next"), attempts);
         assertEquals(java.util.Collections.singletonList("created-first"), pool.cooled);
         assertEquals("created-first", result.failures.get(0).modelId);
@@ -58,7 +61,7 @@ public class AiExplanationRouterTest {
             if ("vision-first".equals(config.getModel())) throw new OpenAiCompatibleClient.AiClientException("图片请求失败");
             return ANSWER;
         });
-        assertSame(ANSWER, result.explanation);
+        assertEquals(ANSWER.getReasoning(), result.explanation.getReasoning());
         assertEquals(Arrays.asList("vision-first", "vision-next"), attempts);
     }
 
@@ -90,5 +93,47 @@ public class AiExplanationRouterTest {
         assertNull(result.explanation);
         assertEquals(2, result.failures.size());
         assertEquals(Arrays.asList("first", "next"), pool.cooled);
+    }
+
+    @Test public void explicitModelFailureDoesNotReplaceWithAnotherModel() throws Exception {
+        Pool pool = new Pool().add("first", true, false, 0).add("selected", true, true, 0);
+        List<String> attempts = new ArrayList<>();
+        AiExplanationRouter.Result result = AiExplanationRouter.generate(pool, false, () -> NOW,
+                () -> config -> {
+                    attempts.add(config.getModel());
+                    throw new OpenAiCompatibleClient.AiClientException("所选模型不可用");
+                }, "selected", true, null);
+        assertNull(result.explanation);
+        assertEquals(java.util.Collections.singletonList("selected"), attempts);
+        assertEquals("所选模型不可用", result.error);
+        assertEquals(java.util.Collections.singletonList("selected"), pool.cooled);
+    }
+
+    @Test public void unavailableSelectionFallsBackToCurrentCreationOrder() throws Exception {
+        Pool pool = new Pool().add("first", true, false, 0).add("selected", false, true, 0);
+        List<String> progress = new ArrayList<>();
+        AiExplanationRouter.Result result = AiExplanationRouter.generate(pool, false, () -> NOW,
+                () -> config -> ANSWER, "selected", true, model -> progress.add(model.id));
+        assertEquals("first", result.profileId);
+        assertEquals(java.util.Collections.singletonList("first"), progress);
+    }
+
+    @Test public void cancellationDoesNotCoolOrFallBack() {
+        Pool pool = new Pool().add("first", true, true, 0).add("next", true, true, 0);
+        OpenAiCompatibleClient.AiClientException error = assertThrows(OpenAiCompatibleClient.AiClientException.class,
+                () -> AiExplanationRouter.generate(pool, false, () -> NOW, () -> config -> {
+                    throw new OpenAiCompatibleClient.AiClientException(
+                            OpenAiCompatibleClient.FailureKind.CANCELLED, "已取消");
+                }));
+        assertTrue(error.isCancelled());
+        assertTrue(pool.cooled.isEmpty());
+    }
+
+    @Test public void eligiblePoolHidesUnavailableAndTextOnlyForImageQuestions() {
+        Pool pool = new Pool().add("disabled", false, true, 0).add("cooling", true, true, NOW + 1)
+                .add("text", true, false, 0).add("vision", true, true, NOW);
+        List<AiProfiles.Model> models = AiExplanationRouter.eligibleModels(pool, true, NOW);
+        assertEquals(1, models.size());
+        assertEquals("vision", models.get(0).id);
     }
 }

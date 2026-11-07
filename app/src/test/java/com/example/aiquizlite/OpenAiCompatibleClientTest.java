@@ -32,4 +32,16 @@ public class OpenAiCompatibleClientTest {
                 )
         );
     }
+
+    @Test
+    public void cancelledClientStopsBeforeSendingAnyRequest() {
+        OpenAiCompatibleClient client = new OpenAiCompatibleClient();
+        client.cancel();
+        OpenAiCompatibleClient.AiClientException failure = org.junit.Assert.assertThrows(
+                OpenAiCompatibleClient.AiClientException.class,
+                () -> client.generateExplanation(new ApiConfig("https://example.invalid", "fixture", "model"),
+                        "system", "prompt"));
+        assertTrue(failure.isCancelled());
+        assertEquals(OpenAiCompatibleClient.FailureKind.CANCELLED, failure.getKind());
+    }
 }

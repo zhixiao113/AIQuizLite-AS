@@ -25,4 +25,24 @@ public class AiExplanationTest {
         AiExplanation explanation = AiExplanation.fromModelText("这是一段普通讲解");
         assertTrue(explanation.getReasoning().contains("普通讲解"));
     }
+
+    @Test
+    public void cachePersistsActualModelAndLegacyHasUnknownSource() {
+        AiExplanation legacy = AiExplanation.fromCachedJson("{\"reasoning\":\"旧讲解\"}");
+        assertEquals("", legacy.getProfileId());
+        assertEquals("", legacy.getModelId());
+        AiExplanation sourced = legacy.withSource("profile-a", "qwen-plus");
+        AiExplanation reopened = AiExplanation.fromCachedJson(sourced.toJson());
+        assertEquals("profile-a", reopened.getProfileId());
+        assertEquals("qwen-plus", reopened.getModelId());
+        assertEquals("旧讲解", reopened.getReasoning());
+    }
+
+    @Test
+    public void modelResponseCannotChooseItsOwnSource() {
+        AiExplanation generated = AiExplanation.fromModelText(
+                "{\"reasoning\":\"解释\",\"source_profile\":\"fake\",\"source_model\":\"fake\"}");
+        assertEquals("", generated.getProfileId());
+        assertEquals("", generated.getModelId());
+    }
 }

@@ -10,21 +10,23 @@ import java.util.Locale;
 /** Derive the icon from the saved model ID, so adding a brand also covers old configs. */
 final class AiModelIcons {
     enum Brand {
-        DEEPSEEK(R.drawable.ai_brand_deepseek, "deepseek"),
-        QWEN(R.drawable.ai_brand_qwen, "qwen"),
-        OPENAI(R.drawable.ai_brand_openai, "gpt"),
-        GEMINI(R.drawable.ai_brand_gemini, "gemini"),
-        ZHIPU(R.drawable.ai_brand_zhipu, "glm", "chatglm"),
-        KIMI(R.drawable.ai_brand_kimi, "moonshot", "kimi"),
-        DOUBAO(R.drawable.ai_brand_doubao, "doubao"),
-        STEPFUN(R.drawable.ai_brand_stepfun, "step", "stepfun"),
-        DEFAULT(R.drawable.ic_ai_model_default);
+        DEEPSEEK(R.drawable.ai_brand_deepseek, "DeepSeek", "deepseek"),
+        QWEN(R.drawable.ai_brand_qwen, "通义千问", "qwen"),
+        OPENAI(R.drawable.ai_brand_openai, "OpenAI", "gpt"),
+        GEMINI(R.drawable.ai_brand_gemini, "Gemini", "gemini"),
+        ZHIPU(R.drawable.ai_brand_zhipu, "智谱 AI", "glm", "chatglm"),
+        KIMI(R.drawable.ai_brand_kimi, "Kimi", "moonshot", "kimi"),
+        DOUBAO(R.drawable.ai_brand_doubao, "豆包", "doubao"),
+        STEPFUN(R.drawable.ai_brand_stepfun, "阶跃星辰", "step", "stepfun"),
+        DEFAULT(R.drawable.ic_ai_model_default, "AI");
 
         final int drawable;
+        final String label;
         final String[] keywords;
 
-        Brand(int drawable, String... keywords) {
+        Brand(int drawable, String label, String... keywords) {
             this.drawable = drawable;
+            this.label = label;
             this.keywords = keywords;
         }
     }

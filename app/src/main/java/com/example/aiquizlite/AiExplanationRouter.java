@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.LongSupplier;
+import java.util.function.Consumer;
 
 /** Tries saved models in creation order and leaves local preparation failures outside cooldown. */
 final class AiExplanationRouter {
@@ -40,12 +41,23 @@ final class AiExplanationRouter {
         final String error;
         final List<Failure> failures;
         final boolean cached;
+        final String profileId;
+        final String modelId;
+        final AiProfiles.Model model;
 
         Result(AiExplanation explanation, String error, List<Failure> failures, boolean cached) {
+            this(explanation, error, failures, cached, null);
+        }
+
+        Result(AiExplanation explanation, String error, List<Failure> failures, boolean cached,
+                AiProfiles.Model model) {
             this.explanation = explanation;
             this.error = error;
             this.failures = Collections.unmodifiableList(new ArrayList<>(failures));
             this.cached = cached;
+            this.profileId = explanation == null ? "" : explanation.getProfileId();
+            this.modelId = explanation == null ? "" : explanation.getModelId();
+            this.model = model;
         }
 
         static Result cached(AiExplanation explanation) {
@@ -57,9 +69,30 @@ final class AiExplanationRouter {
 
     static Result generate(Pool pool, boolean needsVision, LongSupplier clock, Preparation preparation)
             throws OpenAiCompatibleClient.AiClientException {
+        return generate(pool, needsVision, clock, preparation, null, false, null);
+    }
+
+    static List<AiProfiles.Model> eligibleModels(Pool pool, boolean needsVision, long now) {
+        List<AiProfiles.Model> models = new ArrayList<>();
+        for (AiProfiles.Model model : pool.models()) {
+            if (eligible(model, needsVision, now)) models.add(model);
+        }
+        return models;
+    }
+
+    static Result generate(Pool pool, boolean needsVision, LongSupplier clock, Preparation preparation,
+            String preferredProfileId, boolean pinned, Consumer<AiProfiles.Model> onAttempt)
+            throws OpenAiCompatibleClient.AiClientException {
         List<Failure> failures = new ArrayList<>();
         Attempt attempt = null;
-        for (AiProfiles.Model saved : pool.models()) {
+        List<AiProfiles.Model> candidates = eligibleModels(pool, needsVision, clock.getAsLong());
+        AiProfiles.Model preferred = preferredProfileId == null ? null : pool.model(preferredProfileId);
+        if (eligible(preferred, needsVision, clock.getAsLong())) {
+            candidates.removeIf(model -> model.id.equals(preferredProfileId));
+            candidates.add(0, preferred);
+        }
+        for (AiProfiles.Model saved : candidates) {
+            if (Thread.currentThread().isInterrupted()) throw cancelled();
             AiProfiles.Model model = pool.model(saved.id);
             if (!eligible(model, needsVision, clock.getAsLong())) continue;
             if (attempt == null) {
@@ -68,28 +101,38 @@ final class AiExplanationRouter {
                 model = pool.model(saved.id);
                 if (!eligible(model, needsVision, clock.getAsLong())) continue;
             }
+            if (onAttempt != null) onAttempt.accept(model);
             try {
-                AiExplanation explanation = attempt.generate(model.config);
-                return new Result(explanation, null, failures, false);
+                AiExplanation explanation = attempt.generate(model.config).withSource(model.id, model.config.getModel());
+                return new Result(explanation, null, failures, false, model);
             } catch (OpenAiCompatibleClient.AiClientException error) {
-                if (Thread.currentThread().isInterrupted()) throw error;
+                if (error.isCancelled() || Thread.currentThread().isInterrupted()) throw error;
                 boolean cooled = pool.markFailed(model, clock.getAsLong());
                 failures.add(new Failure(model, error, cooled));
+                // A user's explicit choice must fail visibly, preserving the previous explanation.
+                if (pinned && model.id.equals(preferredProfileId)) break;
             }
         }
         String message;
-        if (!failures.isEmpty()) {
-            message = "可用模型均调用失败，请检查 AI 设置";
+        if (pinned && !failures.isEmpty() && failures.get(0).profileId.equals(preferredProfileId)) {
+            message = failures.get(0).reason;
+        } else if (!failures.isEmpty()) {
+            message = "所有模型均调用失败，请稍后重试或前往 AI 设置检查配置";
         } else if (needsVision) {
-            message = "请配置识图模型。添加或测试支持图片输入的模型，并确认已启用";
+            message = "请配置识图模型后使用图片题目讲解功能";
         } else {
-            message = "没有可用的 AI 模型，请在 AI 设置中添加、启用或测试模型";
+            message = "暂无可用 AI 模型，请前往 AI 设置配置后使用";
         }
         return new Result(null, message, failures, false);
     }
 
-    private static boolean eligible(AiProfiles.Model model, boolean needsVision, long now) {
+    static boolean eligible(AiProfiles.Model model, boolean needsVision, long now) {
         return model != null && model.enabled && model.config.isComplete() && !model.isCooling(now)
                 && (!needsVision || model.visionSupported);
+    }
+
+    private static OpenAiCompatibleClient.AiClientException cancelled() {
+        return new OpenAiCompatibleClient.AiClientException(OpenAiCompatibleClient.FailureKind.CANCELLED,
+                "AI 请求已取消");
     }
 }
