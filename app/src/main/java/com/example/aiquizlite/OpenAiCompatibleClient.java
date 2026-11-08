@@ -20,6 +20,7 @@ import javax.net.ssl.SSLException;
 public class OpenAiCompatibleClient {
     private static final int CONNECT_TIMEOUT_MS = 15_000;
     private static final int READ_TIMEOUT_MS = 60_000;
+    private static final int EXPLANATION_READ_TIMEOUT_MS = 120_000;
     private static final int LONG_READ_TIMEOUT_MS = 180_000;
     private volatile HttpURLConnection activeConnection;
     private volatile boolean cancelled;
@@ -27,6 +28,7 @@ public class OpenAiCompatibleClient {
     public enum FailureKind {
         CONFIG,
         NETWORK,
+        TIMEOUT,
         AUTH,
         RATE_LIMIT,
         SERVICE,
@@ -65,7 +67,8 @@ public class OpenAiCompatibleClient {
 
     AiExplanation generateExplanation(ApiConfig config, String systemPrompt, String userPrompt,
             List<String> images) throws AiClientException {
-        String content = createChatCompletion(config, systemPrompt, userPrompt, READ_TIMEOUT_MS, false, images, CONNECT_TIMEOUT_MS);
+        String content = createChatCompletion(config, systemPrompt, userPrompt,
+                EXPLANATION_READ_TIMEOUT_MS, false, images, CONNECT_TIMEOUT_MS, true);
         try {
             AiExplanation explanation = AiExplanation.fromModelText(content);
             checkCancelled();
@@ -108,7 +111,8 @@ public class OpenAiCompatibleClient {
         try {
             return "api.deepseek.com".equalsIgnoreCase(new URL(config.getBaseUrl()).getHost())
                     && ("deepseek-v4-flash".equals(config.getModel())
-                    || "deepseek-v4-pro".equals(config.getModel()));
+                    || "deepseek-v4-pro".equals(config.getModel())
+                    || "deepseek-flash".equals(config.getModel()));
         } catch (Exception ignored) {
             return false;
         }
@@ -143,6 +147,20 @@ public class OpenAiCompatibleClient {
         body.getJSONArray("messages").getJSONObject(1).put("content", parts);
     }
 
+    static JSONObject explanationRequestBody(ApiConfig config, String systemPrompt, String userPrompt)
+            throws Exception {
+        JSONObject body = requestBody(config, systemPrompt, userPrompt, false);
+        if (supportsFastExtraction(config)) {
+            body.put("thinking", new JSONObject().put("type", "disabled"));
+            body.put("max_tokens", 4096);
+        }
+        return body;
+    }
+
+    static int explanationReadTimeoutMillis() {
+        return EXPLANATION_READ_TIMEOUT_MS;
+    }
+
     static int longReadTimeoutMillis() {
         return LONG_READ_TIMEOUT_MS;
     }
@@ -164,6 +182,17 @@ public class OpenAiCompatibleClient {
             String userPrompt,
             int readTimeoutMillis,
             boolean extraction, List<String> images, int connectTimeoutMillis
+    ) throws AiClientException {
+        return createChatCompletion(config, systemPrompt, userPrompt, readTimeoutMillis,
+                extraction, images, connectTimeoutMillis, false);
+    }
+
+    private String createChatCompletion(
+            ApiConfig config,
+            String systemPrompt,
+            String userPrompt,
+            int readTimeoutMillis,
+            boolean extraction, List<String> images, int connectTimeoutMillis, boolean explanation
     ) throws AiClientException {
         checkCancelled();
         if (config == null || !config.isComplete()) {
@@ -187,7 +216,8 @@ public class OpenAiCompatibleClient {
             connection.setRequestProperty("Accept", "application/json");
             connection.setRequestProperty("Authorization", "Bearer " + config.getApiKey());
 
-            JSONObject body = requestBody(config, systemPrompt, userPrompt, extraction);
+            JSONObject body = explanation ? explanationRequestBody(config, systemPrompt, userPrompt)
+                    : requestBody(config, systemPrompt, userPrompt, extraction);
             attachImages(body, userPrompt, images);
 
             byte[] payload = body.toString().getBytes(StandardCharsets.UTF_8);
@@ -212,8 +242,8 @@ public class OpenAiCompatibleClient {
         } catch (SocketTimeoutException e) {
             checkCancelled();
             throw new AiClientException(
-                    FailureKind.NETWORK,
-                    "等待 AI 返回超时，请检查网络后重试",
+                    FailureKind.TIMEOUT,
+                    "等待 AI 返回超时，请稍后重试，该模型不会因此进入冷却",
                     e
             );
         } catch (SSLException e) {
@@ -335,6 +365,9 @@ public class OpenAiCompatibleClient {
         } else if (status == 429 || status == 402) {
             kind = FailureKind.RATE_LIMIT;
             message = "请求过于频繁、额度不足或余额不足";
+        } else if (status == 408 || status == 504) {
+            kind = FailureKind.TIMEOUT;
+            message = "AI 服务响应超时，请稍后重试，该模型不会因此进入冷却";
         } else if (status >= 500) {
             message = "AI 服务暂时不可用，请稍后重试";
         } else {
@@ -382,5 +415,11 @@ public class OpenAiCompatibleClient {
         }
 
         public boolean isCancelled() { return kind == FailureKind.CANCELLED; }
+
+        public boolean isTimeout() { return kind == FailureKind.TIMEOUT; }
+
+        public boolean shouldCooldown() {
+            return kind != FailureKind.TIMEOUT && kind != FailureKind.NETWORK && kind != FailureKind.CANCELLED;
+        }
     }
 }

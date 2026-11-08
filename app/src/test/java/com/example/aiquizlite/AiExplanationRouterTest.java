@@ -136,4 +136,39 @@ public class AiExplanationRouterTest {
         assertEquals(1, models.size());
         assertEquals("vision", models.get(0).id);
     }
+
+    @Test public void timeoutFallsBackWithoutCoolingAndSelectedModelRemainsRetryable() throws Exception {
+        Pool pool = new Pool().add("slow", true, true, 0).add("next", true, true, 0);
+        AiExplanationRouter.Preparation preparation = () -> config -> {
+            if ("slow".equals(config.getModel())) {
+                throw new OpenAiCompatibleClient.AiClientException(
+                        OpenAiCompatibleClient.FailureKind.TIMEOUT, "等待超时，请重试");
+            }
+            return ANSWER;
+        };
+        AiExplanationRouter.Result automatic = AiExplanationRouter.generate(pool, true, () -> NOW, preparation);
+        assertEquals("next", automatic.profileId);
+        assertFalse(automatic.failures.get(0).cooled);
+        assertTrue(pool.cooled.isEmpty());
+        AiExplanationRouter.Result pinned = AiExplanationRouter.generate(pool, true, () -> NOW,
+                preparation, "slow", true, null);
+        assertNull(pinned.explanation);
+        assertEquals("等待超时，请重试", pinned.error);
+        assertEquals(1, pinned.failures.size());
+        assertFalse(pinned.failures.get(0).cooled);
+        assertTrue(AiExplanationRouter.eligible(pool.model("slow"), true, NOW));
+    }
+
+    @Test public void networkFailureDoesNotCoolButCredentialFailureStillDoes() throws Exception {
+        Pool pool = new Pool().add("network", true, false, 0).add("auth", true, false, 0);
+        AiExplanationRouter.Result failed = AiExplanationRouter.generate(pool, false, () -> NOW, () -> config -> {
+            OpenAiCompatibleClient.FailureKind kind = "network".equals(config.getModel())
+                    ? OpenAiCompatibleClient.FailureKind.NETWORK : OpenAiCompatibleClient.FailureKind.AUTH;
+            throw new OpenAiCompatibleClient.AiClientException(kind, "test failure");
+        });
+        assertNull(failed.explanation);
+        assertEquals(java.util.Collections.singletonList("auth"), pool.cooled);
+        assertFalse(failed.failures.get(0).cooled);
+        assertTrue(failed.failures.get(1).cooled);
+    }
 }

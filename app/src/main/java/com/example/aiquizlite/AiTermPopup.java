@@ -127,7 +127,7 @@ final class AiTermPopup {
                 });
             } catch (OpenAiCompatibleClient.AiClientException error) {
                 if (request != serial.get() || error.isCancelled() || Thread.currentThread().isInterrupted()) return;
-                profiles.markFailed(latest, System.currentTimeMillis());
+                if (error.shouldCooldown()) profiles.markFailed(latest, System.currentTimeMillis());
                 activity.runOnUiThread(() -> showFailure(request));
             }
         });

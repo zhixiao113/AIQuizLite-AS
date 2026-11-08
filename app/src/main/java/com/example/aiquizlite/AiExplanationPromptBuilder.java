@@ -17,7 +17,8 @@ public final class AiExplanationPromptBuilder {
                 + "JSON必须包含字符串字段 conclusion、reasoning、common_mistake、memory_tip。"
                 + "在这四个字段的文字中，用双中括号包裹需要解释的学科专业名词，如[[安全区域]]。"
                 + "仅标记真实专业名词，不嵌套标记、不把整句话标为术语，没有专业名词时不添加标记。"
-                + (refined ? "本次是再次生成。用更加通俗易懂的语言讲解，多举生活化类比，减少专业术语。" : "");
+                + (refined ? "本次是再次生成。用更加通俗易懂的语言讲解，减少专业术语，使用一个贴切的生活化类比。"
+                        + "先给结论，再解释必要步骤，避免重复题干和展开无关知识；通常控制在600字以内，必要计算步骤不能省略。" : "");
     }
 
     public static String userPrompt(

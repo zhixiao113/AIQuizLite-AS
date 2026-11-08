@@ -107,7 +107,7 @@ final class AiExplanationRouter {
                 return new Result(explanation, null, failures, false, model);
             } catch (OpenAiCompatibleClient.AiClientException error) {
                 if (error.isCancelled() || Thread.currentThread().isInterrupted()) throw error;
-                boolean cooled = pool.markFailed(model, clock.getAsLong());
+                boolean cooled = error.shouldCooldown() && pool.markFailed(model, clock.getAsLong());
                 failures.add(new Failure(model, error, cooled));
                 // A user's explicit choice must fail visibly, preserving the previous explanation.
                 if (pinned && model.id.equals(preferredProfileId)) break;
