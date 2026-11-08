@@ -2,6 +2,21 @@
   "highestCode": 26,
   "stable": {
     "packageName": "com.example.aiquizlite",
+    "versionCode": 26,
+    "versionName": "1.1.15",
+    "signerSha256": "6973568484920238d35d94425c70601210ca2eaf7e728326785b66fb7e9576c8",
+    "schemaVersion": 1,
+    "apkSize": 5087918,
+    "apkSha256": "9eeff97a22ac613abee009b683e518d70ada6c5942de47b1386077785585b76c",
+    "notes": "应用版本更新，云端已完成构建、测试与原签名校验。",
+    "sourceCommit": "adb9e08a3d9a08ee3e2356b2b8224624e2aad896",
+    "releaseTag": "v1.1.15",
+    "apkUrl": "https://github.com/zhixiao113/AIQuizLite-AS/releases/download/v1.1.15/app-release.apk",
+    "publicationId": "f9af5383e778454a83ffb113eee65f94",
+    "releasedAt": "2026-11-08T04:00:59+00:00"
+  },
+  "previous": {
+    "packageName": "com.example.aiquizlite",
     "versionCode": 25,
     "versionName": "1.1.14",
     "signerSha256": "6973568484920238d35d94425c70601210ca2eaf7e728326785b66fb7e9576c8",
@@ -14,21 +29,6 @@
     "apkUrl": "https://github.com/zhixiao113/AIQuizLite-AS/releases/download/v1.1.14/app-release.apk",
     "publicationId": "04801a54d70f4f1585c5b9bfcc61ac5f",
     "releasedAt": "2026-11-07T13:47:34+00:00"
-  },
-  "previous": {
-    "packageName": "com.example.aiquizlite",
-    "versionCode": 24,
-    "versionName": "1.1.13",
-    "signerSha256": "6973568484920238d35d94425c70601210ca2eaf7e728326785b66fb7e9576c8",
-    "schemaVersion": 1,
-    "apkSize": 5086510,
-    "apkSha256": "b346b29eb6c7f446fcc218d7c3b5eece2146dde79124f0d3ebfb7ba362f32697",
-    "notes": "应用版本更新，云端已完成构建、测试与原签名校验。",
-    "sourceCommit": "ad484e840d7fb328d48d7fc7c91a29e8440172dc",
-    "releaseTag": "v1.1.13",
-    "apkUrl": "https://github.com/zhixiao113/AIQuizLite-AS/releases/download/v1.1.13/app-release.apk",
-    "publicationId": "46d47b72437c4b229c6e722fde33bfdf",
-    "releasedAt": "2026-11-07T13:31:51+00:00"
   },
   "releases": {
     "13": {
@@ -275,7 +275,7 @@
         "publicationId": "f9af5383e778454a83ffb113eee65f94",
         "releasedAt": "2026-11-08T04:00:59+00:00"
       },
-      "status": "candidate",
+      "status": "stable",
       "previousCode": 25
     }
   }
