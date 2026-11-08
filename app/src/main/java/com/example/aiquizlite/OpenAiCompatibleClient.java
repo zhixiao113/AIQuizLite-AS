@@ -419,7 +419,8 @@ public class OpenAiCompatibleClient {
         public boolean isTimeout() { return kind == FailureKind.TIMEOUT; }
 
         public boolean shouldCooldown() {
-            return kind != FailureKind.TIMEOUT && kind != FailureKind.NETWORK && kind != FailureKind.CANCELLED;
+            return !isOutputTruncated() && !isTimeout()
+                    && kind != FailureKind.NETWORK && kind != FailureKind.CANCELLED;
         }
     }
 }

@@ -70,6 +70,17 @@ public class OpenAiCompatibleClientTest {
     }
 
     @Test
+    public void outputBudgetExhaustionDoesNotCooldownAnOtherwiseValidProvider() {
+        OpenAiCompatibleClient.AiClientException failure = org.junit.Assert.assertThrows(
+                OpenAiCompatibleClient.AiClientException.class,
+                () -> OpenAiCompatibleClient.parseContent(
+                        "{\"choices\":[{\"finish_reason\":\"length\",\"message\":{\"content\":\"partial\"}}]}"));
+        assertTrue(failure.isOutputTruncated());
+        assertEquals(OpenAiCompatibleClient.FailureKind.RESPONSE, failure.getKind());
+        assertFalse(failure.shouldCooldown());
+    }
+
+    @Test
     public void parsesStringMessageContent() throws Exception {
         assertEquals(
                 "讲解内容",

@@ -77,6 +77,7 @@ public final class AiFailureInfo {
             case RATE_LIMIT:
                 return rateLimit(message);
             case NETWORK:
+            case TIMEOUT:
                 return network(message);
             case SERVICE:
                 return service(message);

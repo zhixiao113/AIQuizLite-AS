@@ -43,4 +43,11 @@ public class AiFailureInfoTest {
         assertEquals(AiFailureInfo.Kind.AUTH, failure.getKind());
         assertTrue(failure.shouldOfferSettings());
     }
+
+    @Test
+    public void timeoutRemainsRetryableInMaterialTaskFailureUi() {
+        AiFailureInfo failure = AiFailureInfo.from(OpenAiCompatibleClient.httpError(504));
+        assertEquals(AiFailureInfo.Kind.NETWORK, failure.getKind());
+        assertFalse(failure.shouldOfferSettings());
+    }
 }
