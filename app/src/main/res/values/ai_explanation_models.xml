@@ -5,6 +5,7 @@
     <string name="ai_dialog_from_cache">已缓存 · 由 %1$s 生成</string>
     <string name="ai_dialog_legacy_cache">历史缓存 · 模型来源未记录</string>
     <string name="ai_dialog_waiting_model">已选 %1$s · 点击重新生成后使用</string>
+    <string name="ai_dialog_preparing_model">正在准备 %1$s 的讲解…</string>
     <string name="ai_dialog_generating_model">正在使用 %1$s 生成讲解…</string>
     <string name="ai_dialog_menu_order">按添加顺序排列 · 当前 %1$d 个可用</string>
     <string name="ai_dialog_menu_current">使用中 ✓</string>

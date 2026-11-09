@@ -103,6 +103,34 @@ public class AiExplanationRequestsTest {
         assertEquals("qwen-plus", reopened.modelId);
     }
 
+    @Test public void cachedModelReturnsBeforeSchedulingNetworkWork() throws Exception {
+        Cache cache = new Cache();
+        AiProfiles.Model model = new AiProfiles.Model("b", new ApiConfig("https://example.com", "fixture", "qwen-plus"),
+                true, true, true, 0, 1);
+        cache.put(AiExplanationCache.modelKeyFor("q", model.id), result.withSource(model.id, model.config.getModel()));
+        AiExplanationRequests requests = new AiExplanationRequests(task -> {
+            throw new AssertionError("A cached response must not wait for a network worker");
+        });
+        assertTrue(requests.getForModel("q", model, cache, false,
+                () -> { throw new AssertionError("A cached response must not call the provider"); }).cached);
+    }
+
+    @Test public void regenerationUsesItsOwnWorkerAndRefreshesCachedContent() throws Exception {
+        Cache cache = new Cache();
+        AiProfiles.Model model = new AiProfiles.Model("b", new ApiConfig("https://example.com", "fixture", "qwen-plus"),
+                true, true, true, 0, 1);
+        String key = AiExplanationCache.modelKeyFor("q", model.id);
+        cache.put(key, result.withSource(model.id, model.config.getModel()));
+        AiExplanationRequests requests = new AiExplanationRequests(task -> {
+            throw new AssertionError("Regeneration must run independently of the first-generation queue");
+        }, Runnable::run);
+        AiExplanation fresh = new AiExplanation("fresh", "reason", "", "").withSource(model.id, model.config.getModel());
+        AiExplanationRouter.Result generated = requests.getForModel("q", model, cache, true, true,
+                () -> new AiExplanationRouter.Result(fresh, null, java.util.Collections.emptyList(), false));
+        assertFalse(generated.cached);
+        assertEquals("fresh", cache.get(key).getConclusion());
+    }
+
     @Test public void changedModelIdDoesNotReuseOldProfileCache() throws Exception {
         Cache cache = new Cache();
         String key = AiExplanationCache.modelKeyFor("q", "same-profile");

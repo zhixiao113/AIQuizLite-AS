@@ -12,7 +12,8 @@ import java.util.function.Function;
 
 /** A request outlives its dialog; callers for the same answer share its result. */
 final class AiExplanationRequests {
-    static final AiExplanationRequests SHARED = new AiExplanationRequests(Executors.newFixedThreadPool(2));
+    static final AiExplanationRequests SHARED = new AiExplanationRequests(
+            Executors.newFixedThreadPool(2), Executors.newSingleThreadExecutor());
     interface Cache {
         AiExplanation get(String key);
         void put(String key, AiExplanation explanation);
@@ -21,11 +22,23 @@ final class AiExplanationRequests {
         AiExplanationRouter.Result generate() throws OpenAiCompatibleClient.AiClientException;
     }
     private final Executor executor;
+    private final Executor regenerationExecutor;
     private final ConcurrentHashMap<String, FutureTask<AiExplanationRouter.Result>> running = new ConcurrentHashMap<>();
     private final AtomicLong requestOrder = new AtomicLong();
     private final Map<String, Long> newestSaved = new HashMap<>();
 
-    AiExplanationRequests(Executor executor) { this.executor = executor; }
+    AiExplanationRequests(Executor executor) { this(executor, executor); }
+
+    AiExplanationRequests(Executor executor, Executor regenerationExecutor) {
+        this.executor = executor;
+        this.regenerationExecutor = regenerationExecutor;
+    }
+
+    static AiExplanation cachedForModel(Cache cache, String key, AiProfiles.Model requested) {
+        AiExplanation found = cache.get(key);
+        return found != null && requested.id.equals(found.getProfileId())
+                && requested.config.getModel().equals(found.getModelId()) ? found : null;
+    }
 
     AiExplanationRouter.Result get(String key, Cache cache, boolean force, Generator generator)
             throws OpenAiCompatibleClient.AiClientException {
@@ -49,9 +62,7 @@ final class AiExplanationRequests {
             boolean force, boolean pinned, Generator generator) throws OpenAiCompatibleClient.AiClientException {
         Cache currentModelCache = new Cache() {
             @Override public AiExplanation get(String key) {
-                AiExplanation found = cache.get(key);
-                return found != null && requested.id.equals(found.getProfileId())
-                        && requested.config.getModel().equals(found.getModelId()) ? found : null;
+                return cachedForModel(cache, key, requested);
             }
 
             @Override public void put(String key, AiExplanation explanation) {
@@ -68,6 +79,8 @@ final class AiExplanationRequests {
     private AiExplanationRouter.Result get(String requestKey, String cacheKey, Cache cache,
             boolean force, Generator generator, Function<AiExplanation, String> resultKey)
             throws OpenAiCompatibleClient.AiClientException {
+        AiExplanation cached = force ? null : cache.get(cacheKey);
+        if (cached != null) return AiExplanationRouter.Result.cached(cached);
         long order = requestOrder.incrementAndGet();
         FutureTask<AiExplanationRouter.Result> task = new FutureTask<>(() -> {
             AiExplanation existing = force ? null : cache.get(cacheKey);
@@ -89,7 +102,7 @@ final class AiExplanationRequests {
         if (previous != null) task = previous;
         else {
             final FutureTask<AiExplanationRouter.Result> owned = task;
-            executor.execute(() -> {
+            (force ? regenerationExecutor : executor).execute(() -> {
                 try { owned.run(); }
                 finally { running.remove(requestKey, owned); }
             });

@@ -190,8 +190,12 @@ final class AiExplanationDialog {
             return;
         }
         selectedProfileId = current.id;
-        if (settings.isAiModelSwitchRegenerateEnabled()) request(true);
-        else {
+        if (settings.isAiModelSwitchRegenerateEnabled()) {
+            String key = AiExplanationCache.modelKeyFor(questionKey, current.id);
+            AiExplanation cached = AiExplanationRequests.cachedForModel(cache, key, current);
+            if (cached != null) accept(AiExplanationRouter.Result.cached(cached));
+            else request(true);
+        } else {
             bindModel(current.config.getModel());
             subtitle.setText(activity.getString(R.string.ai_dialog_waiting_model, current.config.getModel()));
         }
@@ -218,7 +222,8 @@ final class AiExplanationDialog {
         modelButton.setEnabled(false);
         regenerate.setEnabled(false);
         content.findViewById(R.id.aiRetryButton).setEnabled(false);
-        showAttempt(selected);
+        bindModel(selected.config.getModel());
+        subtitle.setText(activity.getString(R.string.ai_dialog_preparing_model, selected.config.getModel()));
         showState(R.id.aiLoadingContainer);
 
         String system = AiExplanationPromptBuilder.systemPrompt(force);
