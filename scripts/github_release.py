@@ -5,6 +5,7 @@ import base64
 import copy
 from datetime import datetime, timezone
 import hashlib
+import http.client
 import json
 import os
 from pathlib import Path
@@ -26,6 +27,10 @@ BRANCH = "update-channel"
 MANIFEST_URL = f"https://raw.githubusercontent.com/{REPO}/{BRANCH}/stable.json"
 MAX_APK = 128 * 1024 * 1024
 MAX_JSON = 128 * 1024
+# GitHub's release CDN answers 5xx/429 during short incidents; a bounded retry keeps a flaky
+# gateway from failing publication. Policy and permanent 4xx errors are never retried.
+TRANSIENT_HTTP = frozenset({408, 425, 429, 500, 502, 503, 504})
+RETRY_DELAYS = (2, 5, 10, 20)  # One attempt plus one per delay, so at most 5 attempts and 37s of waiting.
 PUBLIC_HOSTS = {"github.com", "raw.githubusercontent.com", "release-assets.githubusercontent.com",
                 "objects.githubusercontent.com", "objects-origin.githubusercontent.com", "github-releases.githubusercontent.com"}
 
@@ -61,33 +66,59 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
         raise ReleaseError("Authenticated API redirect refused")
 
 
-def download(url, destination=None, limit=MAX_JSON):
+def download(url, destination=None, limit=MAX_JSON, retry=True):
+    """Fetch one public artifact, retrying only transient CDN/gateway failures.
+
+    Callers that already poll with their own schedule pass retry=False so the two
+    budgets do not multiply.
+    """
     public_url(url)
+    for attempt, delay in enumerate((RETRY_DELAYS if retry else ()) + (None,), start=1):
+        try:
+            return _fetch(url, destination, limit)
+        except urllib.error.HTTPError as error:
+            if delay is None or error.code not in TRANSIENT_HTTP:
+                raise ReleaseError(f"Public download failed with HTTP {error.code}") from None
+            wait = max(delay, _retry_hint(error))
+        except (OSError, urllib.error.URLError, http.client.HTTPException):
+            if delay is None:
+                raise ReleaseError("Public download unavailable or TLS verification failed") from None
+            wait = delay
+        print(f"Public download attempt {attempt} failed; retrying in {wait}s", file=sys.stderr, flush=True)
+        time.sleep(wait)
+
+
+def _retry_hint(error):
+    value = error.headers.get("Retry-After") if error.headers else None
+    try:
+        return min(int(value), 60)
+    except (TypeError, ValueError):
+        return 0
+
+
+def _fetch(url, destination, limit):
     request = urllib.request.Request(url, headers={"User-Agent": "AIQuizLite-release",
                                                   "Cache-Control": "no-cache", "Accept-Encoding": "identity"})
-    try:
-        with urllib.request.build_opener(PublicRedirect()).open(request, timeout=30) as response:
-            content = bytearray()
-            total = 0
-            output = open(destination, "wb") if destination else None
-            try:
-                while True:
-                    chunk = response.read(65536)
-                    if not chunk:
-                        break
-                    total += len(chunk)
-                    if total > limit:
-                        raise ReleaseError("Download exceeds allowed size")
-                    if output:
-                        output.write(chunk)
-                    else:
-                        content.extend(chunk)
-            finally:
+    with urllib.request.build_opener(PublicRedirect()).open(request, timeout=30) as response:
+        content = bytearray()
+        total = 0
+        output = open(destination, "wb") if destination else None
+        try:
+            while True:
+                chunk = response.read(65536)
+                if not chunk:
+                    break
+                total += len(chunk)
+                if total > limit:
+                    raise ReleaseError("Download exceeds allowed size")
                 if output:
-                    output.close()
-            return bytes(content)
-    except (OSError, urllib.error.URLError) as error:
-        raise ReleaseError("Public download unavailable or TLS verification failed") from error
+                    output.write(chunk)
+                else:
+                    content.extend(chunk)
+        finally:
+            if output:
+                output.close()
+        return bytes(content)
 
 
 def validate_manifest(value):
@@ -259,7 +290,8 @@ class Publisher:
     def check_health(self, manifest):
         for attempt in range(8):
             try:
-                value = json.loads(download(MANIFEST_URL + "?publication=" + manifest["publicationId"]))
+                # The health window is its own retry ladder; do not stack both schedules.
+                value = json.loads(download(MANIFEST_URL + "?publication=" + manifest["publicationId"], retry=False))
                 if value == manifest:
                     self.verify(manifest)
                     return

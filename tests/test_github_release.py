@@ -1,9 +1,11 @@
 import base64
 import copy
+import http.client
 import json
 from pathlib import Path
 import tempfile
 import unittest
+import urllib.error
 from unittest.mock import patch
 from scripts import github_release as release
 
@@ -156,6 +158,69 @@ class RulesTest(unittest.TestCase):
             wrong=dict(packageName=release.local.PACKAGE_NAME, versionCode=14, versionName="1.1.3", signerSha256="wrong")
             with self.assertRaises(release.ReleaseError):
                 release.manifest_for(apk,"test","b"*40,inspector=lambda _:wrong)
+
+
+class DownloadRetryTest(unittest.TestCase):
+    url = f"https://github.com/{release.REPO}/releases/download/v1.1.5/release-manifest.json"
+
+    def http_error(self, code=504, headers=None):
+        return urllib.error.HTTPError(self.url, code, "Gateway Time-out", headers or {}, None)
+
+    def test_transient_gateway_timeout_is_retried_then_succeeds(self):
+        with patch.object(release, "_fetch", side_effect=[self.http_error(), b"ok"]) as fetch, \
+                patch.object(release.time, "sleep") as sleep:
+            self.assertEqual(b"ok", release.download(self.url))
+        self.assertEqual(2, fetch.call_count)
+        self.assertEqual([release.RETRY_DELAYS[0]], [call.args[0] for call in sleep.call_args_list])
+
+    def test_exhausted_retries_fail_with_the_http_status(self):
+        with patch.object(release, "_fetch", side_effect=self.http_error()) as fetch, \
+                patch.object(release.time, "sleep") as sleep:
+            with self.assertRaisesRegex(release.ReleaseError, "HTTP 504"):
+                release.download(self.url)
+        self.assertEqual(len(release.RETRY_DELAYS) + 1, fetch.call_count)
+        self.assertEqual(len(release.RETRY_DELAYS), sleep.call_count)
+
+    def test_permanent_client_error_is_not_retried(self):
+        with patch.object(release, "_fetch", side_effect=self.http_error(404)) as fetch, \
+                patch.object(release.time, "sleep") as sleep:
+            with self.assertRaisesRegex(release.ReleaseError, "HTTP 404"):
+                release.download(self.url)
+        self.assertEqual(1, fetch.call_count)
+        self.assertEqual(0, sleep.call_count)
+
+    def test_connection_reset_and_truncated_body_are_retried(self):
+        for error in (ConnectionResetError("reset"), http.client.IncompleteRead(b"partial")):
+            with patch.object(release, "_fetch", side_effect=[error, b"ok"]) as fetch, \
+                    patch.object(release.time, "sleep"):
+                self.assertEqual(b"ok", release.download(self.url))
+            self.assertEqual(2, fetch.call_count)
+
+    def test_policy_and_preexisting_failures_are_not_retried(self):
+        with patch.object(release, "_fetch", side_effect=release.ReleaseError("Download exceeds allowed size")) as fetch, \
+                patch.object(release.time, "sleep") as sleep:
+            with self.assertRaises(release.ReleaseError):
+                release.download(self.url)
+        self.assertEqual(1, fetch.call_count)
+        self.assertEqual(0, sleep.call_count)
+        with patch.object(release, "_fetch") as fetch:
+            with self.assertRaises(release.ReleaseError):
+                release.download("http://github.com/zhixiao113/AIQuizLite-AS/releases/download/v1.1.5/release-manifest.json")
+        self.assertEqual(0, fetch.call_count)
+
+    def test_retry_after_header_is_honoured_within_the_cap(self):
+        with patch.object(release, "_fetch", side_effect=[self.http_error(503, {"Retry-After": "7"}), b"ok"]), \
+                patch.object(release.time, "sleep") as sleep:
+            self.assertEqual(b"ok", release.download(self.url))
+        self.assertEqual(7, sleep.call_args.args[0])
+
+    def test_retry_can_be_disabled_for_callers_with_their_own_schedule(self):
+        with patch.object(release, "_fetch", side_effect=self.http_error()) as fetch, \
+                patch.object(release.time, "sleep") as sleep:
+            with self.assertRaises(release.ReleaseError):
+                release.download(self.url, retry=False)
+        self.assertEqual(1, fetch.call_count)
+        self.assertEqual(0, sleep.call_count)
 
 
 class UploadTest(unittest.TestCase):
