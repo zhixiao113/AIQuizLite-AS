@@ -37,8 +37,14 @@
 - `:app:assembleDebug`：使用 `AIQUIZ_CI_UNSIGNED=true` 通过；本机 `local.properties` 中的签名口令失效，未生成可安装的签名包。
 - GitHub 仓库页面返回 HTTP 200，README 与描述正常渲染；主分支推送成功。
 
+## 发布（2026-11-23）
+
+- 扩展仓库 Release `v0.5.7` 已发布，资产 `AIQuizLite-browser-extension-v0.5.7.zip` 86,006 字节，SHA-256 `4dbc6350b75a583f44f65a0cde950431726a660820800c19bdf812e19f650900`。
+- 应用 `v1.1.17`/code28：标签打在 `a738568`；Quality gates 成功；保护发布运行 [45175438887](https://github.com/zhixiao113/AIQuizLite-AS/actions/runs/45175438887) 的 validate 与 release 两个作业均成功，未出现待审批停留。
+- 公开 Release 于 2026-11-23T12:35:27Z 发布；APK 5,091,902 字节，SHA-256 `94f283d34737ae2b1d6577fb0aa8c12d44d2ace9d6ea21438329b607c16f2b4b`，`apksigner` 验证原证书 `697356...`，`aapt2` 验证 versionCode 28 / versionName 1.1.17 / targetSdk 35。
+- `update-channel` 分支 `stable.json` 已指向 1.1.17/code28，哈希、大小、来源提交与 `publicationId 074bc79de1b444649bc0024b08932699` 一致。
+- 本地签名口令仍失效，未产出本地签名包；安装版使用云端签名 APK。
+
 ## 待办
 
-- 签名 Release 与云发布 1.1.17/code28 尚未执行（需要有效签名口令或走云构建）。
 - 真机检查：抽屉「插件」入口、说明页滚动、按钮跳转浏览器、返回首页。
-- 可选：为独立仓库补一个 Release，附 0.5.7 安装 ZIP。
