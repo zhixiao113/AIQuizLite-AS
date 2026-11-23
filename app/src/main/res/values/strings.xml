@@ -55,6 +55,7 @@
     <string name="drawer_downloads">下载库</string>
     <string name="drawer_ai_settings">AI 设置</string>
     <string name="drawer_settings">设置</string>
+    <string name="drawer_plugins">插件</string>
     <string name="feature_under_construction">功能建设中</string>
     <string name="learner_name">学习者</string>
     <string name="learner_subtitle">专注每一次练习</string>

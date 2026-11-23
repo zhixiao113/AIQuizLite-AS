@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
         View drawerDownloadsButton = findViewById(R.id.drawerDownloadsButton);
         View drawerAiSettingsButton = findViewById(R.id.drawerAiSettingsButton);
         View drawerSettingsButton = findViewById(R.id.drawerSettingsButton);
+        View drawerPluginsButton = findViewById(R.id.drawerPluginsButton);
         View memorizeButton = findViewById(R.id.memorizeButton);
 
         selectedQuestionBankId = restoreSelectedQuestionBankId();
@@ -83,7 +84,8 @@ public class MainActivity extends AppCompatActivity {
                 drawerHomeButton,
                 drawerDownloadsButton,
                 drawerAiSettingsButton,
-                drawerSettingsButton
+                drawerSettingsButton,
+                drawerPluginsButton
         );
 
         dailyButton.setOnClickListener(view -> openMode(QuizActivity.MODE_DAILY));
@@ -103,7 +105,8 @@ public class MainActivity extends AppCompatActivity {
             View drawerHomeButton,
             View drawerDownloadsButton,
             View drawerAiSettingsButton,
-            View drawerSettingsButton
+            View drawerSettingsButton,
+            View drawerPluginsButton
     ) {
         drawerLayout.setScrimColor(0x990F172A);
         drawerLayout.setDrawerElevation(dp(16));
@@ -120,6 +123,10 @@ public class MainActivity extends AppCompatActivity {
         drawerSettingsButton.setOnClickListener(view -> {
             drawerLayout.closeDrawer(GravityCompat.START);
             startActivity(new Intent(this, GeneralSettingsActivity.class));
+        });
+        drawerPluginsButton.setOnClickListener(view -> {
+            drawerLayout.closeDrawer(GravityCompat.START);
+            startActivity(new Intent(this, BrowserExtensionActivity.class));
         });
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override

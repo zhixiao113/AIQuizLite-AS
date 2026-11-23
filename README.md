@@ -1,5 +1,7 @@
 # AIQuizLite
 
+浏览器题库助手已作为独立项目发布：[zhixiao113/AIQuizLite-browser-extension](https://github.com/zhixiao113/AIQuizLite-browser-extension)。它是 Chrome / Edge 侧边栏扩展，把题库网页里的题目整理成本应用可导入的 JSON / ZIP：整库采集、AI 整理与核对、待核对原文编辑、深度核对，当前版本 0.5.7。导出后把文件传到手机，再用本应用的「＋ 导入题库」导入；扩展不提供扫码或局域网直传。应用内可在侧边栏底部「插件」查看说明并打开该仓库。
+
 面向个人学习者和备考考生的本地 Android 刷题应用。
 
 功能：

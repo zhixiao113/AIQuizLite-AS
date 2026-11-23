@@ -38,6 +38,9 @@
             android:name=".GeneralSettingsActivity"
             android:exported="false" />
         <activity
+            android:name=".BrowserExtensionActivity"
+            android:exported="false" />
+        <activity
             android:name=".SettingsActivity"
             android:exported="false" />
         <activity
