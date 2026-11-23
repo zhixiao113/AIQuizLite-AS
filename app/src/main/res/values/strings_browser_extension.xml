@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="browser_extension_title">浏览器插件</string>
+    <string name="browser_extension_back">返回上一页</string>
+    <string name="browser_extension_platforms">Chrome / Edge 电脑端</string>
+    <string name="browser_extension_headline">把网页题库\n带到手机里</string>
+    <string name="browser_extension_intro">在电脑上采集、整理和核对网页题目，导入手机后随时练习。</string>
+    <string name="browser_extension_download">获取浏览器插件</string>
+    <string name="browser_extension_download_hint">前往 GitHub 发布页，在电脑浏览器中安装</string>
+    <string name="browser_extension_features">整库采集　·　AI 核对　·　含图导出</string>
+    <string name="browser_extension_types">支持单选、多选、判断、填空和连线题。缺答案或缺图的题目会保留待核对。</string>
+    <string name="browser_extension_guide">开始使用</string>
+    <string name="browser_extension_step_1_title">安装到电脑浏览器</string>
+    <string name="browser_extension_step_1_body">下载并解压插件，在 Chrome / Edge 扩展管理页开启开发者模式，加载包含 manifest.json 的插件文件夹。</string>
+    <string name="browser_extension_step_2_title">打开题库，配置模型</string>
+    <string name="browser_extension_step_2_body">打开已登录的题库网页，点击插件图标。在插件设置中填写模型地址、名称和密钥。</string>
+    <string name="browser_extension_step_3_title">告诉助手要整理哪份题库</string>
+    <string name="browser_extension_step_3_body">发送“把这份题库导出来，共 N 题”。核对题数和待处理项后，下载 JSON 或含原图的 ZIP 文件。</string>
+    <string name="browser_extension_step_4_title">传到手机，导入练习</string>
+    <string name="browser_extension_step_4_body">通过微信或文件传输把题库保存到手机，在本应用点“＋ 导入题库”，选择 JSON / ZIP 文件。</string>
+    <string name="browser_extension_repository">项目与安装说明</string>
+    <string name="browser_extension_repository_hint">查看源码、使用文档与问题反馈</string>
+    <string name="browser_extension_open_repository">打开 GitHub 项目与安装说明</string>
+    <string name="browser_extension_note">插件在电脑浏览器中运行，题库需通过文件传到手机。浏览器与本应用分别管理各自的数据。</string>
+    <string name="browser_extension_no_browser">没有可打开链接的浏览器，请手动访问 %1$s</string>
+</resources>
