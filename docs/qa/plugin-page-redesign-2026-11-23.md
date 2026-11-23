@@ -21,3 +21,12 @@
 - 截图和UI层次保存在 artifacts/plugin-page-preview/：default.png、bottom.png、large-font.png、browser.xml、return-after.xml。专用模拟器验证结束后已关闭。
 
 仅完成本地源码改版与验证，没有提高应用版本、提交推送或发布新版APK。后续发布后需在用户手机查看实际布局、返回与浏览器跳转。
+
+## 发布（2026-11-23）
+
+- 版本 1.1.18 / code29，提交 `1d7d2b5`，标签 `v1.1.18`。
+- 保护发布运行 [45198050024](https://github.com/zhixiao113/AIQuizLite-AS/actions/runs/45198050024) 成功（约 105 秒），未出现待审批停留。
+- Release 于 2026-11-23T14:49:44Z 发布：APK 5,104,858 字节，SHA-256 `252928ccb80ba1050ee2420aad9e0d29c981d038cc65492023c617a16c948278`。
+- `apksigner` 验证原证书 `697356...`；`aapt2` 验证 versionCode 29 / versionName 1.1.18 / targetSdk 35。
+- `update-channel` 的 `stable.json` 已指向 29，大小、哈希与 `publicationId 55aca47e47854e15ae6483e4a7e74603` 一致；核验副本在 `artifacts/cloud-verified-v29`。
+- 真机检查仍待用户执行：抽屉「插件」→ 新版页面滚动、「获取浏览器插件」跳转 Release 页、返回首页、应用内检查更新识别 1.1.18。
