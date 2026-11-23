@@ -1,15 +1,15 @@
 {
   "packageName": "com.example.aiquizlite",
-  "versionCode": 27,
-  "versionName": "1.1.16",
+  "versionCode": 28,
+  "versionName": "1.1.17",
   "signerSha256": "6973568484920238d35d94425c70601210ca2eaf7e728326785b66fb7e9576c8",
   "schemaVersion": 1,
-  "apkSize": 5088782,
-  "apkSha256": "902b8368fba7d18a9ebe3971f769a29baa53ee4f5b6c8b7215b0369a7f694b24",
+  "apkSize": 5091902,
+  "apkSha256": "94f283d34737ae2b1d6577fb0aa8c12d44d2ace9d6ea21438329b607c16f2b4b",
   "notes": "应用版本更新，云端已完成构建、测试与原签名校验。",
-  "sourceCommit": "12b23e2189d28a8dcc51b265dd13feb5970240e3",
-  "releaseTag": "v1.1.16",
-  "apkUrl": "https://github.com/zhixiao113/AIQuizLite-AS/releases/download/v1.1.16/app-release.apk",
-  "publicationId": "78300249aa814bfcac2eb431c41bf977",
-  "releasedAt": "2026-11-09T09:44:18+00:00"
+  "sourceCommit": "a738568e05489567c6ac0d480ac4089ca4596a45",
+  "releaseTag": "v1.1.17",
+  "apkUrl": "https://github.com/zhixiao113/AIQuizLite-AS/releases/download/v1.1.17/app-release.apk",
+  "publicationId": "074bc79de1b444649bc0024b08932699",
+  "releasedAt": "2026-11-23T12:35:18+00:00"
 }
